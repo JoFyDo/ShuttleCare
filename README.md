@@ -1,5 +1,11 @@
 # RocketshipCheckingTool
 
+
+Kriterien:
+[Beurteilungsbogen Programmierprojekt IBAIT.pdf](https://github.com/user-attachments/files/19493064/Beurteilungsbogen.Programmierprojekt.IBAIT.pdf)
+
+
+
 Wir bekommen:
 - Flight Data
 - Customer Survey
