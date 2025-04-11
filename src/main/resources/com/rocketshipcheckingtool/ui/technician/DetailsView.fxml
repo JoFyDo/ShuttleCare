@@ -1,0 +1,328 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.image.Image?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.StackPane?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.shape.Line?>
+<?import javafx.scene.shape.Rectangle?>
+<?import javafx.scene.text.Font?>
+<?import javafx.scene.text.Text?>
+
+<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="880.0" prefWidth="1720.0" style="-fx-background-color: cedeff;" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.rocketshipcheckingtool.ui.technician.HomeViewController">
+   <children>
+      <Rectangle arcHeight="5.0" arcWidth="5.0" fill="#182a50" height="889.0" stroke="DODGERBLUE" strokeType="INSIDE" strokeWidth="0.0" width="63.0" />
+      <VBox layoutX="7.0" layoutY="63.0" prefHeight="25.0" prefWidth="7.0">
+         <children>
+            <ImageView fitHeight="35.0" fitWidth="50.0" onMouseClicked="#mouseClicked" pickOnBounds="true" preserveRatio="true">
+               <image>
+                  <Image url="@HomeNavigation.png" />
+               </image>
+            </ImageView>
+            <Text fill="WHITE" strokeType="OUTSIDE" strokeWidth="0.0" text="Home" textAlignment="CENTER" translateX="9.0" />
+         </children>
+      </VBox>
+      <VBox layoutX="7.0" layoutY="179.0" prefHeight="25.0" prefWidth="7.0">
+         <children>
+            <ImageView fitHeight="35.0" fitWidth="50.0" onMouseClicked="#mouseClicked" pickOnBounds="true" preserveRatio="true">
+               <image>
+                  <Image url="@DetailsNavigationSelected.png" />
+               </image>
+            </ImageView>
+            <Text fill="WHITE" strokeType="OUTSIDE" strokeWidth="0.0" text="Details" textAlignment="CENTER" translateX="9.0" />
+         </children>
+      </VBox>
+      <VBox layoutX="104.0" layoutY="41.0">
+         <children>
+            <StackPane fx:id="shuttleOverviewStackPane" prefHeight="150.0" prefWidth="200.0">
+               <children>
+                  <Rectangle fx:id="shuttleOverviewRectangle" arcHeight="5.0" arcWidth="5.0" fill="WHITE" height="323.0" stroke="WHITE" strokeType="INSIDE" style="-fx-arc-height: 30; -fx-arc-width: 30;" width="1580.0" />
+                  <Text strokeType="OUTSIDE" strokeWidth="0.0" text="Shuttle Übersicht" StackPane.alignment="TOP_LEFT">
+                     <StackPane.margin>
+                        <Insets left="30.0" top="10.0" />
+                     </StackPane.margin>
+                     <font>
+                        <Font size="18.0" />
+                     </font>
+                  </Text>
+                  <VBox fx:id="shuttleDataOverviewVBox" prefHeight="238.0" prefWidth="1580.0">
+                     <children>
+                        <HBox fx:id="shuttleOverviewHeaderHBox" prefHeight="2.0" prefWidth="1563.0">
+                           <children>
+                              <Text strokeType="OUTSIDE" strokeWidth="0.0" style="-fx-font-weight: bold;" text="Shuttle">
+                                 <font>
+                                    <Font size="14.0" />
+                                 </font>
+                              </Text>
+                              <Text strokeType="OUTSIDE" strokeWidth="0.0" style="-fx-font-weight: bold;" text="Status">
+                                 <font>
+                                    <Font size="14.0" />
+                                 </font>
+                                 <HBox.margin>
+                                    <Insets left="300.0" />
+                                 </HBox.margin>
+                              </Text>
+                              <Text strokeType="OUTSIDE" strokeWidth="0.0" style="-fx-font-weight: bold;" text="Landung">
+                                 <font>
+                                    <Font size="14.0" />
+                                 </font>
+                                 <HBox.margin>
+                                    <Insets left="300.0" />
+                                 </HBox.margin>
+                              </Text>
+                              <Text strokeType="OUTSIDE" strokeWidth="0.0" style="-fx-font-weight: bold;" text="Mechaniker">
+                                 <font>
+                                    <Font size="14.0" />
+                                 </font>
+                                 <HBox.margin>
+                                    <Insets left="300.0" />
+                                 </HBox.margin>
+                              </Text>
+                           </children>
+                           <VBox.margin>
+                              <Insets left="30.0" />
+                           </VBox.margin>
+                        </HBox>
+                        <Line fx:id="tableHeaderLine" endX="1500.0" stroke="#efe8f0" strokeWidth="2.0">
+                           <VBox.margin>
+                              <Insets left="16.0" top="8.0" />
+                           </VBox.margin>
+                        </Line>
+                        <VBox fx:id="shuttleOverviewEntrysVBox" prefHeight="0.0" prefWidth="1580.0">
+                           <VBox.margin>
+                              <Insets />
+                           </VBox.margin>
+                           <children>
+                              <VBox prefHeight="0.0" prefWidth="1580.0">
+                                 <children>
+                                    <HBox prefHeight="40.0" prefWidth="1550.0">
+                                       <children>
+                                          <Text strokeType="OUTSIDE" strokeWidth="0.0" text="Shuttle A">
+                                             <HBox.margin>
+                                                <Insets top="7.0" />
+                                             </HBox.margin>
+                                             <font>
+                                                <Font size="14.0" />
+                                             </font></Text>
+                                          <Text strokeType="OUTSIDE" strokeWidth="0.0" text="In Wartung">
+                                             <HBox.margin>
+                                                <Insets left="300.0" top="7.0" />
+                                             </HBox.margin>
+                                             <font>
+                                                <Font size="14.0" />
+                                             </font>
+                                          </Text>
+                                          <Text strokeType="OUTSIDE" strokeWidth="0.0" text="12:30">
+                                             <HBox.margin>
+                                                <Insets left="300.0" top="7.0" />
+                                             </HBox.margin>
+                                             <font>
+                                                <Font size="14.0" />
+                                             </font>
+                                          </Text>
+                                          <Text strokeType="OUTSIDE" strokeWidth="0.0" text="Max">
+                                             <HBox.margin>
+                                                <Insets left="300.0" top="7.0" />
+                                             </HBox.margin>
+                                             <font>
+                                                <Font size="14.0" />
+                                             </font>
+                                          </Text>
+                                          <ImageView fx:id="detailsImage0" fitHeight="34.0" fitWidth="63.0" onMouseClicked="#detailsClicked" pickOnBounds="true" preserveRatio="true">
+                                             <image>
+                                                <Image url="@Details.png" />
+                                             </image>
+                                             <HBox.margin>
+                                                <Insets left="300.0" />
+                                             </HBox.margin>
+                                          </ImageView>
+                                       </children>
+                                       <VBox.margin>
+                                          <Insets left="30.0" />
+                                       </VBox.margin>
+                                    </HBox>
+                                    <Line fx:id="tableHeaderLine1" endX="1500.0" stroke="#efe8f0" strokeWidth="2.0">
+                                       <VBox.margin>
+                                          <Insets left="16.0" top="8.0" />
+                                       </VBox.margin>
+                                    </Line>
+                                 </children>
+                                 <VBox.margin>
+                                    <Insets top="8.0" />
+                                 </VBox.margin>
+                              </VBox>
+                           </children>
+                        </VBox>
+                     </children>
+                     <StackPane.margin>
+                        <Insets top="45.0" />
+                     </StackPane.margin>
+                  </VBox>
+               </children>
+            </StackPane>
+            <HBox prefHeight="100.0" prefWidth="200.0">
+               <children>
+                  <StackPane fx:id="shuttleOverviewStackPane1" prefHeight="428.0" prefWidth="910.0">
+                     <children>
+                        <Rectangle fx:id="shuttleTasksOverviewRectangle" arcHeight="5.0" arcWidth="5.0" fill="WHITE" height="428.0" stroke="WHITE" strokeType="INSIDE" style="-fx-arc-height: 30; -fx-arc-width: 30;" width="1012.0" StackPane.alignment="TOP_LEFT" />
+                        <Text strokeType="OUTSIDE" strokeWidth="0.0" text="Aufgaben" StackPane.alignment="TOP_LEFT">
+                           <StackPane.margin>
+                              <Insets left="30.0" top="10.0" />
+                           </StackPane.margin>
+                           <font>
+                              <Font size="18.0" />
+                           </font>
+                        </Text>
+                        <VBox fx:id="shuttleTasksOverviewVBox" prefHeight="238.0" prefWidth="165.0">
+                           <children>
+                              <HBox fx:id="shuttleTasksHeaderHBox" prefHeight="2.0" prefWidth="1563.0">
+                                 <children>
+                                    <Text strokeType="OUTSIDE" strokeWidth="0.0" style="-fx-font-weight: bold;" text="Aufgabe">
+                                       <font>
+                                          <Font size="14.0" />
+                                       </font>
+                                    </Text>
+                                    <Text strokeType="OUTSIDE" strokeWidth="0.0" style="-fx-font-weight: bold;" text="Shuttle">
+                                       <font>
+                                          <Font size="14.0" />
+                                       </font>
+                                       <HBox.margin>
+                                          <Insets left="500.0" />
+                                       </HBox.margin>
+                                    </Text>
+                                    <Text strokeType="OUTSIDE" strokeWidth="0.0" style="-fx-font-weight: bold;" text="Mechaniker">
+                                       <font>
+                                          <Font size="14.0" />
+                                       </font>
+                                       <HBox.margin>
+                                          <Insets left="100.0" />
+                                       </HBox.margin>
+                                    </Text>
+                                    <Text strokeType="OUTSIDE" strokeWidth="0.0" style="-fx-font-weight: bold;" text="Status">
+                                       <font>
+                                          <Font size="14.0" />
+                                       </font>
+                                       <HBox.margin>
+                                          <Insets left="100.0" />
+                                       </HBox.margin>
+                                    </Text>
+                                 </children>
+                                 <VBox.margin>
+                                    <Insets left="30.0" />
+                                 </VBox.margin>
+                              </HBox>
+                              <Line fx:id="tableHeaderLineTasks" endX="800.0" stroke="#efe8f0" strokeWidth="2.0">
+                                 <VBox.margin>
+                                    <Insets left="16.0" top="8.0" />
+                                 </VBox.margin>
+                              </Line>
+                              <VBox fx:id="shuttleTasksEntrysVBox" prefHeight="0.0" prefWidth="1580.0">
+                                 <VBox.margin>
+                                    <Insets />
+                                 </VBox.margin>
+                                 <children>
+                                    <VBox prefHeight="0.0" prefWidth="1580.0">
+                                       <children>
+                                          <HBox prefHeight="40.0" prefWidth="1550.0">
+                                             <children>
+                                                <Text strokeType="OUTSIDE" strokeWidth="0.0" text="Triebwerkdüsen reinigen">
+                                                   <HBox.margin>
+                                                      <Insets />
+                                                   </HBox.margin>
+                                                   <font>
+                                                      <Font size="14.0" />
+                                                   </font>
+                                                </Text>
+                                                <Text strokeType="OUTSIDE" strokeWidth="0.0" text="Shuttle C">
+                                                   <font>
+                                                      <Font size="14.0" />
+                                                   </font>
+                                                   <HBox.margin>
+                                                      <Insets left="500.0" />
+                                                   </HBox.margin>
+                                                </Text>
+                                                <Text strokeType="OUTSIDE" strokeWidth="0.0" text="Lisa">
+                                                   <HBox.margin>
+                                                      <Insets left="100.0" />
+                                                   </HBox.margin>
+                                                   <font>
+                                                      <Font size="14.0" />
+                                                   </font>
+                                                </Text>
+                                                <Text strokeType="OUTSIDE" strokeWidth="0.0" text="Erledigt">
+                                                   <HBox.margin>
+                                                      <Insets left="20.0" />
+                                                   </HBox.margin>
+                                                   <font>
+                                                      <Font size="14.0" />
+                                                   </font>
+                                                </Text>
+                                             </children>
+                                             <VBox.margin>
+                                                <Insets left="30.0" />
+                                             </VBox.margin>
+                                          </HBox>
+                                          <Line fx:id="tableHeaderLine11" endX="800.0" stroke="#efe8f0" strokeWidth="2.0">
+                                             <VBox.margin>
+                                                <Insets left="16.0" top="8.0" />
+                                             </VBox.margin>
+                                          </Line>
+                                       </children>
+                                       <VBox.margin>
+                                          <Insets top="8.0" />
+                                       </VBox.margin>
+                                    </VBox>
+                                 </children>
+                              </VBox>
+                           </children>
+                           <StackPane.margin>
+                              <Insets top="45.0" />
+                           </StackPane.margin>
+                        </VBox>
+                     </children>
+                  </StackPane>
+                  <StackPane fx:id="shuttleOverviewStackPane11" prefHeight="428.0" prefWidth="910.0">
+                     <children>
+                        <Rectangle fx:id="shuttleOverviewRectangle11" arcHeight="5.0" arcWidth="5.0" fill="WHITE" height="423.0" stroke="WHITE" strokeType="INSIDE" style="-fx-arc-height: 30; -fx-arc-width: 30;" width="530.0" StackPane.alignment="TOP_LEFT">
+                           <StackPane.margin>
+                              <Insets />
+                           </StackPane.margin>
+                        </Rectangle>
+                        <Text strokeType="OUTSIDE" strokeWidth="0.0" text="Statistiken" StackPane.alignment="TOP_LEFT">
+                           <StackPane.margin>
+                              <Insets left="30.0" top="10.0" />
+                           </StackPane.margin>
+                           <font>
+                              <Font size="18.0" />
+                           </font>
+                        </Text>
+                     </children>
+                     <HBox.margin>
+                        <Insets left="40.0" />
+                     </HBox.margin>
+                  </StackPane>
+               </children>
+               <VBox.margin>
+                  <Insets top="40.0" />
+               </VBox.margin>
+            </HBox>
+         </children>
+      </VBox>
+      <VBox layoutX="7.0" layoutY="118.0" prefHeight="25.0" prefWidth="7.0">
+         <children>
+            <ImageView fitHeight="35.0" fitWidth="50.0" onMouseClicked="#mouseClicked" pickOnBounds="true" preserveRatio="true">
+               <image>
+                  <Image url="@HomeNavigationSelected.png" />
+               </image>
+            </ImageView>
+            <Text fill="WHITE" strokeType="OUTSIDE" strokeWidth="0.0" text="Home" textAlignment="CENTER" translateX="9.0" />
+         </children>
+      </VBox>
+
+
+
+   </children>
+</AnchorPane>
