@@ -131,7 +131,7 @@
                                                 <Font size="14.0" />
                                              </font>
                                           </Text>
-                                          <ImageView fx:id="detailsImage0" fitHeight="34.0" fitWidth="63.0" onMouseClicked="#detailsClicked  " pickOnBounds="true" preserveRatio="true">
+                                          <ImageView fx:id="detailsImage0" fitHeight="34.0" fitWidth="63.0" onMouseClicked="#detailsClicked" pickOnBounds="true" preserveRatio="true">
                                              <image>
                                                 <Image url="@Details.png" />
                                              </image>
