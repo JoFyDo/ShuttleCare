@@ -1,0 +1,296 @@
+/* General Styles
+    font family: System
+    font size: 13
+    sub header font size: 17
+    header font size: 25
+    rounded corner radius: 20
+    dark blue: rgb(26, 41, 82)
+    light blue: rgb(206, 221, 255)
+    padding all around: 40
+*/
+
+.root {
+    -fx-font-size: 13px;
+}
+
+/* Box Headers */
+.header {
+    -fx-font-size: 24px;
+    -fx-padding: 0 0 10px 0;
+}
+
+/* Big Buttons*/
+.buttonBig {
+    -fx-text-fill: white;
+    -fx-pref-width: 200px;
+    -fx-pref-height: 50px;
+    -fx-background-radius: 20px;
+    -fx-background-color: white;
+}
+
+.buttonBig:hover {
+    -fx-scale-x: 1.1;
+    -fx-scale-y: 1.1;
+}
+
+/* rounded VBox */
+.vBox {
+    -fx-background-radius: 20px;
+    -fx-background-color: white;
+    -fx-padding: 20px;
+}
+
+/* CheckBox */
+.check-box .box {
+    -fx-background-color: transparent;
+    -fx-border-color: rgb(26, 41, 82);
+    -fx-border-width: 2px;
+    -fx-alignment: center;
+    -fx-pref-width: 20px;
+    -fx-pref-height: 20px;
+}
+
+.check-box:selected .box {
+    -fx-background-color: rgb(26, 41, 82);
+    -fx-border-color: rgb(26, 41, 82);
+    -fx-background-insets: 1px;
+}
+
+.check-box .mark {
+    -fx-background-color: white;
+}
+
+/* Pie chart */
+.pieChart, .pieChart .chart-plot-background, .pieChart .chart-legend {
+    -fx-background-color: white;
+    -fx-padding: 10px;
+    -fx-background-radius: 20px;
+}
+
+.pieChart .default-color0.chart-pie {
+    -fx-pie-color: rgb(182, 255, 206);
+}
+
+.pieChart .default-color1.chart-pie {
+    -fx-pie-color: rgb(246, 255, 164);
+}
+
+.pieChart .default-color2.chart-pie {
+    -fx-pie-color: rgb(253, 215, 170);
+}
+
+.pieChart .default-color3.chart-pie {
+    -fx-pie-color: rgb(255, 168, 168);
+}
+
+
+/* Sidebar Menu */
+.sidebar {
+    -fx-background-color: rgb(26, 41, 82);
+}
+
+.buttonSidebar {
+    -fx-pref-width: 80px;
+    -fx-background-radius: 20px;
+    -fx-background-color: rgb(26, 41, 82);
+    -fx-text-fill: white;
+}
+
+.buttonSidebar .iconSidebar {
+    -fx-fill: white;
+}
+
+.buttonSidebar:hover,
+.buttonSidebar:selected {
+    -fx-background-color: white;
+    -fx-text-fill: rgb(26, 41, 82);
+}
+
+.buttonSidebar:hover .iconSidebar,
+.buttonSidebar:selected .iconSidebar {
+    -fx-fill: rgb(26, 41, 82);
+}
+
+/* ContentArea*/
+.contentArea {
+    -fx-background-color: rgb(206, 221, 255);
+}
+
+/* Homepage */
+
+/* Tables*/
+.table-view {
+    -fx-fixed-cell-size: 50px;
+    -fx-fixed-header-size: 50px;
+    -fx-padding: 5px 0 5px 0;
+    -fx-background-radius: 20px;
+    -fx-radius: 20px;
+    -fx-border-width: 0;
+    -fx-background-color: white;
+}
+
+.column-header .label {
+    -fx-alignment: center-left;
+    -fx-padding: 15px 0 15px 0;
+}
+
+.column-header {
+    -fx-border-color: transparent transparent darkgray transparent;
+    -fx-border-width: 0 0 1px 0;
+    -fx-background-color: white;
+}
+
+.table-cell {
+    -fx-alignment: center-left;
+    -fx-border-color: transparent transparent lightgray transparent;
+    -fx-border-width: 0 0 1px 0;
+}
+
+.table-row-cell:selected {
+}
+
+.details-button {
+    -fx-background-color: rgb(26, 41, 82);
+    -fx-text-fill: white;
+    -fx-background-radius: 20px;
+    -fx-pref-width: 100px;
+    -fx-pref-height: 30px;
+}
+
+.details-button:hover {
+    -fx-scale-x: 1.1;
+    -fx-scale-y: 1.1;
+}
+
+/* Details */
+.shuttleName {
+    -fx-text-fill: rgb(26, 41, 82);
+    -fx-background-color: white;
+    -fx-background-radius: 20px;
+    -fx-border-color: rgb(26, 41, 82);
+    -fx-border-radius: 20px;
+    -fx-pref-height: 60px;
+    -fx-pref-width: 300px;
+    -fx-background-insets: 1px;
+    -fx-font-size: 25;
+}
+
+.progressLabel {
+    -fx-pref-height: 60px;
+    -fx-border-color: rgb(26, 41, 82);
+    -fx-text-fill: rgb(26, 41, 82);
+    -fx-background-color: white;
+    -fx-background-insets: 1px;
+    -fx-font-size: 17px;
+}
+
+.progressLabel:hover {
+    -fx-background-color: rgb(206, 221, 255);
+}
+
+#gelandetButton {
+    -fx-background-radius: 20px 0 0 20px;
+    -fx-border-radius: 20px 0 0 20px;
+}
+
+#freigegebenButton {
+    -fx-background-radius: 0 20px 20px 0;
+    -fx-border-radius: 0 20px 20px 0;
+}
+
+.comboBox, .comboBox .list-cell {
+    -fx-alignment: center;
+}
+
+.scrollPane {
+    -fx-background-radius: 20px;
+    -fx-border-radius: 20px;
+    -fx-background-color: white;
+    -fx-padding: 5px 20px 5px 20px;
+}
+
+/* Statistiken */
+/* Rocket */
+.rocketWhite {
+    -fx-fill: white;
+    -fx-stroke: rgb(26, 41, 82);
+    -fx-stroke-width: 5px;
+    -fx-stroke-type: centered;
+}
+
+.rocketSeam {
+    -fx-stroke: rgb(26, 41, 82);
+    -fx-stroke-width: 5px;
+}
+
+/* Rocket usage */
+.rocketNew {
+    -fx-fill: rgb(182, 255, 206);
+    -fx-stroke: rgb(26, 41, 82);
+    -fx-stroke-width: 5px;
+    -fx-stroke-type: centered;
+}
+
+.rocketOperational {
+    -fx-fill: rgb(246, 255, 164);
+    -fx-stroke: rgb(26, 41, 82);
+    -fx-stroke-width: 5px;
+    -fx-stroke-type: centered;
+}
+
+.rocketWorn {
+    -fx-fill: rgb(253, 215, 170);
+    -fx-stroke: rgb(26, 41, 82);
+    -fx-stroke-width: 5px;
+    -fx-stroke-type: centered;
+}
+
+.rocketCritical {
+    -fx-fill: rgb(255, 168, 168);
+    -fx-stroke: rgb(26, 41, 82);
+    -fx-stroke-width: 5px;
+    -fx-stroke-type: centered;
+}
+
+/* Line Chart */
+.chart-line-symbol {
+    -fx-background-color: rgb(26, 41, 82);
+    -fx-background-insets: 0;
+    -fx-shape: "M0,-2 A2,2 0 1,1 0.01,-2 Z";
+}
+
+.chart-series-line {
+    -fx-stroke: rgb(26, 41, 82);
+}
+
+/* Stacked Bar Chart */
+.default-color0.chart-bar {
+    fx-bar-fill: #73A1C4;
+}
+
+.default-color1.chart-bar {
+    -fx-bar-fill: #7EC8DD;
+}
+
+.default-color2.chart-bar {
+    -fx-bar-fill: #C1EAD5
+}
+
+.default-color3.chart-bar {
+    -fx-bar-fill: #8FBD93
+}
+
+/* Lager */
+.searchField {
+    -fx-text-fill: rgb(26, 41, 82);
+    -fx-background-color: white;
+    -fx-background-radius: 20px;
+    -fx-border-color: rgb(26, 41, 82);
+    -fx-border-radius: 20px;
+    -fx-pref-height: 40px;
+    -fx-background-insets: 1px;
+    -fx-font-size: 25px;
+}
+
+
+/* Benachrichtigungen */

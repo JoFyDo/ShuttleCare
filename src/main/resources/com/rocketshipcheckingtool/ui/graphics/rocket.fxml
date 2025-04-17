@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.Group?>
+<?import javafx.scene.shape.*?>
+<Group>
+    <!-- Nose Cone -->
+    <SVGPath id="nose" content="M 70 40 q 10 -18 30 -35 q 20 17 30 35 z" styleClass="rocketWhite"/>
+
+    <!-- Crew and Tourist Cabins -->
+    <SVGPath id="cabins" content="M 70 40 L 130 40 Q 142 61 140 110 L 60 110 Q 58 61 70 40 Z" styleClass="rocketWhite"/>
+
+    <!-- Windows -->
+    <SVGPath id="window" content="M 100 75 m -20, 0 a 20,20 0 1,0 40,0 a 20,20 0 1,0 -40,0" styleClass="rocketWhite"/>
+
+    <!-- Cargo Compartment -->
+    <SVGPath id="cargo" content="M60,110 L140,110 L140,130 L60,130 Z" styleClass="rocketWhite"/>
+
+    <!-- Rocket Body -->
+    <SVGPath id="body" content="M60,130 L140,130 L140,380 L60,380 Z" styleClass="rocketWhite"/>
+    <SVGPath content="M70 140 V370 Z" styleClass="rocketSeam"/>
+    <SVGPath content="M 130 140 V 370 Z" styleClass="rocketSeam"/>
+
+    <!-- Engine -->
+    <SVGPath id="engine" content="M60,380 L140,380 L140,420 L60,420 Z" styleClass="rocketWhite"/>
+
+    <!-- Wings -->
+    <SVGPath id="wing1" content="M60,250 L10,400 L60,400 Z" styleClass="rocketWhite"/>
+    <SVGPath id="wing2" content="M140,250 L190,400 L140,400 Z" styleClass="rocketWhite"/>
+
+    <!-- Legs -->
+    <SVGPath id="leg1" content="M 60 420 L 70 420 L 62 458 L 52 458 Z" styleClass="rocketWhite"/>
+    <SVGPath id="leg2" content="M 130 420 L 140 420 L 148 458 L 138 458 Z" styleClass="rocketWhite"/>
+
+    <!-- Nozzle -->
+    <SVGPath id="nozzle" content="M 88 421 Q 100 424 112 421 L 122 444 Q 100 453 78 444 Z" styleClass="rocketWhite"/>
+</Group>

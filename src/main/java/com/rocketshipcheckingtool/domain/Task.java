@@ -45,4 +45,24 @@ public class Task implements Manage {
             default -> null;
         };
     }
+
+    public String getTask() {
+        return task;
+    }
+
+    public String getStatus() {
+        return status;
+    }
+
+    public String getMechanic() {
+        return mechanic;
+    }
+
+    public Shuttle getShuttle() {
+        return shuttle;
+    }
+
+    public String getShuttleName() {
+        return shuttleName;
+    }
 }
