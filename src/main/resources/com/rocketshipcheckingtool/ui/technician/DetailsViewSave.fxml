@@ -13,7 +13,7 @@
 
 <AnchorPane maxHeight="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefWidth="1720.0" style="-fx-background-color: cedeff;" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.rocketshipcheckingtool.ui.technician.DetailsViewController">
    <children>
-      <Rectangle fx:id="shuttleMenuRectangle" arcHeight="5.0" arcWidth="5.0" fill="#182a50" height="889.0" stroke="DODGERBLUE" strokeType="INSIDE" strokeWidth="0.0" width="63.0" />
+      <Rectangle arcHeight="5.0" arcWidth="5.0" fill="#182a50" height="889.0" stroke="DODGERBLUE" strokeType="INSIDE" strokeWidth="0.0" width="63.0" />
       <VBox layoutX="7.0" layoutY="63.0" prefHeight="25.0" prefWidth="7.0">
          <children>
             <ImageView fitHeight="35.0" fitWidth="50.0" onMouseClicked="#mouseClicked" pickOnBounds="true" preserveRatio="true">

@@ -4,6 +4,10 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.*;
+import java.net.http.HttpClient;
+import java.net.http.HttpRequest;
+import java.net.http.HttpResponse;
+import java.nio.charset.StandardCharsets;
 
 public class ClientRequests {
     private URL url;
@@ -13,28 +17,32 @@ public class ClientRequests {
         url = new URL("http://localhost:2104");
     }
 
-    public String request(String path, String user) throws URISyntaxException, IOException {
+    public String request(String path, String user, String key, String value) throws URISyntaxException, IOException, InterruptedException {
         url = url.toURI().resolve(path).toURL();
         con = (HttpURLConnection) url.openConnection();
         con.setRequestMethod("GET");
         con.setRequestProperty("User", user);
-        if (con.getResponseCode() != 200) {
-            throw new IOException(con.getResponseMessage());
+        con.setRequestProperty(key, value);
+
+        int status = con.getResponseCode();
+        if (status != 200) {
+            throw new IOException("Server responded with: " + status + " - " + con.getResponseMessage());
         }
 
-        BufferedReader in = new BufferedReader(
-                new InputStreamReader(con.getInputStream(), "UTF-8")
-        );
-
-        String inputLine;
         StringBuilder response = new StringBuilder();
-
-        while ((inputLine = in.readLine()) != null) {
-            response.append(inputLine).append("\n");
+        try (BufferedReader reader = new BufferedReader(
+                new InputStreamReader(con.getInputStream(), StandardCharsets.UTF_8))) {
+            String line;
+            while ((line = reader.readLine()) != null) {
+                response.append(line).append("\n");
+            }
         }
-        in.close();
-        con.disconnect();
 
+        con.disconnect();
         return response.toString();
+    }
+
+    public String request(String path, String user) throws URISyntaxException, IOException, InterruptedException {
+        return request(path, user, "penis", "penis");
     }
 }

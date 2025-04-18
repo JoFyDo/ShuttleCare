@@ -7,8 +7,8 @@ import com.sun.net.httpserver.HttpServer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.io.IOException;
@@ -41,21 +41,26 @@ public class Server {
     }
 
     private void handle(HttpExchange exchange) throws IOException {
+        Util.updateDatabase(databaseConnection);
         var request = exchange.getRequestURI();
         Map<String, List<String>> headers = exchange.getRequestHeaders();
 
         switch (request.getPath()) {
-            case "/requestShuttleOverview":
-                System.out.println("requestShuttleOverview");
+            case "/requestShuttles":
                 if(headers.get("User").get(0).equals("technician")) {
                     ArrayList<Shuttle> shuttles = databaseConnection.getShuttles();
                     sendResponse(exchange, 200, Util.combineJSONString(shuttles));
                 }
                 break;
-            case "/requestShuttleTasks":
-                System.out.println("requestShuttleTasks");
+            case "/requestShuttle":
                 if(headers.get("User").get(0).equals("technician")) {
-                    ArrayList<Task> tasks = databaseConnection.getTasks();
+                    Shuttle shuttle = databaseConnection.getShuttle(Integer.valueOf(headers.get("Shuttle").get(0)));
+                    sendResponse(exchange, 200, shuttle.toJson());
+                }
+                break;
+            case "/requestActiveTasks":
+                if(headers.get("User").get(0).equals("technician")) {
+                    ArrayList<Task> tasks = databaseConnection.getActiveTasks();
                     sendResponse(exchange, 200, Util.combineJSONString(tasks));
                 }
                 break;
@@ -63,13 +68,19 @@ public class Server {
 
     }
 
-    private void sendResponse(HttpExchange exchange, int responseCode, String message) throws IOException {
-        byte[] response = message.getBytes("UTF-8");
-        System.out.println(Arrays.toString(response));
-        exchange.sendResponseHeaders(responseCode, message.length());
+    private void sendResponse(HttpExchange exchange, int responseCode, String message) throws IOException {;
+        byte[] responseBytes = message.getBytes(StandardCharsets.UTF_8);
+
+        exchange.getResponseHeaders().set("Content-Type", "application/json; charset=UTF-8");
+        exchange.sendResponseHeaders(responseCode, responseBytes.length);
+
         try (OutputStream os = exchange.getResponseBody()) {
-            os.write(response);
+            os.write(responseBytes);
+            os.flush();
         }
+
+        //System.out.println("Response message: " + message);
+        //System.out.println("Bytes length: " + message.getBytes(StandardCharsets.UTF_8).length);
     }
 
     public void stop( ) {

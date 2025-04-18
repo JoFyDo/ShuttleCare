@@ -12,10 +12,10 @@
 <?import javafx.scene.text.Font?>
 <?import javafx.scene.text.Text?>
 
-<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" style="-fx-background-color: cedeff;" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.rocketshipcheckingtool.ui.technician.HomeViewController">
+<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="880.0" prefWidth="1720.0" style="-fx-background-color: cedeff;" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.rocketshipcheckingtool.ui.technician.HomeViewController">
    <children>
-      <Rectangle arcHeight="5.0" arcWidth="5.0" fill="#182a50" height="440.0" stroke="DODGERBLUE" strokeType="INSIDE" strokeWidth="0.0" width="60.0" />
-      <VBox layoutX="5.0" layoutY="62.0" prefHeight="25.0" prefWidth="7.0">
+      <Rectangle arcHeight="5.0" arcWidth="5.0" fill="#182a50" height="889.0" stroke="DODGERBLUE" strokeType="INSIDE" strokeWidth="0.0" width="63.0" />
+      <VBox layoutX="7.0" layoutY="63.0" prefHeight="25.0" prefWidth="7.0">
          <children>
             <ImageView fitHeight="35.0" fitWidth="50.0" onMouseClicked="#mouseClicked" pickOnBounds="true" preserveRatio="true">
                <image>
@@ -25,7 +25,7 @@
             <Text fill="WHITE" strokeType="OUTSIDE" strokeWidth="0.0" text="Home" textAlignment="CENTER" translateX="9.0" />
          </children>
       </VBox>
-      <VBox layoutX="5.0" layoutY="180.0" prefHeight="25.0" prefWidth="7.0">
+      <VBox layoutX="7.0" layoutY="179.0" prefHeight="25.0" prefWidth="7.0">
          <children>
             <ImageView fitHeight="35.0" fitWidth="50.0" onMouseClicked="#mouseClicked" pickOnBounds="true" preserveRatio="true">
                <image>
@@ -35,21 +35,11 @@
             <Text fill="WHITE" strokeType="OUTSIDE" strokeWidth="0.0" text="Details" textAlignment="CENTER" translateX="9.0" />
          </children>
       </VBox>
-      <VBox layoutX="5.0" layoutY="114.0" prefHeight="25.0" prefWidth="7.0">
+      <VBox layoutX="104.0" layoutY="41.0">
          <children>
-            <ImageView fitHeight="35.0" fitWidth="50.0" onMouseClicked="#mouseClicked" pickOnBounds="true" preserveRatio="true">
-               <image>
-                  <Image url="@HomeNavigationSelected.png" />
-               </image>
-            </ImageView>
-            <Text fill="WHITE" strokeType="OUTSIDE" strokeWidth="0.0" text="Home" textAlignment="CENTER" translateX="9.0" />
-         </children>
-      </VBox>
-      <VBox layoutX="100.0" layoutY="40.0">
-         <children>
-            <StackPane fx:id="shuttleOverviewStackPane">
+            <StackPane fx:id="shuttleOverviewStackPane" prefHeight="150.0" prefWidth="200.0">
                <children>
-                  <Rectangle fx:id="shuttleOverviewRectangle" arcHeight="5.0" arcWidth="5.0" fill="WHITE" height="10.0" stroke="WHITE" strokeType="INSIDE" style="-fx-arc-height: 30; -fx-arc-width: 30;" width="10.0" StackPane.alignment="TOP_LEFT" />
+                  <Rectangle fx:id="shuttleOverviewRectangle" arcHeight="5.0" arcWidth="5.0" fill="WHITE" height="323.0" stroke="WHITE" strokeType="INSIDE" style="-fx-arc-height: 30; -fx-arc-width: 30;" width="1580.0" />
                   <Text strokeType="OUTSIDE" strokeWidth="0.0" text="Shuttle Übersicht" StackPane.alignment="TOP_LEFT">
                      <StackPane.margin>
                         <Insets left="30.0" top="10.0" />
@@ -58,7 +48,7 @@
                         <Font size="18.0" />
                      </font>
                   </Text>
-                  <VBox fx:id="shuttleDataOverviewVBox" prefWidth="1580.0">
+                  <VBox fx:id="shuttleDataOverviewVBox" prefHeight="238.0" prefWidth="1580.0">
                      <children>
                         <HBox fx:id="shuttleOverviewHeaderHBox" prefHeight="2.0" prefWidth="1563.0">
                            <children>
@@ -172,9 +162,6 @@
                      </StackPane.margin>
                   </VBox>
                </children>
-               <VBox.margin>
-                  <Insets right="40.0" />
-               </VBox.margin>
             </StackPane>
             <HBox prefHeight="100.0" prefWidth="200.0">
                <children>
@@ -319,9 +306,19 @@
                   </StackPane>
                </children>
                <VBox.margin>
-                  <Insets right="40.0" top="40.0" />
+                  <Insets top="40.0" />
                </VBox.margin>
             </HBox>
+         </children>
+      </VBox>
+      <VBox layoutX="7.0" layoutY="118.0" prefHeight="25.0" prefWidth="7.0">
+         <children>
+            <ImageView fitHeight="35.0" fitWidth="50.0" onMouseClicked="#mouseClicked" pickOnBounds="true" preserveRatio="true">
+               <image>
+                  <Image url="@HomeNavigationSelected.png" />
+               </image>
+            </ImageView>
+            <Text fill="WHITE" strokeType="OUTSIDE" strokeWidth="0.0" text="Home" textAlignment="CENTER" translateX="9.0" />
          </children>
       </VBox>
 

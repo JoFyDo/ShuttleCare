@@ -1,8 +1,9 @@
 import com.rocketshipcheckingtool.ui.technician.HomeView;
+import com.rocketshipcheckingtool.ui.technician.SceneManager;
 
 public class Launcher {
 
     public static void main(String[] args) {
-        HomeView.main(args);
+        SceneManager.main(args);
     }
 }

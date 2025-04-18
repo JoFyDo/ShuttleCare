@@ -1,42 +1,38 @@
 package com.rocketshipcheckingtool.ui.technician;
 
 import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
-import com.google.gson.JsonDeserializer;
 import com.google.gson.reflect.TypeToken;
 import com.rocketshipcheckingtool.domain.Shuttle;
 import com.rocketshipcheckingtool.domain.Task;
-import com.rocketshipcheckingtool.server.Server;
-import javafx.application.Application;
 import javafx.application.Platform;
 import javafx.fxml.FXML;
-import javafx.fxml.FXMLLoader;
 import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Alert;
-import javafx.scene.image.Image;
 import javafx.scene.layout.HBox;
+import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.scene.shape.Line;
 import javafx.scene.shape.Rectangle;
-import javafx.stage.Stage;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.lang.reflect.Type;
 import java.net.ConnectException;
-import java.sql.Date;
-import java.sql.Time;
 import java.util.ArrayList;
-import java.util.Objects;
 
-public class HomeView extends Application {
+public class HomeView extends Scene{
 
-    private ClientRequests clientRequests;
+    private final double minMargin = 20;
+
     private final String user = "technician";
     private final static Logger logger = LoggerFactory.getLogger(HomeView.class);
+    private ClientRequests clientRequests;
+
+    private double shuttleOverviewMinWidth;
+    private double shuttleOverviewMinHeight;
 
     @FXML
     private Line tableHeaderLine;
@@ -47,68 +43,59 @@ public class HomeView extends Application {
     private VBox shuttleOverviewEntrysVBox;
     private HBox shuttleTasksHeaderHBox;
     private VBox shuttleTasksEntrysVBox;
+    private StackPane shuttleOverviewStackPane;
 
-    @Override
-    public void start(Stage stage) throws Exception {
+    public HomeView(Parent parent, ClientRequests clientRequests) {
+        super(parent);
+        this.clientRequests = clientRequests;
+        initialize();
+    }
+
+    public void initialize() {
         try {
-            connectToServer();
-            Parent root = FXMLLoader.load(getClass().getResource("HomeView.fxml"));
-            Scene home = fitContent(root);
+            this.widthProperty().addListener((observable, oldValue, newValue) -> resize());
+            this.heightProperty().addListener((observable, oldValue, newValue) -> resize());
+
+            lookupContent();
             loadContent();
 
-            for (Node n : shuttleOverviewEntrysVBox.getChildren()){
-                VBox vbox = (VBox) n;
-                for (Node f: vbox.getChildren()){
-                    if (f instanceof HBox hbox){
-                        for (Node n2 : hbox.getChildren()){
-                                System.out.println(HBox.getMargin(n2));
-                            }
-                    }
-                }
-            }
+
+
 
             Platform.runLater(() -> {
+                resize();
                 fitVBoxs(shuttleOverviewEntrysVBox, shuttleOverviewHeaderHBox, shuttleOverviewRectangle);
                 fitVBoxs(shuttleTasksEntrysVBox, shuttleTasksHeaderHBox, shuttleTasksOverviewRectangle);
+                tableHeaderLine.setEndX((shuttleOverviewRectangle.getWidth() - 34));
+                tableHeaderLineTasks.setEndX((shuttleTasksOverviewRectangle.getWidth() - 34));
             });
 
-            stage.setTitle("Rocketship Checking Tool");
-            Image i = new Image(Objects.requireNonNull(getClass().getResourceAsStream("icon.png")));
-            stage.getIcons().add(i);
-            stage.setScene(home);
-            stage.show();
         }catch (Exception e){
-            e.printStackTrace();
+            logger.error(e.getMessage());
+            throw new RuntimeException(e);
         }
     }
 
-    private Scene fitContent(Parent root){
-        Scene scene = new Scene(root);
 
-        shuttleOverviewHeaderHBox = (HBox) scene.lookup("#shuttleOverviewHeaderHBox");
-        shuttleOverviewEntrysVBox = (VBox) scene.lookup("#shuttleOverviewEntrysVBox");
+    private void lookupContent(){
 
-        shuttleTasksHeaderHBox = (HBox) scene.lookup("#shuttleTasksHeaderHBox");
-        shuttleTasksEntrysVBox = (VBox) scene.lookup("#shuttleTasksEntrysVBox");
-
-        shuttleOverviewRectangle = (Rectangle) root.lookup("#shuttleOverviewRectangle");
-        shuttleTasksOverviewRectangle = (Rectangle) root.lookup("#shuttleTasksOverviewRectangle");
-
-        tableHeaderLine = (Line) scene.lookup("#tableHeaderLine");
-        tableHeaderLine.setEndX((shuttleOverviewRectangle.getWidth() - 34));
-
-        tableHeaderLineTasks = (Line) scene.lookup("#tableHeaderLineTasks");
-        tableHeaderLineTasks.setEndX((shuttleTasksOverviewRectangle.getWidth() - 34));
-
-        return scene;
+        shuttleOverviewHeaderHBox = (HBox) lookup("#shuttleOverviewHeaderHBox");
+        shuttleOverviewEntrysVBox = (VBox) lookup("#shuttleOverviewEntrysVBox");
+        shuttleTasksHeaderHBox = (HBox) lookup("#shuttleTasksHeaderHBox");
+        shuttleTasksEntrysVBox = (VBox) lookup("#shuttleTasksEntrysVBox");
+        shuttleOverviewRectangle = (Rectangle) lookup("#shuttleOverviewRectangle");
+        shuttleTasksOverviewRectangle = (Rectangle) lookup("#shuttleTasksOverviewRectangle");
+        tableHeaderLine = (Line) lookup("#tableHeaderLine");
+        tableHeaderLineTasks = (Line) lookup("#tableHeaderLineTasks");
+        shuttleOverviewStackPane = (StackPane) lookup("#shuttleOverviewStackPane");
     }
 
     private void loadContent(){
         try {
-            ArrayList<Shuttle> shuttles = getShuttleEntrysForOverview();
+            ArrayList<Shuttle> shuttles = Util.getShuttles(clientRequests, user);
             Util.shuttleEntryLoadVBoxes(shuttles, shuttleOverviewEntrysVBox);
 
-            ArrayList<Task> tasks = getShutlleEntrysForTasks();
+            ArrayList<Task> tasks = Util.getActiveTasks(clientRequests, user);
             Util.shuttleEntryLoadVBoxes(tasks, shuttleTasksEntrysVBox);
 
         }catch (Exception e){
@@ -134,46 +121,12 @@ public class HomeView extends Application {
         }
     }
 
+    private void resize(){
+        double newWidth = getWidth() - 140;
+        double newHeight = getHeight()/2 - 120;
+        //System.out.println(getWidth());
+        SizeUtil.resizeStackPane(shuttleOverviewStackPane, newWidth, newHeight);
 
-    private ArrayList<Shuttle> getShuttleEntrysForOverview() throws IOException {
-        try {
-            String shuttles = clientRequests.request("/requestShuttleOverview", user);
-            Gson gson = new GsonBuilder()
-                    .registerTypeAdapter(Date.class, (JsonDeserializer<Date>) (jsonElement, type, context) ->
-                            Date.valueOf(jsonElement.getAsString()))
-                    .registerTypeAdapter(Time.class, (JsonDeserializer<Time>) (jsonElement, type, context) ->
-                            Time.valueOf(jsonElement.getAsString()))
-                    .create();
-            Type shuttleListType = new TypeToken<ArrayList<Shuttle>>() {}.getType();
-            return gson.fromJson(shuttles, shuttleListType);
-        }catch (Exception e){
-            logger.error(e.getMessage());
-            throw new ConnectException(e.getMessage());
-        }
     }
 
-    private ArrayList<Task> getShutlleEntrysForTasks() throws IOException {
-        try {
-            String tasks = clientRequests.request("/requestShuttleTasks", user);
-            Gson gson = new Gson();
-            Type shuttleListType = new TypeToken<ArrayList<Task>>() {}.getType();
-            System.out.println(tasks);
-            return gson.fromJson(tasks, shuttleListType);
-        }catch (Exception e){
-            logger.error(e.getMessage());
-            throw new ConnectException(e.getMessage());
-        }
-    }
-
-    private void connectToServer() {
-        try {
-            clientRequests = new ClientRequests();
-        }catch (Exception e){
-            e.printStackTrace();
-        }
-    }
-
-    public static void main(String[] args) {
-        launch(args);
-    }
 }
