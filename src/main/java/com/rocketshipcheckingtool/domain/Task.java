@@ -39,9 +39,9 @@ public class Task implements Manage {
     public String getByI(int index) {
         return switch (index) {
             case 0 -> task;
-            case 1 -> mechanic;
-            case 2 -> status;
-            case 3 -> shuttleName;
+            case 2 -> mechanic;
+            case 3 -> status;
+            case 1 -> shuttleName;
             default -> null;
         };
     }

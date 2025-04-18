@@ -19,7 +19,7 @@
                     maxWidth="Infinity" alignment="CENTER"/>
             <Button fx:id="inWartungButton" text="In Wartung" styleClass="progressLabel" HBox.hgrow="ALWAYS"
                     maxWidth="Infinity" alignment="CENTER"/>
-            <Button fx:id="inspektion2LButton" text="Inspektion" styleClass="progressLabel" HBox.hgrow="ALWAYS"
+            <Button fx:id="inspektion2Button" text="Inspektion" styleClass="progressLabel" HBox.hgrow="ALWAYS"
                     maxWidth="Infinity" alignment="CENTER"/>
             <Button fx:id="freigegebenButton" text="Freigegeben" styleClass="progressLabel" HBox.hgrow="ALWAYS"
                     maxWidth="Infinity" alignment="CENTER"/>

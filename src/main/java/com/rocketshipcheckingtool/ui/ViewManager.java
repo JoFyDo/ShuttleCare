@@ -12,29 +12,30 @@ import org.slf4j.LoggerFactory;
 
 import java.util.Objects;
 
-public class MainView extends Application {
+public class ViewManager extends Application {
     private ClientRequests clientRequests;
     private final String user = "technician";
-    private final static Logger logger = LoggerFactory.getLogger(MainViewController.class);
+    private final static Logger logger = LoggerFactory.getLogger(ViewManagerController.class);
 
     @Override
     public void start(Stage stage) throws Exception {
-        try {
-            connectToServer();
+        connectToServer();
 
+        try {
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/rocketshipcheckingtool/ui/technician/MainView.fxml"));
             Parent root = loader.load();
 
-            MainViewController controller = loader.getController();
+            ViewManagerController controller = loader.getController();
             controller.setClientRequests(clientRequests);
             controller.initContent();
 
             Scene scene = new Scene(root);
             scene.getStylesheets().add(Objects.requireNonNull(getClass().getResource("/com/rocketshipcheckingtool/ui/style.css")).toExternalForm());
             stage.setTitle("Rocketship Checking Tool");
-            Image i = new Image(Objects.requireNonNull(getClass().getResourceAsStream("/com/rocketshipcheckingtool/ui/technician/icon.png")));
+            Image i = new Image(Objects.requireNonNull(getClass().getResourceAsStream("/com/rocketshipcheckingtool/ui/graphics/icon.png")));
             stage.getIcons().add(i);
             stage.setScene(scene);
+            stage.setMaximized(true);
             stage.show();
 
         } catch (Exception e) {

@@ -17,6 +17,7 @@ target/
 =======
 .idea
 >>>>>>> Stashed changes
+.idea
 *.iws
 *.iml
 *.ipr

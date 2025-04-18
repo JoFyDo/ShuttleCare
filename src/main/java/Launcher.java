@@ -1,9 +1,8 @@
-import com.rocketshipcheckingtool.ui.MainView;
-import com.rocketshipcheckingtool.ui.technician.HomeView;
+import com.rocketshipcheckingtool.ui.ViewManager;
 
 public class Launcher {
 
     public static void main(String[] args) {
-        MainView.main(args);
+        ViewManager.main(args);
     }
 }

@@ -20,6 +20,10 @@ public class Shuttle implements Manage {
         this.mechanic = mechanic;
     }
 
+    public int getId() {
+        return id;
+    }
+
     @Override
     public String getByI(int i) {
         return switch (i) {
@@ -31,15 +35,12 @@ public class Shuttle implements Manage {
         };
     }
 
+    public String getName() {
+        return shuttleName;
+    }
+
     public String toJson() {
-        return "{\n" +
-                "  \"id\": " + id + ",\n" +
-                "  \"shuttleName\": \"" + shuttleName + "\",\n" +
-                "  \"status\": \"" + status + "\",\n" +
-                "  \"landungDate\": \"" + landungDate + "\",\n" +
-                "  \"landungTime\": \"" + landungTime + "\",\n" +
-                "  \"mechanic\": \"" + mechanic + "\"\n" +
-                "}";
+        return new com.google.gson.Gson().toJson(this);
     }
 
     @Override
@@ -52,10 +53,6 @@ public class Shuttle implements Manage {
                 ", landunngTime=" + landungTime +
                 ", mechanic='" + mechanic + '\'' +
                 '}';
-    }
-
-    public int getId() {
-        return id;
     }
 
     public String getShuttleName() {
