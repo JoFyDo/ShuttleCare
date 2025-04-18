@@ -9,7 +9,11 @@ target/
 .idea/compiler.xml
 .idea/libraries/
 <<<<<<< Updated upstream
+<<<<<<< Updated upstream
 .idea/vcs.xml
+=======
+.idea
+>>>>>>> Stashed changes
 =======
 .idea
 >>>>>>> Stashed changes
