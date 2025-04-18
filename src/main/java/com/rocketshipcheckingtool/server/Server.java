@@ -64,6 +64,12 @@ public class Server {
                     sendResponse(exchange, 200, Util.combineJSONString(tasks));
                 }
                 break;
+            case "/requestActiveTaskForShuttle":
+                if(headers.get("User").get(0).equals("technician")) {
+                    System.out.println(headers.get("Shuttle").get(0));
+                    ArrayList<Task> tasks = databaseConnection.getActiveTaskByShuttleID(Integer.valueOf(headers.get("Shuttle").get(0)));
+                    sendResponse(exchange, 200, Util.combineJSONString(tasks));
+                }
         }
 
     }

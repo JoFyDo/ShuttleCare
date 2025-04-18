@@ -96,6 +96,23 @@ public class DatabaseConnection {
         }
     }
 
+    public ArrayList<Task> getActiveTaskByShuttleID(int shuttleID) {
+        try {
+            String query = "SELECT Tasks.*, Shuttles.Name AS ShuttleName FROM Tasks INNER JOIN Shuttles ON Tasks.ShuttleID = Shuttles.ID WHERE Tasks.ShuttleID = ? AND Tasks.Aktiv = 1";
+            PreparedStatement stmt = connection.prepareStatement(query);
+            stmt.setString(1, Integer.toString(shuttleID));
+            ResultSet rs = stmt.executeQuery();
+            ArrayList<Task> tasks = new ArrayList<>();
+            while (rs.next()) {
+                tasks.add(new Task(rs.getString("Aufgabe"), rs.getString("Status"), rs.getString("Mechaniker"), rs.getString("ShuttleName")));
+            }
+            return tasks;
+        }catch (SQLException e) {
+            logger.error(e.getMessage());
+            throw new RuntimeException(e);
+        }
+    }
+
     public Connection connect() throws SQLException {
         Connection c = DriverManager.getConnection(database);
         logger.info("Connected to SQLite!");

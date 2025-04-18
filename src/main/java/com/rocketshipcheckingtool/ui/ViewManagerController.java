@@ -1,5 +1,6 @@
 package com.rocketshipcheckingtool.ui;
 
+import com.rocketshipcheckingtool.domain.Shuttle;
 import com.rocketshipcheckingtool.ui.technician.*;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -19,6 +20,7 @@ public class ViewManagerController {
     public ToggleButton btnHome, btnDetails, btnStatistiken, btnLager, btnNachrichten;
     public StackPane contentArea;
     private Node homePage, detailsPage, statistikenPage, lagerPage, nachrichtenPage;
+    private DetailsViewController detailsController;
 
 
     @FXML
@@ -34,10 +36,6 @@ public class ViewManagerController {
 
         homePage.setVisible(true);
         btnHome.setSelected(true);
-    }
-
-    public void penis(ActionEvent event) {
-        System.out.println("Penis");
     }
 
     @FXML
@@ -62,8 +60,9 @@ public class ViewManagerController {
         if (fxml.endsWith("HomeView.fxml")) {
             HomeViewController homeController = loader.getController();
             homeController.setClientRequests(this.clientRequests);
+            homeController.setViewManagerController(this);
         } else if (fxml.endsWith("DetailsView.fxml")) {
-            DetailsViewController detailsController = loader.getController();
+            detailsController = loader.getController();
             detailsController.setClientRequests(this.clientRequests);
         } else if (fxml.endsWith("StatistikenView.fxml")) {
             StatistikenViewController statistikenController = loader.getController();
@@ -81,6 +80,11 @@ public class ViewManagerController {
     private void showPage(Node page) {
         contentArea.getChildren().forEach(node -> node.setVisible(false));
         page.setVisible(true);
+    }
+
+    public void handleDetailButton(Shuttle shuttle) throws IOException {
+        detailsController.selectShuttle(shuttle);
+        showPage(detailsPage);
     }
 
     public void setClientRequests(ClientRequests clientRequests) {

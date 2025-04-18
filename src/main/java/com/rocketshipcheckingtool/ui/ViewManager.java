@@ -19,9 +19,9 @@ public class ViewManager extends Application {
 
     @Override
     public void start(Stage stage) throws Exception {
-        try {
-            connectToServer();
+        connectToServer();
 
+        try {
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/rocketshipcheckingtool/ui/technician/MainView.fxml"));
             Parent root = loader.load();
 
@@ -35,6 +35,7 @@ public class ViewManager extends Application {
             Image i = new Image(Objects.requireNonNull(getClass().getResourceAsStream("/com/rocketshipcheckingtool/ui/graphics/icon.png")));
             stage.getIcons().add(i);
             stage.setScene(scene);
+            stage.setMaximized(true);
             stage.show();
 
         } catch (Exception e) {

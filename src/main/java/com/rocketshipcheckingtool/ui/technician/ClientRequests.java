@@ -43,6 +43,6 @@ public class ClientRequests {
     }
 
     public String request(String path, String user) throws URISyntaxException, IOException, InterruptedException {
-        return request(path, user, "penis", "penis");
+        return request(path, user, "p", "p");
     }
 }

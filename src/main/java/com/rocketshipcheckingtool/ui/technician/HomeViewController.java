@@ -6,6 +6,7 @@ import com.google.gson.JsonDeserializer;
 import com.google.gson.reflect.TypeToken;
 import com.rocketshipcheckingtool.domain.Shuttle;
 import com.rocketshipcheckingtool.domain.Task;
+import com.rocketshipcheckingtool.ui.ViewManagerController;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
@@ -16,6 +17,7 @@ import javafx.scene.control.cell.PropertyValueFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.IOException;
 import java.lang.reflect.Type;
 import java.sql.Date;
 import java.sql.Time;
@@ -27,6 +29,7 @@ public class HomeViewController {
     private ClientRequests clientRequests;
     private final String user = "technician";
     private final static Logger logger = LoggerFactory.getLogger(HomeViewController.class);
+    private ViewManagerController viewManagerController;
 
     @FXML
     public TableView<Shuttle> shuttleTableView;
@@ -81,7 +84,6 @@ public class HomeViewController {
         detailsOverviewColumn.setCellValueFactory(param -> null);
         detailsOverviewColumn.setCellFactory(param -> new TableCell<Shuttle, Void>() {
             private final Button detailsButton = new Button("Details");
-
             {
                 detailsButton.getStyleClass().add("details-button");
                 detailsButton.setOnAction(event -> {
@@ -104,32 +106,24 @@ public class HomeViewController {
     }
 
     private void showShuttleDetails(Shuttle shuttle) {
-        System.out.println("[Home] Showing details for shuttle: " + shuttle.getShuttleName());
+        try {
+            viewManagerController.handleDetailButton(shuttle);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     private void loadTableContent() {
         try {
-            //System.out.println("[Home] shuttleTableView: " + shuttleTableView);
             //Shuttle
-            String shuttlesJson = clientRequests.request("/requestShuttleOverview", user);
-
-            Gson shuttleGson = new GsonBuilder().registerTypeAdapter(Date.class, (JsonDeserializer<Date>) (jsonElement, type, context) -> Date.valueOf(jsonElement.getAsString())).registerTypeAdapter(Time.class, (JsonDeserializer<Time>) (jsonElement, type, context) -> Time.valueOf(jsonElement.getAsString())).create();
-            Type shuttleListType = new TypeToken<ArrayList<Shuttle>>() {
-            }.getType();
-            ArrayList<Shuttle> shuttles = shuttleGson.fromJson(shuttlesJson, shuttleListType);
-
+            ArrayList<Shuttle> shuttles = Util.getShuttles(clientRequests, user);
             shuttleTableView.setItems(FXCollections.observableArrayList(shuttles));
-            //System.out.println("[Home] shuttleTableView: " + shuttleTableView);
 
             //Details button
             setupDetailsButtonColumn();
 
             // Task
-            String tasksJson = clientRequests.request("/requestShuttleTasks", user);
-            Gson taskGson = new Gson();
-            Type taskListType = new TypeToken<ArrayList<Task>>() {
-            }.getType();
-            ArrayList<Task> tasks = taskGson.fromJson(tasksJson, taskListType);
+            ArrayList<Task> tasks = Util.getActiveTasks(clientRequests, user);
             aufgabenTableView.setItems(FXCollections.observableArrayList(tasks));
 
         } catch (Exception e) {
@@ -145,5 +139,9 @@ public class HomeViewController {
     public void setClientRequests(ClientRequests clientRequests) {
         this.clientRequests = clientRequests;
         loadTableContent();
+    }
+
+    public void setViewManagerController(ViewManagerController viewManagerController) {
+        this.viewManagerController = viewManagerController;
     }
 }
