@@ -21,18 +21,6 @@ public class Task implements Manage {
         this.shuttleName = shuttleName;
     }
 
-    public String getShuttleName() {
-        return shuttleName;
-    }
-
-    public String getTask() {
-        return task;
-    }
-
-    public String getStatus() {
-        return status;
-    }
-
     public String toJson() {
         return new com.google.gson.Gson().toJson(this);
     }

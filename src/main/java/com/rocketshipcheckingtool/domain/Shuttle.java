@@ -39,10 +39,6 @@ public class Shuttle implements Manage {
         return shuttleName;
     }
 
-    public String getStatus() {
-        return status;
-    }
-
     public String toJson() {
         return new com.google.gson.Gson().toJson(this);
     }
@@ -57,10 +53,6 @@ public class Shuttle implements Manage {
                 ", landunngTime=" + landungTime +
                 ", mechanic='" + mechanic + '\'' +
                 '}';
-    }
-
-    public int getId() {
-        return id;
     }
 
     public String getShuttleName() {

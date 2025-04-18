@@ -8,12 +8,11 @@ import javafx.scene.Node;
 import javafx.scene.control.ToggleButton;
 import javafx.scene.control.ToggleGroup;
 import javafx.scene.layout.StackPane;
-import javafx.scene.text.Font;
 
 import java.io.IOException;
 import java.util.Objects;
 
-public class MainViewController {
+public class ViewManagerController {
 
     private ClientRequests clientRequests;
     public ToggleGroup toggleGroup;
@@ -24,7 +23,7 @@ public class MainViewController {
 
     @FXML
     public void initContent() throws IOException {
-        homePage = loadPage("/com/rocketshipcheckingtool/ui/technician/HomeView2.fxml");
+        homePage = loadPage("/com/rocketshipcheckingtool/ui/technician/HomeView.fxml");
         detailsPage = loadPage("/com/rocketshipcheckingtool/ui/technician/DetailsView.fxml");
         statistikenPage = loadPage("/com/rocketshipcheckingtool/ui/technician/StatistikenView.fxml");
         lagerPage = loadPage("/com/rocketshipcheckingtool/ui/technician/LagerView.fxml");
@@ -60,8 +59,8 @@ public class MainViewController {
         FXMLLoader loader = new FXMLLoader(Objects.requireNonNull(getClass().getResource(fxml)));
         Node page = loader.load();
 
-        if (fxml.endsWith("HomeView2.fxml")) {
-            HomeView2Controller homeController = loader.getController();
+        if (fxml.endsWith("HomeView.fxml")) {
+            HomeViewController homeController = loader.getController();
             homeController.setClientRequests(this.clientRequests);
         } else if (fxml.endsWith("DetailsView.fxml")) {
             DetailsViewController detailsController = loader.getController();
