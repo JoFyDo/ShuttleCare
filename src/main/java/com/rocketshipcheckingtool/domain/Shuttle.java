@@ -58,4 +58,28 @@ public class Shuttle implements Manage {
                 ", mechanic='" + mechanic + '\'' +
                 '}';
     }
+
+    public int getId() {
+        return id;
+    }
+
+    public String getShuttleName() {
+        return shuttleName;
+    }
+
+    public String getStatus() {
+        return status;
+    }
+
+    public Date getLandungDate() {
+        return landungDate;
+    }
+
+    public Time getLandungTime() {
+        return landungTime;
+    }
+
+    public String getMechanic() {
+        return mechanic;
+    }
 }

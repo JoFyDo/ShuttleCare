@@ -1,4 +1,5 @@
 import com.rocketshipcheckingtool.server.Server;
+import com.rocketshipcheckingtool.ui.MainView;
 import com.rocketshipcheckingtool.ui.technician.HomeView;
 import com.rocketshipcheckingtool.ui.technician.SceneManager;
 
