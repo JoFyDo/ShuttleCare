@@ -76,6 +76,8 @@ public class HomeViewController {
         // resize column width
         detailsOverviewColumn.setResizable(false);
         detailsOverviewColumn.setPrefWidth(140);
+        shuttleTableView.setSelectionModel(null);
+        aufgabenTableView.setSelectionModel(null);
         shuttleTableView.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY_ALL_COLUMNS);
         aufgabenTableView.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY_ALL_COLUMNS);
     }
