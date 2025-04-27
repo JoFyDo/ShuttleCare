@@ -1,5 +1,6 @@
 package com.rocketshipcheckingtool.ui.technician;
 
+import com.rocketshipcheckingtool.ui.ViewManagerController;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
@@ -22,6 +23,7 @@ public class StatistikenViewController {
     public CategoryAxis xAxisBC;
     public NumberAxis yAxisBC;
     private ClientRequests clientRequests;
+    private ViewManagerController viewManagerController;
 
     public void setClientRequests(ClientRequests clientRequests) {
         this.clientRequests = clientRequests;
@@ -107,7 +109,6 @@ public class StatistikenViewController {
     }
 
 
-
     private void scaleSvg(Bounds newBounds) {
         double scaleX = rocketContainer.getWidth() / newBounds.getWidth();
         double scaleY = rocketContainer.getHeight() / newBounds.getHeight();
@@ -118,5 +119,9 @@ public class StatistikenViewController {
 
         rocketSVG.setLayoutX((rocketContainer.getWidth() - newBounds.getWidth() * scale) / 2);
         rocketSVG.setLayoutY((rocketContainer.getHeight() - newBounds.getHeight() * scale) / 2);
+    }
+
+    public void setViewManagerController(ViewManagerController viewManagerController) {
+        this.viewManagerController = viewManagerController;
     }
 }

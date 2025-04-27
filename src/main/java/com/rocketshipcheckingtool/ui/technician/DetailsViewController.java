@@ -2,10 +2,18 @@ package com.rocketshipcheckingtool.ui.technician;
 
 import com.rocketshipcheckingtool.domain.Shuttle;
 import com.rocketshipcheckingtool.domain.Task;
+import com.rocketshipcheckingtool.ui.ViewManagerController;
+import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
+import javafx.scene.Parent;
+import javafx.scene.Scene;
 import javafx.scene.control.*;
-import javafx.scene.layout.*;
-import javafx.scene.paint.Color;
+import javafx.scene.layout.HBox;
+import javafx.scene.layout.Priority;
+import javafx.scene.layout.VBox;
+import javafx.stage.Modality;
+import javafx.stage.Stage;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -22,9 +30,11 @@ public class DetailsViewController {
     public Button inWartungButton;
     public Button inspektion2Button;
     public Button freigegebenButton;
+    public Button erledigtButton;
     public HBox progressBar;
     public VBox aufgabenBox;
     public VBox zusaetzlichAufgabenBox;
+    private ViewManagerController viewManagerController;
 
     private ClientRequests clientRequests;
     private final String user = "technician";
@@ -38,7 +48,6 @@ public class DetailsViewController {
                 loadAufgaben(newVal);
                 loadZusaetzlicheAufgaben(newVal);
                 loadLoadingBar(newVal);
-                //loadCrewFeedback(newVal);
                 System.out.println("[Details] selected Shuttle: " + newVal);
             }
         });
@@ -82,39 +91,43 @@ public class DetailsViewController {
     }
 
     private void loadLoadingBar(String shuttleName) {
-        Shuttle shuttle = shuttles.stream().filter(sh -> sh.getShuttleName().equals(shuttleName)).findFirst().get();
+        Shuttle shuttle = shuttles.stream()
+                .filter(sh -> sh.getShuttleName().equals(shuttleName))
+                .findFirst()
+                .orElseThrow(() -> new IllegalArgumentException("Shuttle not found"));
 
-        Color[] colors = switch (shuttle.getStatus()) {
-            case "Gelandet" -> new Color[]{Color.GREEN, Color.WHITE, Color.WHITE, Color.WHITE, Color.WHITE};
-            case "Inspektion 1" -> new Color[]{Color.GREEN, Color.ORANGE, Color.WHITE, Color.WHITE, Color.WHITE};
-            case "In Wartung" -> new Color[]{Color.GREEN, Color.GREEN, Color.ORANGE, Color.WHITE, Color.WHITE};
-            case "Inspektion 2" -> new Color[]{Color.GREEN, Color.GREEN, Color.GREEN, Color.ORANGE, Color.WHITE};
-            case "Erledigt - Warte auf Freigabe" ->
-                    new Color[]{Color.GREEN, Color.GREEN, Color.GREEN, Color.GREEN, Color.ORANGE};
-            case "Freigegeben" -> new Color[]{Color.GREEN, Color.GREEN, Color.GREEN, Color.GREEN, Color.GREEN};
-            case "Unterwegs" -> new Color[]{Color.ORANGE, Color.WHITE, Color.WHITE, Color.WHITE, Color.WHITE};
-            default -> null;
+        List<Button> steps = List.of(
+                gelandetButton,
+                inspektion1Button,
+                inWartungButton,
+                inspektion2Button,
+                erledigtButton,
+                freigegebenButton
+        );
+
+        for (Button step : steps) {
+            step.getStyleClass().removeAll("progressLabel-complete", "progressLabel-current");
+        }
+
+        int activeStep = switch (shuttle.getStatus()) {
+            case "Gelandet" -> 0;
+            case "Inspektion 1" -> 1;
+            case "In Wartung" -> 2;
+            case "Inspektion 2" -> 3;
+            case "Erledigt - Warte auf Freigabe" -> 4;
+            case "Freigegeben" -> 5;
+            default -> -1;
         };
 
-        assert colors != null;
-        Background gelandetButtonBackground = gelandetButton.getBackground();
-        Background inspektion1ButtonBackground = inspektion1Button.getBackground();
-        Background inWartungButtonBackground = inWartungButton.getBackground();
-        Background inspektion2ButtonBackground = inspektion2Button.getBackground();
-        Background freigegebenButtonBackground = freigegebenButton.getBackground();
-        gelandetButton.setBackground(new Background(new BackgroundFill(colors[0], gelandetButtonBackground.getFills().get(0).getRadii(), gelandetButtonBackground.getFills().get(0).getInsets())));
-        inspektion1Button.setBackground(new Background(new BackgroundFill(colors[1], inspektion1ButtonBackground.getFills().get(0).getRadii(), inspektion1ButtonBackground.getFills().get(0).getInsets())));
-        inWartungButton.setBackground(new Background(new BackgroundFill(colors[2], inWartungButtonBackground.getFills().get(0).getRadii(), inWartungButtonBackground.getFills().get(0).getInsets())));
-        inspektion2Button.setBackground(new Background(new BackgroundFill(colors[3], inspektion2ButtonBackground.getFills().get(0).getRadii(), inspektion2ButtonBackground.getFills().get(0).getInsets())));
-        freigegebenButton.setBackground(new Background(new BackgroundFill(colors[4], freigegebenButtonBackground.getFills().get(0).getRadii(), freigegebenButtonBackground.getFills().get(0).getInsets())));
-
-
+        for (int i = 0; i < steps.size(); i++) {
+            if (i < activeStep) {
+                steps.get(i).getStyleClass().add("progressLabel-complete");
+            } else if (i == activeStep) {
+                steps.get(i).getStyleClass().add("progressLabel-current");
+            }
+        }
     }
 
-
-    private static String getString(Color[] colors) {
-        return colors[0].toString();
-    }
 
     //no preselected shuttle
     private void loadShuttleContent() {
@@ -160,4 +173,43 @@ public class DetailsViewController {
         loadShuttleContent(shuttle.getShuttleName());
     }
 
+    public void onNeueAufgabeClick(ActionEvent actionEvent) {
+        try {
+            System.out.println("[Details] Neue Aufgabe Button Clicked");
+
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/rocketshipcheckingtool/ui/technician/NeueAufgabePopupView.fxml"));
+            Parent popupRoot = loader.load();
+
+            // New Stage for the popup
+            Stage popupStage = new Stage();
+            popupStage.setTitle("Neue Aufgabe");
+            popupStage.setScene(new Scene(popupRoot));
+            popupStage.initModality(Modality.APPLICATION_MODAL);
+            popupStage.showAndWait();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public void onFreigebenButtonClick(ActionEvent actionEvent) {
+        Alert alert = new Alert(Alert.AlertType.CONFIRMATION, "Bitte bestätigen Sie die Freigabe");
+        alert.setHeaderText(null);
+        alert.setTitle("Bestätigung erforderlich");
+        alert.show();
+    }
+
+    public void onVerschrottenButtonClick(ActionEvent actionEvent) {
+        Alert alert = new Alert(Alert.AlertType.CONFIRMATION, "Bitte bestätigen Sie die Verschrottung");
+        alert.setHeaderText(null);
+        alert.setTitle("Bestätigung erforderlich");
+        alert.show();
+    }
+
+    public void onBestellenButtonClick(ActionEvent actionEvent) {
+        viewManagerController.handleBestellenButton();
+    }
+
+    public void setViewManagerController(ViewManagerController viewManagerController) {
+        this.viewManagerController = viewManagerController;
+    }
 }

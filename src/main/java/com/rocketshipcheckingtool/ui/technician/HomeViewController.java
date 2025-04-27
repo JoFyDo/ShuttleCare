@@ -1,9 +1,5 @@
 package com.rocketshipcheckingtool.ui.technician;
 
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
-import com.google.gson.JsonDeserializer;
-import com.google.gson.reflect.TypeToken;
 import com.rocketshipcheckingtool.domain.Shuttle;
 import com.rocketshipcheckingtool.domain.Task;
 import com.rocketshipcheckingtool.ui.ViewManagerController;
@@ -14,13 +10,11 @@ import javafx.geometry.Insets;
 import javafx.scene.chart.PieChart;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
+import javafx.scene.input.MouseEvent;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
-import java.lang.reflect.Type;
-import java.sql.Date;
-import java.sql.Time;
 import java.util.ArrayList;
 
 public class HomeViewController {
@@ -86,6 +80,7 @@ public class HomeViewController {
         detailsOverviewColumn.setCellValueFactory(param -> null);
         detailsOverviewColumn.setCellFactory(param -> new TableCell<Shuttle, Void>() {
             private final Button detailsButton = new Button("Details");
+
             {
                 detailsButton.getStyleClass().add("details-button");
                 detailsButton.setOnAction(event -> {
@@ -145,5 +140,9 @@ public class HomeViewController {
 
     public void setViewManagerController(ViewManagerController viewManagerController) {
         this.viewManagerController = viewManagerController;
+    }
+
+    public void onStatistikenBoxClicked(MouseEvent mouseEvent) {
+        viewManagerController.handleStatistikenVBox();
     }
 }

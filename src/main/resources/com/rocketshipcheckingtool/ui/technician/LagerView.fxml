@@ -23,10 +23,10 @@
         </TextField>
         <Button fx:id="verwendenButton" mnemonicParsing="false" style="-fx-background-color: rgb(76, 126, 79)"
                 styleClass="buttonBig" text="Verwenden" GridPane.columnIndex="1" GridPane.halignment="RIGHT"
-                GridPane.rowIndex="0"/>
+                GridPane.rowIndex="0" onAction="#onVerwendenButtonClick"/>
         <Button fx:id="bestellenButton" mnemonicParsing="false" style="-fx-background-color: rgb(26, 41, 82)"
                 styleClass="buttonBig" text="Bestellen" GridPane.columnIndex="2" GridPane.halignment="RIGHT"
-                GridPane.rowIndex="0">
+                GridPane.rowIndex="0" onAction="#onBestellenButtonClick">
             <GridPane.margin>
                 <Insets right="40"/>
             </GridPane.margin>
