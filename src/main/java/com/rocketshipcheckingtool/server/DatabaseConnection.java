@@ -5,6 +5,7 @@ import com.rocketshipcheckingtool.domain.Task;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.IOException;
 import java.sql.*;
 import java.util.ArrayList;
 
@@ -85,9 +86,9 @@ public class DatabaseConnection {
         try{
             ArrayList<Task> tasks = new ArrayList<>();
             Statement stmt = connection.createStatement();
-            ResultSet rs = stmt.executeQuery("SELECT Tasks.*, Shuttles.Name AS ShuttleName FROM Tasks INNER JOIN Shuttles ON Tasks.ShuttleID = Shuttles.ID WHERE Aktiv = 1");
+            ResultSet rs = stmt.executeQuery("SELECT Tasks.*, Shuttles.Name AS ShuttleName FROM Tasks INNER JOIN Shuttles ON Tasks.ShuttleID = Shuttles.ID WHERE Aktiv = 'true'");
             while (rs.next()) {
-                tasks.add(new Task(rs.getString("Aufgabe"), rs.getString("Status"), rs.getString("Mechaniker"), rs.getString("ShuttleName")));
+                tasks.add(new Task(rs.getString("Aufgabe"), rs.getString("Status"), rs.getString("Mechaniker"), rs.getString("ShuttleName"), rs.getInt("ID")));
             }
             return tasks;
         }catch (SQLException e) {
@@ -98,16 +99,76 @@ public class DatabaseConnection {
 
     public ArrayList<Task> getActiveTaskByShuttleID(int shuttleID) {
         try {
-            String query = "SELECT Tasks.*, Shuttles.Name AS ShuttleName FROM Tasks INNER JOIN Shuttles ON Tasks.ShuttleID = Shuttles.ID WHERE Tasks.ShuttleID = ? AND Tasks.Aktiv = 1";
+            String query = "SELECT Tasks.*, Shuttles.Name AS ShuttleName FROM Tasks INNER JOIN Shuttles ON Tasks.ShuttleID = Shuttles.ID WHERE Tasks.ShuttleID = ? AND Tasks.Aktiv = 'true'";
             PreparedStatement stmt = connection.prepareStatement(query);
             stmt.setString(1, Integer.toString(shuttleID));
             ResultSet rs = stmt.executeQuery();
             ArrayList<Task> tasks = new ArrayList<>();
             while (rs.next()) {
-                tasks.add(new Task(rs.getString("Aufgabe"), rs.getString("Status"), rs.getString("Mechaniker"), rs.getString("ShuttleName")));
+                tasks.add(new Task(rs.getString("Aufgabe"), rs.getString("Status"), rs.getString("Mechaniker"), rs.getString("ShuttleName"), rs.getInt("ID")));
             }
             return tasks;
         }catch (SQLException e) {
+            logger.error(e.getMessage());
+            throw new RuntimeException(e);
+        }
+    }
+
+    public boolean updateTask(int taskID, String status) {
+        try {
+            String query = "UPDATE Tasks SET Status = ? WHERE ID = ?";
+            PreparedStatement stmt = connection.prepareStatement(query);
+            stmt.setString(1, String.valueOf(status));
+            stmt.setString(2, Integer.toString(taskID));
+            stmt.executeUpdate();
+            return true;
+        } catch (SQLException e){
+            logger.error(e.getMessage());
+            throw new RuntimeException(e);
+        }
+    }
+
+    public boolean createTask(String mechanic, String description, String shuttleID) throws IOException {
+        try {
+            String query = "INSERT INTO Tasks (Aufgabe, Status, ShuttleID, Mechaniker, Aktiv) VALUES (?, 'Offen', ?, ?, 'true')";
+            PreparedStatement stmt = connection.prepareStatement(query);
+            stmt.setString(1, description);
+            stmt.setString(2, shuttleID);
+            stmt.setString(3, mechanic);
+            stmt.executeUpdate();
+            return true;
+        } catch (SQLException e){
+            logger.error(e.getMessage());
+            throw new RuntimeException(e);
+        }
+    }
+
+    public ArrayList<Task> getGeneralTasksForShuttle(int shuttleID) {
+        try {
+            String query = "SELECT GeneralTasks.*, Shuttles.Name AS ShuttleName FROM GeneralTasks INNER JOIN Shuttles ON GeneralTasks.ShuttleID = Shuttles.ID WHERE GeneralTasks.ShuttleID = ?";
+            PreparedStatement stmt = connection.prepareStatement(query);
+            stmt.setString(1, String.valueOf(shuttleID));
+            ResultSet rs = stmt.executeQuery();
+            ArrayList<Task> tasks = new ArrayList<>();
+            while (rs.next()) {
+                tasks.add(new Task(rs.getString("Aufgabe"), rs.getString("Status"), rs.getInt("ID"), rs.getString("ShuttleName")));
+            }
+            return tasks;
+        } catch (SQLException e){
+            logger.error(e.getMessage());
+            throw new RuntimeException(e);
+        }
+    }
+
+    public boolean updateGeneralTask(int taskID, String status) {
+        try {
+            String query = "UPDATE GeneralTasks SET Status = ? WHERE ID = ?";
+            PreparedStatement stmt = connection.prepareStatement(query);
+            stmt.setString(1, status);
+            stmt.setString(2, String.valueOf(taskID));
+            stmt.executeUpdate();
+            return true;
+        } catch(SQLException e){
             logger.error(e.getMessage());
             throw new RuntimeException(e);
         }

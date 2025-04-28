@@ -66,9 +66,26 @@ public class Server {
                 break;
             case "/requestActiveTaskForShuttle":
                 if(headers.get("User").get(0).equals("technician")) {
-                    System.out.println(headers.get("Shuttle").get(0));
                     ArrayList<Task> tasks = databaseConnection.getActiveTaskByShuttleID(Integer.valueOf(headers.get("Shuttle").get(0)));
                     sendResponse(exchange, 200, Util.combineJSONString(tasks));
+                }
+            case "/updateTask":
+                if(headers.get("User").get(0).equals("technician")) {
+                    sendResponse(exchange, 200, String.valueOf(databaseConnection.updateTask(Integer.valueOf(headers.get("TaskID").get(0)),headers.get("Status").get(0))));
+                }
+            case "/createTask":
+                if(headers.get("User").get(0).equals("technician")) {
+                    sendResponse(exchange, 200, String.valueOf(databaseConnection.createTask(headers.get("Mechanic").get(0), headers.get("Description").get(0), headers.get("ShuttleID").get(0))));
+                }
+            case "/requestGeneralTasksForShuttle":
+                if(headers.get("User").get(0).equals("technician")) {
+                    ArrayList<Task> tasks = databaseConnection.getGeneralTasksForShuttle(Integer.parseInt(headers.get("ShuttleID").get(0)));
+                    sendResponse(exchange, 200, Util.combineJSONString(tasks));
+                }
+            case "/updateGeneralTasksForShuttle":
+                if(headers.get("User").get(0).equals("technician")) {
+                    String s = String.valueOf(databaseConnection.updateGeneralTask(Integer.parseInt(headers.get("TaskID").get(0)), headers.get("Status").get(0)));
+                    sendResponse(exchange, 200, s);
                 }
         }
 

@@ -110,7 +110,7 @@ public class HomeViewController {
         }
     }
 
-    private void loadTableContent() {
+    public void loadTableContent() {
         try {
             //Shuttle
             ArrayList<Shuttle> shuttles = Util.getShuttles(clientRequests, user);

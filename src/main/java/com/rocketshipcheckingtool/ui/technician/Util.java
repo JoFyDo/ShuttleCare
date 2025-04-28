@@ -2,20 +2,8 @@ package com.rocketshipcheckingtool.ui.technician;
 
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
-import com.rocketshipcheckingtool.domain.Manage;
 import com.rocketshipcheckingtool.domain.Shuttle;
 import com.rocketshipcheckingtool.domain.Task;
-import com.sun.javafx.geom.Dimension;
-import javafx.collections.ObservableList;
-import javafx.geometry.BoundingBox;
-import javafx.geometry.Insets;
-import javafx.scene.Node;
-import javafx.scene.image.ImageView;
-import javafx.scene.layout.HBox;
-import javafx.scene.layout.StackPane;
-import javafx.scene.layout.VBox;
-import javafx.scene.shape.Line;
-import javafx.scene.text.Text;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -71,6 +59,45 @@ public class Util {
             Type shuttleListType = new TypeToken<ArrayList<Task>>() {}.getType();
             return gson.fromJson(tasks, shuttleListType);
         }catch (Exception e){
+            logger.error(e.getMessage());
+            throw new ConnectException(e.getMessage());
+        }
+    }
+
+    public static void updateTaskStatus(ClientRequests clientRequests, String user, int taskID, String status) throws IOException {
+        try {
+            clientRequests.request("/updateTask", user, "TaskID", String.valueOf(taskID), "status", String.valueOf(status));
+        } catch (Exception e){
+            logger.error(e.getMessage());
+            throw new ConnectException(e.getMessage());
+        }
+    }
+
+    public static void createTask(ClientRequests clientRequests, String user, String mechanic, String description, int shuttleID) throws IOException {
+        try {
+            clientRequests.request("/createTask", user, "Mechanic", mechanic, "Description", description, "ShuttleID", String.valueOf(shuttleID));
+        } catch (Exception e){
+            logger.error(e.getMessage());
+            throw new ConnectException(e.getMessage());
+        }
+    }
+
+    public static ArrayList<Task> getGeneralTasksByShuttleID(ClientRequests clientRequests, String user, int shuttleID) throws IOException {
+        try {
+            String tasks = clientRequests.request("/requestGeneralTasksForShuttle", user, "ShuttleID", String.valueOf(shuttleID));
+            Gson gson = new Gson();
+            Type shuttleListType = new TypeToken<ArrayList<Task>>() {}.getType();
+            return gson.fromJson(tasks, shuttleListType);
+        } catch (Exception e){
+            logger.error(e.getMessage());
+            throw new ConnectException(e.getMessage());
+        }
+    }
+
+    public static void updateGeneralTask(ClientRequests clientRequests, String user, int taskID, String status) throws IOException {
+        try {
+            clientRequests.request("/updateGeneralTasksForShuttle", user, "TaskID", String.valueOf(taskID), "Status", status);
+        } catch (Exception e){
             logger.error(e.getMessage());
             throw new ConnectException(e.getMessage());
         }
