@@ -41,8 +41,8 @@
                 </columns>
             </TableView>
         </VBox>
-        <VBox VBox.vgrow="ALWAYS" GridPane.columnIndex="1" styleClass="vBox">
-            <Label text="Pie Chart" styleClass="header"/>
+        <VBox VBox.vgrow="ALWAYS" GridPane.columnIndex="1" styleClass="vBox" onMouseClicked="#onStatistikenBoxClicked">
+            <Label text="Statistiken" styleClass="header"/>
             <PieChart fx:id="pieChart" VBox.vgrow="ALWAYS" HBox.hgrow="ALWAYS" styleClass="pieChart"/>
         </VBox>
     </GridPane>

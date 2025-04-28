@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<VBox xmlns="http://javafx.com/javafx" xmlns:fx="http://javafx.com/fxml"
+      fx:controller="com.rocketshipcheckingtool.ui.technician.VerwendenPopupController"
+      prefHeight="400.0" prefWidth="600.0" stylesheets="@../style.css" style="-fx-background-color: rgb(206, 221, 255)">
+    <padding>
+        <Insets topRightBottomLeft="40"/>
+    </padding>
+    <VBox styleClass="vBox" VBox.vgrow="ALWAYS" spacing="40" alignment="TOP_CENTER">
+        <Label text="Teil" styleClass="header" alignment="TOP_CENTER"/>
+        <Label text="Preis" VBox.vgrow="ALWAYS"/>
+        <HBox spacing="10" alignment="TOP_CENTER">
+            <Button fx:id="minusButton" text="-" styleClass="buttonAmount" style="-fx-background-color: rgb(76, 126, 79)"/>
+            <TextField fx:id="quantityField" text="1" alignment="CENTER" style="-fx-border-color: rgb(76, 126, 79)"/>
+            <Button fx:id="plusButton" text="+" styleClass="buttonAmount" style="-fx-background-color: rgb(76, 126, 79)"/>
+        </HBox>
+        <Button fx:id="verwendenButton" text="Verwenden" styleClass="buttonBig" style="-fx-background-color: rgb(76, 126, 79)"/>
+    </VBox>
+</VBox>

@@ -64,9 +64,11 @@ public class ViewManagerController {
         } else if (fxml.endsWith("DetailsView.fxml")) {
             detailsController = loader.getController();
             detailsController.setClientRequests(this.clientRequests);
+            detailsController.setViewManagerController(this);
         } else if (fxml.endsWith("StatistikenView.fxml")) {
             StatistikenViewController statistikenController = loader.getController();
             statistikenController.setClientRequests(this.clientRequests);
+            statistikenController.setViewManagerController(this);
         } else if (fxml.endsWith("LagerView.fxml")) {
             LagerViewController lagerController = loader.getController();
             lagerController.setClientRequests(this.clientRequests);
@@ -85,6 +87,17 @@ public class ViewManagerController {
     public void handleDetailButton(Shuttle shuttle) throws IOException {
         detailsController.selectShuttle(shuttle);
         showPage(detailsPage);
+        btnDetails.setSelected(true);
+    }
+
+    public void handleBestellenButton() {
+        showPage(lagerPage);
+        btnLager.setSelected(true);
+    }
+
+    public void handleStatistikenVBox() {
+        showPage(statistikenPage);
+        btnStatistiken.setSelected(true);
     }
 
     public void setClientRequests(ClientRequests clientRequests) {
