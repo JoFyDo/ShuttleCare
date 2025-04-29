@@ -23,10 +23,7 @@ Weil Raumfahrt keine Fehler verzeiht.
 
 
 ## Das sagen ShuttleCare-Benutzer 
-|https://github.com/user-attachments/assets/cd055168-7427-44b7-8afa-e05e0153454d | https://github.com/user-attachments/assets/4ca86b7a-be58-49c4-af78-e5ea304c73d9|
-|----------------|--------------|
 
-|[![reiner](https://github.com/user-attachments/assets/4336b7df-6948-4411-8470-88b0f8bef090)](https://github.com/user-attachments/assets/589ef5d0-9c96-4647-9180-3641d9faec29)
-
-||
+|[![reiner](https://github.com/user-attachments/assets/4336b7df-6948-4411-8470-88b0f8bef090)](https://github.com/user-attachments/assets/589ef5d0-9c96-4647-9180-3641d9faec29) | [![jürgen](https://github.com/user-attachments/assets/c7874fab-ff0d-423b-a316-a221f07e4ef3)](https://github.com/user-attachments/assets/dfcd746a-10a8-4048-a327-fe07814d5926)|
+|----|----|
 
