@@ -28,3 +28,12 @@ Kicken Sie auf das Bild, um zu hören was bisherige Kunden über **ShuttleCare**
 |[![reiner](https://github.com/user-attachments/assets/4336b7df-6948-4411-8470-88b0f8bef090)](https://github.com/user-attachments/assets/589ef5d0-9c96-4647-9180-3641d9faec29) | [![jürgen](https://github.com/user-attachments/assets/c7874fab-ff0d-423b-a316-a221f07e4ef3)](https://github.com/user-attachments/assets/dfcd746a-10a8-4048-a327-fe07814d5926)|
 |----|----|
 
+#### Haben wir sie neugierig gemacht? Dann schauen sie sich hier unsere Doku an 
+
+## Kontake 
+[Jonas Domnick](https://github.com/JoFyDo)  
+[Giang Vu](https://github.com/sangg284)  
+[Hannah Knorr](https://github.com/hnnahkn)  
+[Roman Ott](https://github.com/rmanfx)  
+[Marco Cornachhione](https://github.com/Marco-cor12)
+
