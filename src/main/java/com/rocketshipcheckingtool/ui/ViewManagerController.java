@@ -103,6 +103,12 @@ public class ViewManagerController {
         btnStatistiken.setSelected(true);
     }
 
+    public void showHome(){
+        homeController.initialize();
+        homeController.loadTableContent();
+        showPage(homePage);
+    }
+
     public void setClientRequests(ClientRequests clientRequests) {
         this.clientRequests = clientRequests;
     }

@@ -36,15 +36,15 @@ public class ViewManager extends Application {
             stage.setTitle("Rocketship Checking Tool");
             Image i = new Image(Objects.requireNonNull(getClass().getResourceAsStream("/com/rocketshipcheckingtool/ui/graphics/icon.png")));
 
-            int in = 0;
-            for (Screen screen : Screen.getScreens()) {
-                Rectangle2D bounds = screen.getVisualBounds();
-                if (in == 2) {
-                    stage.setX(bounds.getMinX());
-                    stage.setY(bounds.getMinY());
-                }
-                in++;
-            }
+//            int in = 0;
+//            for (Screen screen : Screen.getScreens()) {
+//                Rectangle2D bounds = screen.getVisualBounds();
+//                if (in == 2) {
+//                    stage.setX(bounds.getMinX());
+//                    stage.setY(bounds.getMinY());
+//                }
+//                in++;
+//            }
 
             stage.getIcons().add(i);
             stage.setScene(scene);

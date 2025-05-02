@@ -102,4 +102,22 @@ public class Util {
             throw new ConnectException(e.getMessage());
         }
     }
+
+    public static void updateShuttleStatus(ClientRequests clientRequests, String user, int shuttleID, String status) throws IOException {
+        try {
+            clientRequests.request("/updateShuttleStatus", user, "ShuttleID", String.valueOf(shuttleID), "Status", status);
+        } catch (Exception e){
+            logger.error(e.getMessage());
+            throw new ConnectException(e.getMessage());
+        }
+    }
+
+    public static void updateAllTasksBelongToShuttle(ClientRequests clientRequest, String user, int shuttleID, boolean status) throws IOException {
+        try {
+            clientRequest.request("/updateAllTasksBelongToShuttle", user, "ShuttleID", String.valueOf(shuttleID), "Status", String.valueOf(status));
+        } catch (Exception e){
+            logger.error(e.getMessage());
+            throw new ConnectException(e.getMessage());
+        }
+    }
 }

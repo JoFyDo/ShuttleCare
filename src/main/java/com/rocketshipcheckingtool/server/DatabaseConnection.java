@@ -27,7 +27,7 @@ public class DatabaseConnection {
         try {
             ArrayList<Shuttle> shuttles = new ArrayList<>();
             Statement stmt = connection.createStatement();
-            ResultSet rs = stmt.executeQuery("SELECT * FROM Shuttles");
+            ResultSet rs = stmt.executeQuery("SELECT * FROM Shuttles WHERE Status != 'Verschrottet'");
             while (rs.next()) {
                 shuttles.add(new Shuttle(rs.getInt("ID"), rs.getString("Name"), rs.getString("Status"), rs.getDate("Landung"), rs.getTime("Landung"), rs.getString("Mechaniker")));
             }
@@ -40,7 +40,7 @@ public class DatabaseConnection {
 
     public Shuttle getShuttle(String name) {
         try {
-            String query = "SELECT * FROM Shuttles WHERE Name = ?";
+            String query = "SELECT * FROM Shuttles WHERE Name = ? AND Status != 'Verschrottet'";
             PreparedStatement stmt = connection.prepareStatement(query);
             stmt.setString(1, name);
             ResultSet rs = stmt.executeQuery();
@@ -169,6 +169,34 @@ public class DatabaseConnection {
             stmt.executeUpdate();
             return true;
         } catch(SQLException e){
+            logger.error(e.getMessage());
+            throw new RuntimeException(e);
+        }
+    }
+
+    public boolean updateShuttleStatus(int shuttleID, String status) {
+        try {
+            String query = "UPDATE Shuttles SET Status = ? WHERE ID = ?";
+            PreparedStatement stmt = connection.prepareStatement(query);
+            stmt.setString(1, status);
+            stmt.setString(2, String.valueOf(shuttleID));
+            stmt.executeUpdate();
+            return true;
+        } catch (SQLException e){
+            logger.error(e.getMessage());
+            throw new RuntimeException(e);
+        }
+    }
+
+    public boolean updateAllTasksBelongToShuttle(int shuttleID, String status) {
+        try {
+            String query = "UPDATE Tasks SET Aktiv = ? WHERE ShuttleID = ?";
+            PreparedStatement stmt = connection.prepareStatement(query);
+            stmt.setString(1, status);
+            stmt.setString(2, String.valueOf(shuttleID));
+            stmt.executeUpdate();
+            return true;
+        } catch (SQLException e){
             logger.error(e.getMessage());
             throw new RuntimeException(e);
         }
