@@ -3,6 +3,7 @@ package com.rocketshipcheckingtool.ui.technician;
 import com.rocketshipcheckingtool.domain.Shuttle;
 import com.rocketshipcheckingtool.domain.Task;
 import com.rocketshipcheckingtool.ui.ViewManagerController;
+import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
@@ -59,7 +60,7 @@ public class HomeViewController {
     private void setupTableColumns() {
         shuttleOverviewColumn.setCellValueFactory(new PropertyValueFactory<>("shuttleName"));
         statusOverviewColumn.setCellValueFactory(new PropertyValueFactory<>("status"));
-        landungOverviewColumn.setCellValueFactory(new PropertyValueFactory<>("landungDate"));
+        landungOverviewColumn.setCellValueFactory(cellData -> new SimpleStringProperty(cellData.getValue().getLandungDate() + " " + cellData.getValue().getLandungTime()));
         mechanikerOverviewColumn.setCellValueFactory(new PropertyValueFactory<>("mechanic"));
 
         aufgabeTaskColumn.setCellValueFactory(new PropertyValueFactory<>("task"));
