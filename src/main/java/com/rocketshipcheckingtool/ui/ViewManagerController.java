@@ -21,6 +21,7 @@ public class ViewManagerController {
     public StackPane contentArea;
     private Node homePage, detailsPage, statistikenPage, lagerPage, nachrichtenPage;
     private DetailsViewController detailsController;
+    private HomeViewController homeController;
 
 
     @FXML
@@ -41,6 +42,8 @@ public class ViewManagerController {
     @FXML
     private void handleSidebarClick(ActionEvent event) {
         if (event.getSource() == btnHome) {
+            homeController.initialize();
+            homeController.loadTableContent();
             showPage(homePage);
         } else if (event.getSource() == btnDetails) {
             showPage(detailsPage);
@@ -58,7 +61,7 @@ public class ViewManagerController {
         Node page = loader.load();
 
         if (fxml.endsWith("HomeView.fxml")) {
-            HomeViewController homeController = loader.getController();
+            homeController = loader.getController();
             homeController.setClientRequests(this.clientRequests);
             homeController.setViewManagerController(this);
         } else if (fxml.endsWith("DetailsView.fxml")) {
@@ -98,6 +101,12 @@ public class ViewManagerController {
     public void handleStatistikenVBox() {
         showPage(statistikenPage);
         btnStatistiken.setSelected(true);
+    }
+
+    public void showHome(){
+        homeController.initialize();
+        homeController.loadTableContent();
+        showPage(homePage);
     }
 
     public void setClientRequests(ClientRequests clientRequests) {

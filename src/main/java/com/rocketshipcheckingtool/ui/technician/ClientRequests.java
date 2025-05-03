@@ -17,12 +17,14 @@ public class ClientRequests {
         url = new URL("http://localhost:2104");
     }
 
-    public String request(String path, String user, String key, String value) throws URISyntaxException, IOException, InterruptedException {
+    public String request(String path, String user, String key, String value, String key2, String value2, String key3, String value3) throws URISyntaxException, IOException, InterruptedException {
         url = url.toURI().resolve(path).toURL();
         con = (HttpURLConnection) url.openConnection();
         con.setRequestMethod("GET");
         con.setRequestProperty("User", user);
         con.setRequestProperty(key, value);
+        con.setRequestProperty(key2, value2);
+        con.setRequestProperty(key3, value3);
 
         int status = con.getResponseCode();
         if (status != 200) {
@@ -40,6 +42,14 @@ public class ClientRequests {
 
         con.disconnect();
         return response.toString();
+    }
+
+    public String request(String path, String user, String key, String value, String key2, String value2) throws URISyntaxException, IOException, InterruptedException {
+        return request(path, user, key, value, key2, value2, "p", "p");
+    }
+
+    public String request(String path, String user, String key, String value) throws URISyntaxException, IOException, InterruptedException {
+        return request(path, user, key, value, "p", "p");
     }
 
     public String request(String path, String user) throws URISyntaxException, IOException, InterruptedException {

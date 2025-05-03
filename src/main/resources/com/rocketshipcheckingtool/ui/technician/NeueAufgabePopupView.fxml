@@ -1,24 +1,22 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import javafx.scene.control.Label?>
-<?import javafx.scene.layout.VBox?>
 <?import javafx.geometry.Insets?>
-<?import javafx.scene.control.TextField?>
 <?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
 <?import javafx.scene.control.TextArea?>
-<VBox xmlns="http://javafx.com/javafx"
-      xmlns:fx="http://javafx.com/fxml"
-      fx:controller="com.rocketshipcheckingtool.ui.technician.NeueAufgabePopupController" prefHeight="400"
-      prefWidth="600" stylesheets="@../style.css" style="-fx-background-color: rgb(206, 221, 255)">
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.VBox?>
+
+<VBox prefHeight="400" prefWidth="600" style="-fx-background-color: rgb(206, 221, 255)" stylesheets="@../style.css" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.rocketshipcheckingtool.ui.technician.NeueAufgabePopupController">
     <padding>
-        <Insets topRightBottomLeft="40"/>
+        <Insets topRightBottomLeft="40" />
     </padding>
-    <VBox styleClass="vBox" VBox.vgrow="ALWAYS" spacing="20" alignment="TOP_CENTER">
-        <Label text="Neue Aufgabe" styleClass="header"/>
-        <TextArea promptText="Beschreibung..." VBox.vgrow="ALWAYS"/>
-        <Label text="Mechaniker" styleClass="header"/>
-        <TextField promptText="Mechaniker..." />
-        <Button text="Erstellen" styleClass="buttonBig" style="-fx-background-color: rgb(26, 41, 82);"/>
+    <VBox alignment="TOP_CENTER" spacing="20" styleClass="vBox" VBox.vgrow="ALWAYS">
+        <Label styleClass="header" text="Neue Aufgabe" />
+        <TextArea fx:id="descriptionArea" promptText="Beschreibung..." VBox.vgrow="ALWAYS" />
+        <Label styleClass="header" text="Mechaniker" />
+        <TextField fx:id="mechanic" promptText="Mechaniker..." />
+        <Button fx:id="createButton" style="-fx-background-color: rgb(26, 41, 82);" styleClass="buttonBig" text="Erstellen" />
     </VBox>
 
 </VBox>

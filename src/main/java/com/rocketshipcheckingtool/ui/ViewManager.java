@@ -3,9 +3,11 @@ package com.rocketshipcheckingtool.ui;
 import com.rocketshipcheckingtool.ui.technician.ClientRequests;
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
+import javafx.geometry.Rectangle2D;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.image.Image;
+import javafx.stage.Screen;
 import javafx.stage.Stage;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -33,6 +35,17 @@ public class ViewManager extends Application {
             scene.getStylesheets().add(Objects.requireNonNull(getClass().getResource("/com/rocketshipcheckingtool/ui/style.css")).toExternalForm());
             stage.setTitle("Rocketship Checking Tool");
             Image i = new Image(Objects.requireNonNull(getClass().getResourceAsStream("/com/rocketshipcheckingtool/ui/graphics/icon.png")));
+
+//            int in = 0;
+//            for (Screen screen : Screen.getScreens()) {
+//                Rectangle2D bounds = screen.getVisualBounds();
+//                if (in == 2) {
+//                    stage.setX(bounds.getMinX());
+//                    stage.setY(bounds.getMinY());
+//                }
+//                in++;
+//            }
+
             stage.getIcons().add(i);
             stage.setScene(scene);
             stage.setMaximized(true);

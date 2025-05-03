@@ -5,6 +5,7 @@ import com.rocketshipcheckingtool.domain.Task;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.IOException;
 import java.sql.*;
 import java.util.ArrayList;
 
@@ -26,7 +27,7 @@ public class DatabaseConnection {
         try {
             ArrayList<Shuttle> shuttles = new ArrayList<>();
             Statement stmt = connection.createStatement();
-            ResultSet rs = stmt.executeQuery("SELECT * FROM Shuttles");
+            ResultSet rs = stmt.executeQuery("SELECT * FROM Shuttles WHERE Status != 'Verschrottet'");
             while (rs.next()) {
                 shuttles.add(new Shuttle(rs.getInt("ID"), rs.getString("Name"), rs.getString("Status"), rs.getDate("Landung"), rs.getTime("Landung"), rs.getString("Mechaniker")));
             }
@@ -39,7 +40,7 @@ public class DatabaseConnection {
 
     public Shuttle getShuttle(String name) {
         try {
-            String query = "SELECT * FROM Shuttles WHERE Name = ?";
+            String query = "SELECT * FROM Shuttles WHERE Name = ? AND Status != 'Verschrottet'";
             PreparedStatement stmt = connection.prepareStatement(query);
             stmt.setString(1, name);
             ResultSet rs = stmt.executeQuery();
@@ -71,10 +72,10 @@ public class DatabaseConnection {
         }
     }
 
-    public void changeShuttleStatus(Shuttle shuttle, String status) {
+    public void changeShuttleStatus(int shuttleID, String status) {
         try{
             Statement stmt = connection.createStatement();
-            stmt.executeUpdate("UPDATE Shuttles SET Status = '" + status + "' WHERE ID = " + shuttle.getId());
+            stmt.executeUpdate("UPDATE Shuttles SET Status = '" + status + "' WHERE ID = " + shuttleID);
         } catch (SQLException e) {
             logger.error(e.getMessage());
             throw new RuntimeException(e);
@@ -85,9 +86,9 @@ public class DatabaseConnection {
         try{
             ArrayList<Task> tasks = new ArrayList<>();
             Statement stmt = connection.createStatement();
-            ResultSet rs = stmt.executeQuery("SELECT Tasks.*, Shuttles.Name AS ShuttleName FROM Tasks INNER JOIN Shuttles ON Tasks.ShuttleID = Shuttles.ID WHERE Aktiv = 1");
+            ResultSet rs = stmt.executeQuery("SELECT Tasks.*, Shuttles.Name AS ShuttleName FROM Tasks INNER JOIN Shuttles ON Tasks.ShuttleID = Shuttles.ID WHERE Aktiv = 'true'");
             while (rs.next()) {
-                tasks.add(new Task(rs.getString("Aufgabe"), rs.getString("Status"), rs.getString("Mechaniker"), rs.getString("ShuttleName")));
+                tasks.add(new Task(rs.getString("Aufgabe"), rs.getString("Status"), rs.getString("Mechaniker"), rs.getString("ShuttleName"), rs.getInt("ID")));
             }
             return tasks;
         }catch (SQLException e) {
@@ -98,16 +99,132 @@ public class DatabaseConnection {
 
     public ArrayList<Task> getActiveTaskByShuttleID(int shuttleID) {
         try {
-            String query = "SELECT Tasks.*, Shuttles.Name AS ShuttleName FROM Tasks INNER JOIN Shuttles ON Tasks.ShuttleID = Shuttles.ID WHERE Tasks.ShuttleID = ? AND Tasks.Aktiv = 1";
+            String query = "SELECT Tasks.*, Shuttles.Name AS ShuttleName FROM Tasks INNER JOIN Shuttles ON Tasks.ShuttleID = Shuttles.ID WHERE Tasks.ShuttleID = ? AND Tasks.Aktiv = 'true'";
             PreparedStatement stmt = connection.prepareStatement(query);
             stmt.setString(1, Integer.toString(shuttleID));
             ResultSet rs = stmt.executeQuery();
             ArrayList<Task> tasks = new ArrayList<>();
             while (rs.next()) {
-                tasks.add(new Task(rs.getString("Aufgabe"), rs.getString("Status"), rs.getString("Mechaniker"), rs.getString("ShuttleName")));
+                tasks.add(new Task(rs.getString("Aufgabe"), rs.getString("Status"), rs.getString("Mechaniker"), rs.getString("ShuttleName"), rs.getInt("ID")));
             }
             return tasks;
         }catch (SQLException e) {
+            logger.error(e.getMessage());
+            throw new RuntimeException(e);
+        }
+    }
+
+    public boolean updateTask(int taskID, String status) {
+        try {
+            String query = "UPDATE Tasks SET Status = ? WHERE ID = ?";
+            PreparedStatement stmt = connection.prepareStatement(query);
+            stmt.setString(1, String.valueOf(status));
+            stmt.setString(2, Integer.toString(taskID));
+            stmt.executeUpdate();
+            return true;
+        } catch (SQLException e){
+            logger.error(e.getMessage());
+            throw new RuntimeException(e);
+        }
+    }
+
+    public boolean createTask(String mechanic, String description, String shuttleID) throws IOException {
+        try {
+            String query = "INSERT INTO Tasks (Aufgabe, Status, ShuttleID, Mechaniker, Aktiv) VALUES (?, 'Offen', ?, ?, 'true')";
+            PreparedStatement stmt = connection.prepareStatement(query);
+            stmt.setString(1, description);
+            stmt.setString(2, shuttleID);
+            stmt.setString(3, mechanic);
+            stmt.executeUpdate();
+            return true;
+        } catch (SQLException e){
+            logger.error(e.getMessage());
+            throw new RuntimeException(e);
+        }
+    }
+
+    public ArrayList<Task> getGeneralTasksForShuttle(int shuttleID) {
+        try {
+            String query = "SELECT GeneralTasks.*, Shuttles.Name AS ShuttleName FROM GeneralTasks INNER JOIN Shuttles ON GeneralTasks.ShuttleID = Shuttles.ID WHERE GeneralTasks.ShuttleID = ?";
+            PreparedStatement stmt = connection.prepareStatement(query);
+            stmt.setString(1, String.valueOf(shuttleID));
+            ResultSet rs = stmt.executeQuery();
+            ArrayList<Task> tasks = new ArrayList<>();
+            while (rs.next()) {
+                tasks.add(new Task(rs.getString("Aufgabe"), rs.getString("Status"), rs.getInt("ID"), rs.getString("ShuttleName")));
+            }
+            return tasks;
+        } catch (SQLException e){
+            logger.error(e.getMessage());
+            throw new RuntimeException(e);
+        }
+    }
+
+    public boolean updateGeneralTask(int taskID, String status) {
+        try {
+            String query = "UPDATE GeneralTasks SET Status = ? WHERE ID = ?";
+            PreparedStatement stmt = connection.prepareStatement(query);
+            stmt.setString(1, status);
+            stmt.setString(2, String.valueOf(taskID));
+            stmt.executeUpdate();
+            return true;
+        } catch(SQLException e){
+            logger.error(e.getMessage());
+            throw new RuntimeException(e);
+        }
+    }
+
+    public boolean updateShuttleStatus(int shuttleID, String status) {
+        try {
+            String query = "UPDATE Shuttles SET Status = ? WHERE ID = ?";
+            PreparedStatement stmt = connection.prepareStatement(query);
+            stmt.setString(1, status);
+            stmt.setString(2, String.valueOf(shuttleID));
+            stmt.executeUpdate();
+            return true;
+        } catch (SQLException e){
+            logger.error(e.getMessage());
+            throw new RuntimeException(e);
+        }
+    }
+
+    public boolean updateAllTasksActivityBelongToShuttle(int shuttleID, String status) {
+        try {
+            String query = "UPDATE Tasks SET Aktiv = ? WHERE ShuttleID = ?";
+            PreparedStatement stmt = connection.prepareStatement(query);
+            stmt.setString(1, status);
+            stmt.setString(2, String.valueOf(shuttleID));
+            stmt.executeUpdate();
+            return true;
+        } catch (SQLException e){
+            logger.error(e.getMessage());
+            throw new RuntimeException(e);
+        }
+    }
+
+    public boolean updateAllTasksStatusBelongToShuttle(int shuttleID, String status) {
+        try {
+            String query = "UPDATE Tasks SET Status = ? WHERE ShuttleID = ?";
+            PreparedStatement stmt = connection.prepareStatement(query);
+            stmt.setString(1, status);
+            stmt.setString(2, String.valueOf(shuttleID));
+            stmt.executeUpdate();
+            return true;
+        } catch (SQLException e){
+            logger.error(e.getMessage());
+            throw new RuntimeException(e);
+        }
+    }
+
+    public boolean updateAllGeneralTasksStatusBelongToShuttle(int shuttleID, String status) {
+        try {
+            String query = "UPDATE GeneralTasks SET Status = ? WHERE ShuttleID = ?";
+            PreparedStatement stmt = connection.prepareStatement(query);
+            stmt.setString(1, status);
+            stmt.setString(2, String.valueOf(shuttleID));
+            stmt.executeUpdate();
+            return true;
+        } catch (SQLException e){
             logger.error(e.getMessage());
             throw new RuntimeException(e);
         }
