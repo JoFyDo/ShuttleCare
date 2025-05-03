@@ -50,7 +50,7 @@ public class Util {
                 }
                 if (c == taskList.size()) {
                     Shuttle shuttle = databaseConnection.getShuttle(task.getShuttleName());
-                    databaseConnection.changeShuttleStatus(shuttle, "Erledigt - Warte auf Freigabe");
+                    databaseConnection.changeShuttleStatus(shuttle.getId(), "Erledigt - Warte auf Freigabe");
                 }
             }
         }

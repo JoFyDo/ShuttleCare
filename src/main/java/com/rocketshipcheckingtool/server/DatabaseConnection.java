@@ -72,10 +72,10 @@ public class DatabaseConnection {
         }
     }
 
-    public void changeShuttleStatus(Shuttle shuttle, String status) {
+    public void changeShuttleStatus(int shuttleID, String status) {
         try{
             Statement stmt = connection.createStatement();
-            stmt.executeUpdate("UPDATE Shuttles SET Status = '" + status + "' WHERE ID = " + shuttle.getId());
+            stmt.executeUpdate("UPDATE Shuttles SET Status = '" + status + "' WHERE ID = " + shuttleID);
         } catch (SQLException e) {
             logger.error(e.getMessage());
             throw new RuntimeException(e);
@@ -188,9 +188,37 @@ public class DatabaseConnection {
         }
     }
 
-    public boolean updateAllTasksBelongToShuttle(int shuttleID, String status) {
+    public boolean updateAllTasksActivityBelongToShuttle(int shuttleID, String status) {
         try {
             String query = "UPDATE Tasks SET Aktiv = ? WHERE ShuttleID = ?";
+            PreparedStatement stmt = connection.prepareStatement(query);
+            stmt.setString(1, status);
+            stmt.setString(2, String.valueOf(shuttleID));
+            stmt.executeUpdate();
+            return true;
+        } catch (SQLException e){
+            logger.error(e.getMessage());
+            throw new RuntimeException(e);
+        }
+    }
+
+    public boolean updateAllTasksStatusBelongToShuttle(int shuttleID, String status) {
+        try {
+            String query = "UPDATE Tasks SET Status = ? WHERE ShuttleID = ?";
+            PreparedStatement stmt = connection.prepareStatement(query);
+            stmt.setString(1, status);
+            stmt.setString(2, String.valueOf(shuttleID));
+            stmt.executeUpdate();
+            return true;
+        } catch (SQLException e){
+            logger.error(e.getMessage());
+            throw new RuntimeException(e);
+        }
+    }
+
+    public boolean updateAllGeneralTasksStatusBelongToShuttle(int shuttleID, String status) {
+        try {
+            String query = "UPDATE GeneralTasks SET Status = ? WHERE ShuttleID = ?";
             PreparedStatement stmt = connection.prepareStatement(query);
             stmt.setString(1, status);
             stmt.setString(2, String.valueOf(shuttleID));

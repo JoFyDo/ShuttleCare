@@ -98,7 +98,7 @@ public class Server {
                 break;
             case "/updateAllTasksBelongToShuttle":
                 if (headers.get("User").get(0).equals("technician")) {
-                    sendResponse(exchange, 200, String.valueOf(databaseConnection.updateAllTasksBelongToShuttle(Integer.valueOf(headers.get("ShuttleID").get(0)), headers.get("Status").get(0))));
+                    sendResponse(exchange, 200, String.valueOf(databaseConnection.updateAllTasksActivityBelongToShuttle(Integer.valueOf(headers.get("ShuttleID").get(0)), headers.get("Status").get(0))));
                 }
                 break;
         }
