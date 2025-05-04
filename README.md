@@ -35,5 +35,5 @@ Kicken Sie auf das Bild, um zu hören was bisherige Kunden über **ShuttleCare**
 [Giang Vu](https://github.com/sangg284)  
 [Hannah Knorr](https://github.com/hnnahkn)  
 [Roman Ott](https://github.com/rmanfx)  
-[Marco Cornachhione](https://github.com/Marco-cor12)
+[Marco Cornacchione](https://github.com/Marco-cor12)
 
