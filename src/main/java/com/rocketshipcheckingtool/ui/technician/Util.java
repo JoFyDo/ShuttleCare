@@ -2,6 +2,7 @@ package com.rocketshipcheckingtool.ui.technician;
 
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
+import com.rocketshipcheckingtool.domain.Part;
 import com.rocketshipcheckingtool.domain.Shuttle;
 import com.rocketshipcheckingtool.domain.Task;
 import org.slf4j.Logger;
@@ -116,6 +117,18 @@ public class Util {
         try {
             clientRequest.request("/updateAllTasksBelongToShuttle", user, "ShuttleID", String.valueOf(shuttleID), "Status", String.valueOf(status));
         } catch (Exception e){
+            logger.error(e.getMessage());
+            throw new ConnectException(e.getMessage());
+        }
+    }
+
+    public static ArrayList<Part> getParts(ClientRequests clientRequests, String user) throws IOException {
+        try {
+            String tasks = clientRequests.request("/requestParts", user);
+            Gson gson = new Gson();
+            Type shuttleListType = new TypeToken<ArrayList<Part>>() {}.getType();
+            return gson.fromJson(tasks, shuttleListType);
+        }catch (Exception e){
             logger.error(e.getMessage());
             throw new ConnectException(e.getMessage());
         }

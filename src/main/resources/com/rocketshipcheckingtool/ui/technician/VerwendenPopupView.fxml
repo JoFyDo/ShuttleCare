@@ -10,8 +10,8 @@
         <Insets topRightBottomLeft="40"/>
     </padding>
     <VBox styleClass="vBox" VBox.vgrow="ALWAYS" spacing="40" alignment="TOP_CENTER">
-        <Label text="Teil" styleClass="header" alignment="TOP_CENTER"/>
-        <Label text="Preis" VBox.vgrow="ALWAYS"/>
+        <Label fx:id="teil" text="Teil" styleClass="header" alignment="TOP_CENTER"/>
+        <Label fx:id="preis" text="Preis" VBox.vgrow="ALWAYS"/>
         <HBox spacing="10" alignment="TOP_CENTER">
             <Button fx:id="minusButton" text="-" styleClass="buttonAmount" style="-fx-background-color: rgb(76, 126, 79)"/>
             <TextField fx:id="quantityField" text="1" alignment="CENTER" style="-fx-border-color: rgb(76, 126, 79)"/>

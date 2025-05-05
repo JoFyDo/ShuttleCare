@@ -1,5 +1,6 @@
 package com.rocketshipcheckingtool.server;
 
+import com.rocketshipcheckingtool.domain.Part;
 import com.rocketshipcheckingtool.domain.Shuttle;
 import com.rocketshipcheckingtool.domain.Task;
 import org.slf4j.Logger;
@@ -225,6 +226,22 @@ public class DatabaseConnection {
             stmt.executeUpdate();
             return true;
         } catch (SQLException e){
+            logger.error(e.getMessage());
+            throw new RuntimeException(e);
+        }
+    }
+
+    public ArrayList<Part> getParts() {
+        try {
+            String query = "SELECT * FROM Parts";
+            PreparedStatement stmt = connection.prepareStatement(query);
+            ResultSet rs = stmt.executeQuery();
+            ArrayList<Part> parts = new ArrayList<>();
+            while (rs.next()) {
+                parts.add(new Part(rs.getInt("ID"), rs.getString("Name"), String.format("%.2f", (double) rs.getInt("Price") / 100), rs.getInt("Quantity")));
+            }
+            return parts;
+        } catch (SQLException e) {
             logger.error(e.getMessage());
             throw new RuntimeException(e);
         }
