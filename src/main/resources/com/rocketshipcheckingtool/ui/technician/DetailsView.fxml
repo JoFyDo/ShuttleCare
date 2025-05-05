@@ -37,7 +37,7 @@
         </rowConstraints>
 
         <VBox GridPane.columnIndex="0" GridPane.rowIndex="0" VBox.vgrow="ALWAYS" styleClass="vBox">
-            <Label text="Aufgaben" styleClass="header"/>
+            <Label text="Standard-Wartungsprotokoll" styleClass="header"/>
             <ScrollPane fitToWidth="true" VBox.vgrow="ALWAYS" styleClass="scrollPane">
                 <VBox fx:id="aufgabenBox">
                 </VBox>
