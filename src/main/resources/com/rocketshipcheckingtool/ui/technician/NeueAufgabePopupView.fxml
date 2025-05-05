@@ -7,6 +7,7 @@
 <?import javafx.scene.control.TextField?>
 <?import javafx.scene.layout.VBox?>
 
+<?import javafx.scene.control.ComboBox?>
 <VBox prefHeight="400" prefWidth="600" style="-fx-background-color: rgb(206, 221, 255)" stylesheets="@../style.css" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.rocketshipcheckingtool.ui.technician.NeueAufgabePopupController">
     <padding>
         <Insets topRightBottomLeft="40" />
@@ -14,8 +15,7 @@
     <VBox alignment="TOP_CENTER" spacing="20" styleClass="vBox" VBox.vgrow="ALWAYS">
         <Label styleClass="header" text="Neue Aufgabe" />
         <TextArea fx:id="descriptionArea" promptText="Beschreibung..." VBox.vgrow="ALWAYS" />
-        <Label styleClass="header" text="Mechaniker" />
-        <TextField fx:id="mechanic" promptText="Mechaniker..." />
+        <ComboBox fx:id="mechanikerComboBox" promptText="Mechaniker..." styleClass="mechanikerComboBox"/>
         <Button fx:id="createButton" style="-fx-background-color: rgb(26, 41, 82);" styleClass="buttonBig" text="Erstellen" />
     </VBox>
 

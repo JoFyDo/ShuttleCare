@@ -1,14 +1,13 @@
 package com.rocketshipcheckingtool.ui.technician;
 
+import javafx.collections.FXCollections;
 import javafx.fxml.FXML;
-import javafx.scene.control.Alert;
-import javafx.scene.control.Button;
-import javafx.scene.control.TextArea;
-import javafx.scene.control.TextField;
+import javafx.scene.control.*;
 import javafx.stage.Stage;
 
 public class NeueAufgabePopupController {
 
+    public ComboBox<String> mechanikerComboBox;
     private Stage stage;
 
     @FXML
@@ -19,6 +18,17 @@ public class NeueAufgabePopupController {
     private Button createButton;
 
     public void initialize() {
+        mechanikerComboBox.setItems(FXCollections.observableArrayList(
+                "Alois", "Boris", "Christian", "Deniz"
+        ));
+
+        mechanikerComboBox.setOnAction(event -> {
+            String selected = mechanikerComboBox.getValue();
+            if (selected != null) {
+                mechanic.setText(selected);
+            }
+        });
+
         createButton.setOnAction(event -> {
             if (stage.isShowing()) {
                 if (getDescription().equals("") || getMechanic().equals("")) {

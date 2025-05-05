@@ -12,22 +12,28 @@ public class VerwendenPopupController {
     public Button verwendenButton;
     public Label preis;
     public Label teil;
+    public Label gesamtPreis;
 
     private int quantity = 1;
 
     public void initialize() {
         quantityField.setText(String.valueOf(quantity));
+        setupButtons();
+    }
 
+    private void setupButtons() {
         minusButton.setOnAction(event -> {
             if (quantity > 1) {
                 quantity--;
                 quantityField.setText(String.valueOf(quantity));
+                updateGesamtPreis();
             }
         });
 
         plusButton.setOnAction(event -> {
             quantity++;
             quantityField.setText(String.valueOf(quantity));
+            updateGesamtPreis();
         });
 
         verwendenButton.setOnAction(event -> {
@@ -37,12 +43,29 @@ public class VerwendenPopupController {
         });
     }
 
+    private void updateGesamtPreis() {
+        String preisText = preis.getText().replace(",", ".").trim();
+        if (preisText.isEmpty()) {
+            gesamtPreis.setText("0.00 €");
+            return;
+        }
+
+        try {
+            double preisValue = Double.parseDouble(preisText);
+            double total = preisValue * quantity;
+            gesamtPreis.setText(String.format("%.2f €", total));
+        } catch (NumberFormatException e) {
+            gesamtPreis.setText("Ungültiger Preis");
+        }
+    }
+
     public int getQuantity() {
         return quantity;
     }
 
     public void setPreis(String preis) {
         this.preis.setText(preis);
+        updateGesamtPreis(); // Ensure total price is set after price is injected
     }
 
     public void setTeil(String teil) {

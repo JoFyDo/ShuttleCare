@@ -341,3 +341,15 @@
     -fx-border-color: transparent;
     -fx-alignment: center;
 }
+
+/* Neue Aufgabe Popup */
+.mechanikerComboBox {
+    -fx-text-fill: rgb(26, 41, 82);
+    -fx-background-color: white;
+    -fx-background-radius: 20px;
+    -fx-border-color: rgb(26, 41, 82);
+    -fx-border-radius: 20px;
+    -fx-pref-height: 20px;
+    -fx-pref-width: 200px;
+    -fx-background-insets: 1px;
+}
