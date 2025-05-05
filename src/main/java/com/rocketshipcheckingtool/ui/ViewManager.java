@@ -3,11 +3,9 @@ package com.rocketshipcheckingtool.ui;
 import com.rocketshipcheckingtool.ui.technician.ClientRequests;
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
-import javafx.geometry.Rectangle2D;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.image.Image;
-import javafx.stage.Screen;
 import javafx.stage.Stage;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -24,12 +22,11 @@ public class ViewManager extends Application {
         connectToServer();
 
         try {
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/rocketshipcheckingtool/ui/technician/MainView.fxml"));
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/rocketshipcheckingtool/ui/LoginView.fxml"));
             Parent root = loader.load();
 
-            ViewManagerController controller = loader.getController();
+            LoginViewController controller = loader.getController();
             controller.setClientRequests(clientRequests);
-            controller.initContent();
 
             Scene scene = new Scene(root);
             scene.getStylesheets().add(Objects.requireNonNull(getClass().getResource("/com/rocketshipcheckingtool/ui/style.css")).toExternalForm());

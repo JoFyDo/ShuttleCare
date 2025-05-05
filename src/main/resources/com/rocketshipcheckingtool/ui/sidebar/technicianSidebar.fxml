@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<VBox xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" alignment="TOP_CENTER"
+      prefWidth="100.0" spacing="20.0" styleClass="sidebar" stylesheets="@../style.css" fx:id="technicianSidebar" fx:controller="com.rocketshipcheckingtool.ui.technician.TechnicianSidebarController">
+    <VBox alignment="TOP_CENTER">
+        <ToggleButton fx:id="btnHome" onAction="#handleSidebarClick" styleClass="buttonSidebar">
+            <graphic>
+                <fx:include source="/com/rocketshipcheckingtool/ui/graphics/home.fxml"/>
+            </graphic>
+            <toggleGroup>
+                <ToggleGroup fx:id="toggleGroup"/>
+            </toggleGroup>
+        </ToggleButton>
+        <Label alignment="CENTER" text="Home" textFill="white">
+            <padding>
+                <Insets top="5.0"/>
+            </padding>
+        </Label>
+    </VBox>
+
+    <VBox alignment="TOP_CENTER">
+        <ToggleButton fx:id="btnDetails" onAction="#handleSidebarClick" toggleGroup="$toggleGroup"
+                      styleClass="buttonSidebar">
+            <graphic>
+                <fx:include source="/com/rocketshipcheckingtool/ui/graphics/details.fxml"/>
+            </graphic>
+        </ToggleButton>
+        <Label alignment="CENTER" text="Details" textFill="white">
+            <padding>
+                <Insets top="5.0"/>
+            </padding>
+        </Label>
+    </VBox>
+
+    <VBox alignment="TOP_CENTER">
+        <ToggleButton fx:id="btnStatistiken" styleClass="buttonSidebar" onAction="#handleSidebarClick"
+                      toggleGroup="$toggleGroup">
+            <graphic>
+                <fx:include source="/com/rocketshipcheckingtool/ui/graphics/statistiken.fxml"/>
+            </graphic>
+        </ToggleButton>
+        <Label alignment="CENTER" text="Statistiken" textFill="white">
+            <padding>
+                <Insets top="5.0"/>
+            </padding>
+        </Label>
+    </VBox>
+
+    <VBox alignment="TOP_CENTER">
+        <ToggleButton fx:id="btnLager" onAction="#handleSidebarClick" toggleGroup="$toggleGroup"
+                      styleClass="buttonSidebar">
+            <graphic>
+                <fx:include source="/com/rocketshipcheckingtool/ui/graphics/lager.fxml"/>
+            </graphic>
+        </ToggleButton>
+        <Label alignment="CENTER" text="Lager" textFill="white">
+            <padding>
+                <Insets top="5.0"/>
+            </padding>
+        </Label>
+    </VBox>
+
+    <VBox alignment="TOP_CENTER">
+        <ToggleButton fx:id="btnNachrichten" onAction="#handleSidebarClick" styleClass="buttonSidebar"
+                      toggleGroup="$toggleGroup">
+            <graphic>
+                <fx:include source="/com/rocketshipcheckingtool/ui/graphics/nachrichten.fxml"/>
+            </graphic>
+
+        </ToggleButton>
+        <Label alignment="CENTER" text="Nachrichten" textFill="white">
+            <padding>
+                <Insets top="5.0"/>
+            </padding>
+        </Label>
+    </VBox>
+    <Pane fx:id="spacer" VBox.vgrow="ALWAYS"/>
+    <ToggleButton fx:id="btnLogout" onAction="#handleLogout" styleClass="buttonSidebar">
+        <graphic>
+            <fx:include source="/com/rocketshipcheckingtool/ui/graphics/logout.fxml"/>
+        </graphic>
+    </ToggleButton>
+    <padding>
+        <Insets top="50.0" bottom="50"/>
+    </padding>
+</VBox>

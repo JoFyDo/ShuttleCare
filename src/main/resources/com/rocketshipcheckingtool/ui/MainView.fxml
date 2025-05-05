@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.layout.StackPane?>
+<?import javafx.scene.layout.VBox?>
+<BorderPane xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1"
+            fx:controller="com.rocketshipcheckingtool.ui.ViewManagerController" stylesheets="@style.css">
+    <left>
+        <VBox fx:id="sidebarPlaceholder" prefWidth="100"/>
+    </left>
+    <center>
+        <StackPane fx:id="contentArea" styleClass="contentArea" BorderPane.alignment="CENTER"/>
+    </center>
+
+</BorderPane>

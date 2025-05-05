@@ -1,6 +1,7 @@
 package com.rocketshipcheckingtool.ui.technician;
 
 import com.rocketshipcheckingtool.domain.Shuttle;
+import com.rocketshipcheckingtool.domain.UserSession;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
 import javafx.collections.FXCollections;
@@ -34,7 +35,7 @@ public class NachrichtenViewController {
     private ClientRequests clientRequests;
     public List<Shuttle> shuttles;
     public String shuttleSelected;
-    private final String user = "technician";
+    private final String user = UserSession.getRole().name().toLowerCase();
     private final static Logger logger = LoggerFactory.getLogger(NachrichtenViewController.class);
 
 

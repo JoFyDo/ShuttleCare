@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.layout.GridPane?>
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.layout.ColumnConstraints?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.layout.RowConstraints?>
+<?import javafx.scene.control.TableView?>
+<?import javafx.scene.control.TableColumn?>
+<VBox xmlns="http://javafx.com/javafx" xmlns:fx="http://javafx.com/fxml"
+      fx:controller="com.rocketshipcheckingtool.ui.manager.KommentarViewController">
+    <GridPane>
+        <VBox.margin>
+            <Insets top="40"/>
+        </VBox.margin>
+        <columnConstraints>
+            <ColumnConstraints hgrow="ALWAYS" percentWidth="75.0"/>
+            <ColumnConstraints hgrow="ALWAYS" percentWidth="25.0"/>
+        </columnConstraints>
+        <TextField fx:id="searchField" promptText="Search" styleClass="searchField" GridPane.columnIndex="0"
+                   GridPane.halignment="CENTER" GridPane.rowIndex="0">
+            <GridPane.margin>
+                <Insets left="40"/>
+            </GridPane.margin>
+
+        </TextField>
+        <Button fx:id="weiterleitenButton" mnemonicParsing="false" style="-fx-background-color: rgb(26, 41, 82)"
+                styleClass="buttonBig" text="Bestellen" GridPane.columnIndex="1" GridPane.halignment="RIGHT"
+                GridPane.rowIndex="0" onAction="#onWeiterleitenButtonClick">
+            <GridPane.margin>
+                <Insets right="40"/>
+            </GridPane.margin>
+        </Button>
+    </GridPane>
+    <VBox VBox.vgrow="ALWAYS" styleClass="vBox" style="-fx-background-radius: 0;">
+        <TableView fx:id="lagerTableView" VBox.vgrow="ALWAYS">
+            <columns>
+                <TableColumn fx:id="checkBoxColumn"/>
+                <TableColumn fx:id="kommentarColumn" text="Kommentar"/>
+            </columns>
+        </TableView>
+    </VBox>
+</VBox>
