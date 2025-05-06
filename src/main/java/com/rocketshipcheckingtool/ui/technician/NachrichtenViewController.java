@@ -1,7 +1,7 @@
 package com.rocketshipcheckingtool.ui.technician;
 
 import com.rocketshipcheckingtool.domain.Shuttle;
-import com.rocketshipcheckingtool.domain.UserSession;
+import com.rocketshipcheckingtool.ui.auth.UserSession;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
 import javafx.collections.FXCollections;

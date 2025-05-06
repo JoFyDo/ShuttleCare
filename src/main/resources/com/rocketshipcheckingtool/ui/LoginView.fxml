@@ -4,10 +4,11 @@
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.VBox?>
 <VBox xmlns="http://javafx.com/javafx" xmlns:fx="http://javafx.com/fxml"
-      fx:controller="com.rocketshipcheckingtool.ui.LoginViewController" styleClass="@style.css"
+      fx:controller="com.rocketshipcheckingtool.ui.auth.LoginViewController" styleClass="@style.css"
       style="-fx-background-color: rgb(206, 221, 255)" alignment="CENTER">
     <VBox alignment="CENTER" spacing="20" styleClass="vBox" focusTraversable="true" fx:id="focusTrap"
           VBox.vgrow="ALWAYS">
+        <Label text="Press 1 for technician, 2 for manager" styleClass="header"/>
         <Label text="Username" styleClass="header"/>
         <TextField fx:id="usernameField" promptText="username" alignment="CENTER"/>
 

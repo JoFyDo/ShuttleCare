@@ -1,12 +1,14 @@
 package com.rocketshipcheckingtool.ui.technician;
 
-import com.rocketshipcheckingtool.domain.SidebarControllerInterface;
+import com.rocketshipcheckingtool.ui.SidebarControllerInterface;
 import com.rocketshipcheckingtool.ui.ViewManagerController;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.ToggleButton;
+import javafx.scene.control.ToggleGroup;
 
 public class TechnicianSidebarController implements SidebarControllerInterface {
+    public ToggleGroup toggleGroup;
     private ViewManagerController mainController;
 
     @FXML
@@ -34,6 +36,17 @@ public class TechnicianSidebarController implements SidebarControllerInterface {
     private void handleLogout(ActionEvent event) {
         if (mainController != null) {
             mainController.handleLogout(event);
+        }
+    }
+
+    @Override
+    public void selectButton(String buttonId) {
+        switch (buttonId) {
+            case "btnHome" -> btnHome.setSelected(true);
+            case "btnDetails" -> btnDetails.setSelected(true);
+            case "btnStatistiken" -> btnStatistiken.setSelected(true);
+            case "btnLager" -> btnLager.setSelected(true);
+            case "btnNachrichten" -> btnNachrichten.setSelected(true);
         }
     }
 }

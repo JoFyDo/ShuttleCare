@@ -1,7 +1,6 @@
-package com.rocketshipcheckingtool.ui;
+package com.rocketshipcheckingtool.ui.auth;
 
-import com.rocketshipcheckingtool.domain.UserRole;
-import com.rocketshipcheckingtool.domain.UserSession;
+import com.rocketshipcheckingtool.ui.ViewManagerController;
 import com.rocketshipcheckingtool.ui.technician.ClientRequests;
 import javafx.application.Platform;
 import javafx.fxml.FXML;
@@ -14,12 +13,10 @@ import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
 import javafx.scene.image.Image;
 import javafx.scene.input.KeyEvent;
-import javafx.scene.layout.Region;
 import javafx.scene.layout.VBox;
 import javafx.stage.Screen;
 import javafx.stage.Stage;
 
-import javax.swing.*;
 import java.io.IOException;
 import java.util.Objects;
 
@@ -56,33 +53,25 @@ public class LoginViewController {
             controller.setClientRequests(clientRequests);
             controller.initAfterLogin();
 
-            Stage oldStage = (Stage) usernameField.getScene().getWindow();
-            oldStage.close();
-
             Stage newStage = new Stage();
             newStage.setTitle("Rocketship Checking Tool");
-            Image i = new Image(Objects.requireNonNull(getClass().getResourceAsStream("/com/rocketshipcheckingtool/ui/graphics/icon.png")));
-            newStage.getIcons().add(i);
+            newStage.getIcons().add(new Image(Objects.requireNonNull(
+                    getClass().getResourceAsStream("/com/rocketshipcheckingtool/ui/graphics/icon.png"))));
 
             Scene scene = new Scene(mainRoot);
-
-            scene.getStylesheets().add(
-                    Objects.requireNonNull(getClass().getResource("/com/rocketshipcheckingtool/ui/style.css")).toExternalForm()
-            );
+            scene.getStylesheets().add(Objects.requireNonNull(
+                    getClass().getResource("/com/rocketshipcheckingtool/ui/style.css")).toExternalForm());
 
             newStage.setScene(scene);
-            newStage.setMaximized(true);
+            Rectangle2D bounds = Screen.getPrimary().getVisualBounds();
+            newStage.setX(bounds.getMinX());
+            newStage.setY(bounds.getMinY());
+            newStage.setWidth(bounds.getWidth());
+            newStage.setHeight(bounds.getHeight());
             newStage.show();
 
-//            Rectangle2D screenBounds = Screen.getPrimary().getVisualBounds();
-//            Scene scene = new Scene(mainRoot, screenBounds.getWidth(), screenBounds.getHeight());
-//            stage.setScene(scene);
-//            stage.setX(screenBounds.getMinX());
-//            stage.setY(screenBounds.getMinY());
-//            stage.setWidth(screenBounds.getWidth());
-//            stage.setHeight(screenBounds.getHeight());
-//            stage.show();
-
+            Stage oldStage = (Stage) usernameField.getScene().getWindow();
+            oldStage.close();
         } catch (IOException e) {
             throw new RuntimeException("Failed to load main view", e);
         }

@@ -77,8 +77,8 @@
             </padding>
         </Label>
     </VBox>
-    <Pane fx:id="spacer" VBox.vgrow="ALWAYS"/>
-    <ToggleButton fx:id="btnLogout" onAction="#handleLogout" styleClass="buttonSidebar">
+    <Pane VBox.vgrow="ALWAYS"/>
+    <ToggleButton fx:id="btnLogout" onAction="#handleLogout" styleClass="transparent-button">
         <graphic>
             <fx:include source="/com/rocketshipcheckingtool/ui/graphics/logout.fxml"/>
         </graphic>

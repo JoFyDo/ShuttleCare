@@ -5,17 +5,18 @@
 <?import javafx.scene.layout.*?>
 <VBox xmlns="http://javafx.com/javafx"
       xmlns:fx="http://javafx.com/fxml"
-      fx:controller="com.rocketshipcheckingtool.ui.manager.DetailsViewController" >
+      fx:controller="com.rocketshipcheckingtool.ui.manager.DetailsViewController" spacing="40">
     <padding>
         <Insets bottom="40.0" left="40.0" right="40.0" top="40.0"/>
     </padding>
+    <ComboBox fx:id="shuttleComboBox" promptText="chose Shuttle" styleClass="shuttleName"/>
     <VBox VBox.vgrow="ALWAYS" spacing="40">
         <VBox styleClass="vBox" VBox.vgrow="ALWAYS">
             <Label text="Umfrage" styleClass="header"/>
             <TableView fx:id="umfrageTableView" VBox.vgrow="ALWAYS" styleClass="table-view">
                 <columns>
-                    <TableColumn fx:id="befragtePunkteColumn" text="Shuttle"/>
-                    <TableColumn fx:id="bewertungColumn" text="Status"/>
+                    <TableColumn fx:id="befragtePunkteColumn" text="Befragte Punkte"/>
+                    <TableColumn fx:id="bewertungColumn" text="Bewertung"/>
                 </columns>
             </TableView>
         </VBox>

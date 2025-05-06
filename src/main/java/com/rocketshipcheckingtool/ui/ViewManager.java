@@ -1,11 +1,14 @@
 package com.rocketshipcheckingtool.ui;
 
+import com.rocketshipcheckingtool.ui.auth.LoginViewController;
 import com.rocketshipcheckingtool.ui.technician.ClientRequests;
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
+import javafx.geometry.Rectangle2D;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.image.Image;
+import javafx.stage.Screen;
 import javafx.stage.Stage;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -45,7 +48,11 @@ public class ViewManager extends Application {
 
             stage.getIcons().add(i);
             stage.setScene(scene);
-            stage.setMaximized(true);
+            Rectangle2D bounds = Screen.getPrimary().getVisualBounds();
+            stage.setX(bounds.getMinX());
+            stage.setY(bounds.getMinY());
+            stage.setWidth(bounds.getWidth());
+            stage.setHeight(bounds.getHeight());
             stage.show();
 
         } catch (Exception e) {

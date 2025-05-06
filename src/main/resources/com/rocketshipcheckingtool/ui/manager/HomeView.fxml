@@ -4,7 +4,7 @@
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.VBox?>
 <VBox xmlns="http://javafx.com/javafx"
-      xmlns:fx="http://javafx.com/fxml"
+      xmlns:fx="http://javafx.com/fxml" maxWidth="Infinity" maxHeight="Infinity"
       fx:controller="com.rocketshipcheckingtool.ui.manager.HomeViewController">
     <padding>
         <Insets bottom="40.0" left="40.0" right="40.0" top="40.0"/>

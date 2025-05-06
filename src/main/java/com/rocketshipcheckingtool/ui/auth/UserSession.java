@@ -1,4 +1,4 @@
-package com.rocketshipcheckingtool.domain;
+package com.rocketshipcheckingtool.ui.auth;
 
 public class UserSession {
     private static UserRole role;

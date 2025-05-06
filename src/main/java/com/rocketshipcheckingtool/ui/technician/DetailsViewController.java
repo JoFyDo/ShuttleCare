@@ -2,7 +2,7 @@ package com.rocketshipcheckingtool.ui.technician;
 
 import com.rocketshipcheckingtool.domain.Shuttle;
 import com.rocketshipcheckingtool.domain.Task;
-import com.rocketshipcheckingtool.domain.UserSession;
+import com.rocketshipcheckingtool.ui.auth.UserSession;
 import com.rocketshipcheckingtool.ui.ViewManagerController;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
