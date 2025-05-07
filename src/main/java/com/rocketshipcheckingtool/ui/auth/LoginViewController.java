@@ -54,7 +54,7 @@ public class LoginViewController {
             controller.initAfterLogin();
 
             Stage newStage = new Stage();
-            newStage.setTitle("Rocketship Checking Tool");
+            newStage.setTitle("ShuttleCare");
             newStage.getIcons().add(new Image(Objects.requireNonNull(
                     getClass().getResourceAsStream("/com/rocketshipcheckingtool/ui/graphics/icon.png"))));
 
@@ -69,6 +69,7 @@ public class LoginViewController {
             newStage.setWidth(bounds.getWidth());
             newStage.setHeight(bounds.getHeight());
             newStage.show();
+            newStage.setOnCloseRequest(e -> {System.exit(1);});
 
             Stage oldStage = (Stage) usernameField.getScene().getWindow();
             oldStage.close();
