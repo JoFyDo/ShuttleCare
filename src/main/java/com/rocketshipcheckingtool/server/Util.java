@@ -10,6 +10,7 @@ import java.util.Map;
 
 public class Util {
 
+
     public static String combineJSONString(ArrayList<? extends Manage> items) {
         StringBuilder sb = new StringBuilder();
         sb.append("[\n");

@@ -1,4 +1,4 @@
-![ShuttleCare (1)](https://github.com/user-attachments/assets/ba274e8f-a0fc-462e-884b-b2b48f8520de)
+![ShuttleCare (2)](https://github.com/user-attachments/assets/146f0c8c-7b1d-4c4e-9493-203017874f78)
 
 # ShuttleCare - das Post-Flight Maintenance-System von morgen! 
 Willkommen bei **ShuttleCare**, einer hochmodernen Softwarelösung, die die Wartung von Raumfahrtschiffen nach der Rückkehr koordiniert.  
@@ -35,5 +35,5 @@ Kicken Sie auf das Bild, um zu hören was bisherige Kunden über **ShuttleCare**
 [Giang Vu](https://github.com/sangg284)  
 [Hannah Knorr](https://github.com/hnnahkn)  
 [Roman Ott](https://github.com/rmanfx)  
-[Marco Cornachhione](https://github.com/Marco-cor12)
+[Marco Cornacchione](https://github.com/Marco-cor12)
 

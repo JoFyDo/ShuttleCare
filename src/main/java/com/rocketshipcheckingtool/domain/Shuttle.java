@@ -35,10 +35,6 @@ public class Shuttle implements Manage {
         };
     }
 
-    public String getName() {
-        return shuttleName;
-    }
-
     public String toJson() {
         return new com.google.gson.Gson().toJson(this);
     }

@@ -1,5 +1,7 @@
 package com.rocketshipcheckingtool.server;
 
+import com.rocketshipcheckingtool.domain.Notification;
+import com.rocketshipcheckingtool.domain.Part;
 import com.rocketshipcheckingtool.domain.Shuttle;
 import com.rocketshipcheckingtool.domain.Task;
 import org.slf4j.Logger;
@@ -230,6 +232,22 @@ public class DatabaseConnection {
         }
     }
 
+    public ArrayList<Part> getParts() {
+        try {
+            String query = "SELECT * FROM Parts";
+            PreparedStatement stmt = connection.prepareStatement(query);
+            ResultSet rs = stmt.executeQuery();
+            ArrayList<Part> parts = new ArrayList<>();
+            while (rs.next()) {
+                parts.add(new Part(rs.getInt("ID"), rs.getString("Name"), String.format("%.2f", (double) rs.getInt("Price") / 100), rs.getInt("Quantity")));
+            }
+            return parts;
+        } catch (SQLException e) {
+            logger.error(e.getMessage());
+            throw new RuntimeException(e);
+        }
+    }
+
     public Connection connect() throws SQLException {
         Connection c = DriverManager.getConnection(database);
         logger.info("Connected to SQLite!");
@@ -239,5 +257,66 @@ public class DatabaseConnection {
     public void disconnect() throws SQLException {
         connection.close();
         logger.info("Disconnected from SQLite!");
+    }
+
+    public boolean updatePartQuantity(Integer partID, Integer quantity) {
+        try {
+            String query = "UPDATE Parts SET Quantity = ? WHERE ID = ?";
+            PreparedStatement stmt = connection.prepareStatement(query);
+            stmt.setString(1, String.valueOf(quantity));
+            stmt.setString(2, String.valueOf(partID));
+            stmt.executeUpdate();
+            return true;
+        } catch (SQLException e){
+            logger.error(e.getMessage());
+            throw new RuntimeException(e);
+        }
+    }
+
+    public ArrayList<Notification> getNotifications() {
+        try {
+            String query = "SELECT * FROM Notifications WHERE Aktiv = 'true'";
+            PreparedStatement stmt = connection.prepareStatement(query);
+            ResultSet rs = stmt.executeQuery();
+            ArrayList<Notification> notifications = new ArrayList<>();
+            while (rs.next()) {
+                notifications.add(new Notification(rs.getInt("ID"), rs.getString("Nachricht"), rs.getInt("ShuttleID"), rs.getString("Absender"), rs.getString("Kommentar")));
+            }
+            return notifications;
+        } catch (SQLException e) {
+            logger.error(e.getMessage());
+            throw new RuntimeException(e);
+        }
+    }
+
+    public boolean updateNotification(int notificationID, String status) {
+        try {
+            String query = "UPDATE Notifications SET Aktiv = ? WHERE ID = ?";
+            PreparedStatement stmt = connection.prepareStatement(query);
+            stmt.setString(1, status);
+            stmt.setString(2, String.valueOf(notificationID));
+            stmt.executeUpdate();
+            return true;
+        } catch (SQLException e){
+            logger.error(e.getMessage());
+            throw new RuntimeException(e);
+        }
+    }
+
+    public ArrayList<Notification> getNotificationsByShuttle(String shuttleID) {
+        try {
+            String query = "SELECT * FROM Notifications WHERE ShuttleID = ? AND Aktiv = 'true'";
+            PreparedStatement stmt = connection.prepareStatement(query);
+            stmt.setString(1, shuttleID);
+            ResultSet rs = stmt.executeQuery();
+            ArrayList<Notification> notifications = new ArrayList<>();
+            while (rs.next()) {
+                notifications.add(new Notification(rs.getInt("ID"), rs.getString("Nachricht"), rs.getInt("ShuttleID"), rs.getString("Absender"), rs.getString("Kommentar")));
+            }
+            return notifications;
+        } catch (SQLException e) {
+            logger.error(e.getMessage());
+            throw new RuntimeException(e);
+        }
     }
 }

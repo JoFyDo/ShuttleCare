@@ -1,5 +1,6 @@
 package com.rocketshipcheckingtool.ui.technician;
 
+import com.rocketshipcheckingtool.domain.Part;
 import javafx.beans.property.*;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -22,16 +23,16 @@ public class LagerViewController {
     public Button verwendenButton;
     public Button bestellenButton;
 
-    // ────────────────────────────────────────────────────────────────────────────
-    // EXAMPLE
-    // ────────────────────────────────────────────────────────────────────────────
-    public TableColumn<DemoLagerItem, Boolean> checkBoxColumn;
-    public TableColumn<DemoLagerItem, Boolean> nameColumn;
-    public TableColumn<DemoLagerItem, Boolean> nrColumn;
-    public TableColumn<DemoLagerItem, Boolean> preisColumn;
-    public TableColumn<DemoLagerItem, Boolean> bestandColumn;
-    public TableView<DemoLagerItem> lagerTableView;
+
+    public TableColumn<Part, Boolean> checkBoxColumn;
+    public TableColumn<Part, Boolean> nameColumn;
+    public TableColumn<Part, Boolean> nrColumn;
+    public TableColumn<Part, Boolean> preisColumn;
+    public TableColumn<Part, Boolean> bestandColumn;
+    public TableView<Part> lagerTableView;
     private ClientRequests clientRequests;
+    private final String user = "technician";
+
 
     public void setClientRequests(ClientRequests clientRequests) {
         this.clientRequests = clientRequests;
@@ -46,18 +47,23 @@ public class LagerViewController {
     private void setupTableColumns() {
 
         checkBoxColumn.setCellFactory(col -> {
-            CheckBoxTableCell<DemoLagerItem, Boolean> cell =
-                    new CheckBoxTableCell<>(index ->
+            CheckBoxTableCell<Part, Boolean> cell =
+                    new CheckBoxTableCell<Part, Boolean>(index ->
                             lagerTableView.getItems().get(index).selectedProperty()
                     );
 
             cell.addEventFilter(MouseEvent.MOUSE_PRESSED, evt -> {
                 int row = cell.getIndex();
                 if (row >= 0 && row < lagerTableView.getItems().size()) {
-                    DemoLagerItem item = lagerTableView.getItems().get(row);
+                    Part item = lagerTableView.getItems().get(row);
+                    for (Part part : lagerTableView.getItems()) {
+                        if (part != item) {
+                            part.selectedProperty().set(false);
+                        }
+                    }
                     item.selectedProperty().set(!item.selectedProperty().get());
-                    System.out.println("[Lager] Clicked row: " + item.nameProperty().get() + ", " + item.nummerProperty().get()
-                            + ", " + item.preisProperty().get() + ", " + item.bestandProperty().get());
+                    System.out.println("[Lager] Clicked row: " + item.getName() + ", " + item.getId()
+                            + ", " + item.getPrice() + ", " + item.getQuantity());
                 }
                 evt.consume();
             });
@@ -69,9 +75,9 @@ public class LagerViewController {
         // EXAMPLE
         // ────────────────────────────────────────────────────────────────────────────
         nameColumn.setCellValueFactory(new PropertyValueFactory<>("name"));
-        nrColumn.setCellValueFactory(new PropertyValueFactory<>("nummer"));
-        preisColumn.setCellValueFactory(new PropertyValueFactory<>("preis"));
-        bestandColumn.setCellValueFactory(new PropertyValueFactory<>("bestand"));
+        nrColumn.setCellValueFactory(new PropertyValueFactory<>("id"));
+        preisColumn.setCellValueFactory(new PropertyValueFactory<>("price"));
+        bestandColumn.setCellValueFactory(new PropertyValueFactory<>("quantity"));
 
         checkBoxColumn.setResizable(false);
         checkBoxColumn.setPrefWidth(50);
@@ -83,13 +89,7 @@ public class LagerViewController {
 
     private void loadTableContent() {
         try {
-            // ────────────────────────────────────────────────────────────────────────────
-            // DEMO - delete later!!!
-            // ────────────────────────────────────────────────────────────────────────────
-            ObservableList<DemoLagerItem> items = FXCollections.observableArrayList(
-                    new DemoLagerItem(false, "Schraube M5", "12345", 0.12, 150)
-            );
-            lagerTableView.setItems(items);
+            lagerTableView.setItems(FXCollections.observableArrayList(Util.getParts(clientRequests, user)));
 
         } catch (Exception e) {
             Alert alert = new Alert(Alert.AlertType.ERROR);
@@ -107,12 +107,29 @@ public class LagerViewController {
 
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/rocketshipcheckingtool/ui/technician/VerwendenPopupView.fxml"));
             Parent popupRoot = loader.load();
+            VerwendenPopupController verwendenPopupController = loader.getController();
+
 
             Stage popupStage = new Stage();
-            popupStage.setTitle("Verwenden");
-            popupStage.setScene(new Scene(popupRoot));
-            popupStage.initModality(Modality.APPLICATION_MODAL);
-            popupStage.showAndWait();
+            try {
+                Part part = lagerTableView.getItems().stream()
+                        .filter(Part::isSelected)
+                        .findFirst()
+                        .orElse(null);
+                popupStage.setTitle(part.getName() + " aus dem Lager entnehmen");
+                verwendenPopupController.setTeil(part.getName());
+                verwendenPopupController.setPreis(part.getPrice());
+                verwendenPopupController.setMaxQuantity(part.getQuantity());
+                popupStage.setScene(new Scene(popupRoot));
+                popupStage.initModality(Modality.APPLICATION_MODAL);
+                popupStage.showAndWait();
+                if (verwendenPopupController.getIsVerwendenButton()) {
+                    Util.updatePartQuantity(clientRequests, user, part.getId(), part.getQuantity()-verwendenPopupController.getQuantity());
+                    loadTableContent();
+                }
+            } catch (NullPointerException e) {
+                alertDidntSelect();
+            }
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -125,54 +142,38 @@ public class LagerViewController {
 
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/rocketshipcheckingtool/ui/technician/BestellenPopupView.fxml"));
             Parent popupRoot = loader.load();
+            BestellenPopupController bestellenPopupController = loader.getController();
+            Part part = lagerTableView.getItems().stream()
+                    .filter(Part::isSelected)
+                    .findFirst()
+                    .orElse(null);
 
             Stage popupStage = new Stage();
-            popupStage.setTitle("Bestellen");
-            popupStage.setScene(new Scene(popupRoot));
-            popupStage.initModality(Modality.APPLICATION_MODAL);
-            popupStage.setResizable(false);
-            popupStage.showAndWait();
+            try {
+                popupStage.setTitle(part.getName() + " nachbestellen");
+                bestellenPopupController.setTeil(part.getName());
+                bestellenPopupController.setPreis(part.getPrice());
+                popupStage.setScene(new Scene(popupRoot));
+                popupStage.initModality(Modality.APPLICATION_MODAL);
+                popupStage.setResizable(false);
+                popupStage.showAndWait();
+                if (bestellenPopupController.getIsBestellenButton()) {
+                    Util.orderPart(clientRequests, user, part.getId(), bestellenPopupController.getQuantity());
+                    loadTableContent();
+                }
+            } catch (NullPointerException e) {
+                alertDidntSelect();
+            }
         } catch (IOException e) {
             e.printStackTrace();
         }
     }
 
-    // ────────────────────────────────────────────────────────────────────────────
-    // EXAMPLE
-    // ────────────────────────────────────────────────────────────────────────────
-    public static class DemoLagerItem {
-        private final BooleanProperty selected = new SimpleBooleanProperty();
-        private final StringProperty name = new SimpleStringProperty();
-        private final StringProperty nummer = new SimpleStringProperty();
-        private final DoubleProperty preis = new SimpleDoubleProperty();
-        private final IntegerProperty bestand = new SimpleIntegerProperty();
-
-        public DemoLagerItem(boolean sel, String nm, String nr, double pr, int bs) {
-            selected.set(sel);
-            name.set(nm);
-            nummer.set(nr);
-            preis.set(pr);
-            bestand.set(bs);
-        }
-
-        public BooleanProperty selectedProperty() {
-            return selected;
-        }
-
-        public StringProperty nameProperty() {
-            return name;
-        }
-
-        public StringProperty nummerProperty() {
-            return nummer;
-        }
-
-        public DoubleProperty preisProperty() {
-            return preis;
-        }
-
-        public IntegerProperty bestandProperty() {
-            return bestand;
-        }
+    public void alertDidntSelect(){
+        Alert alert = new Alert(Alert.AlertType.INFORMATION);
+        alert.setTitle("Wähle bitte eine Zeile aus");
+        alert.setHeaderText(null);
+        alert.setContentText("Bitte wähle eine Zeile aus, um mit dem Artikel zu interagieren.");
+        alert.showAndWait();
     }
 }
