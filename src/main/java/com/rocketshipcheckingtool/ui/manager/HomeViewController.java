@@ -1,34 +1,27 @@
-package com.rocketshipcheckingtool.ui.technician;
+package com.rocketshipcheckingtool.ui.manager;
 
 import com.rocketshipcheckingtool.domain.Shuttle;
-import com.rocketshipcheckingtool.domain.Task;
 import com.rocketshipcheckingtool.ui.auth.UserSession;
 import com.rocketshipcheckingtool.ui.ViewManagerController;
+import com.rocketshipcheckingtool.ui.technician.ClientRequests;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
-import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.geometry.Insets;
-import javafx.scene.chart.PieChart;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
-import javafx.scene.input.MouseEvent;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
-import java.io.IOException;
-import java.util.ArrayList;
+import java.sql.Date;
+import java.sql.Time;
+import java.util.List;
 
 public class HomeViewController {
-
-    public PieChart pieChart;
     private ClientRequests clientRequests;
     private final String user = UserSession.getRole().name().toLowerCase();
-    private final static Logger logger = LoggerFactory.getLogger(HomeViewController.class);
     private ViewManagerController viewManagerController;
 
     @FXML
-    public TableView<Shuttle> shuttleTableView;
+    private TableView<Shuttle> shuttleTableView;
     @FXML
     private TableColumn<Shuttle, String> shuttleOverviewColumn;
     @FXML
@@ -41,53 +34,38 @@ public class HomeViewController {
     private TableColumn<Shuttle, Void> detailsOverviewColumn;
 
     @FXML
-    private TableView<Task> aufgabenTableView;
-    @FXML
-    private TableColumn<Task, String> aufgabeTaskColumn;
-    @FXML
-    private TableColumn<Task, String> shuttleTaskColumn;
-    @FXML
-    private TableColumn<Task, String> mechanikerTaskColumn;
-    @FXML
-    private TableColumn<Task, String> statusTaskColumn;
-
-    @FXML
     public void initialize() {
+        System.out.println("[ManagerHome] initialize");
         setupTableColumns();
-        ObservableList<PieChart.Data> data = FXCollections.observableArrayList(new PieChart.Data("new", 25), new PieChart.Data("in use", 35), new PieChart.Data("worn", 15), new PieChart.Data("critical", 25));
-        pieChart.setData(data);
     }
 
     private void setupTableColumns() {
         shuttleOverviewColumn.setCellValueFactory(new PropertyValueFactory<>("shuttleName"));
         statusOverviewColumn.setCellValueFactory(new PropertyValueFactory<>("status"));
-        landungOverviewColumn.setCellValueFactory(cellData -> new SimpleStringProperty(cellData.getValue().getLandungDate() + " " + cellData.getValue().getLandungTime()));
+        landungOverviewColumn.setCellValueFactory(data -> new SimpleStringProperty(
+                data.getValue().getLandungDate() + " " + data.getValue().getLandungTime()));
         mechanikerOverviewColumn.setCellValueFactory(new PropertyValueFactory<>("mechanic"));
 
-        aufgabeTaskColumn.setCellValueFactory(new PropertyValueFactory<>("task"));
-        shuttleTaskColumn.setCellValueFactory(new PropertyValueFactory<>("shuttleName"));
-        mechanikerTaskColumn.setCellValueFactory(new PropertyValueFactory<>("mechanic"));
-        statusTaskColumn.setCellValueFactory(new PropertyValueFactory<>("status"));
+        setupDetailsButtonColumn();
 
-        // resize column width
         detailsOverviewColumn.setResizable(false);
         detailsOverviewColumn.setPrefWidth(140);
         shuttleTableView.setSelectionModel(null);
-        aufgabenTableView.setSelectionModel(null);
         shuttleTableView.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY_ALL_COLUMNS);
-        aufgabenTableView.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY_ALL_COLUMNS);
     }
 
     private void setupDetailsButtonColumn() {
         detailsOverviewColumn.setCellValueFactory(param -> null);
-        detailsOverviewColumn.setCellFactory(param -> new TableCell<Shuttle, Void>() {
+        detailsOverviewColumn.setCellFactory(param -> new TableCell<>() {
             private final Button detailsButton = new Button("Details");
 
             {
                 detailsButton.getStyleClass().add("details-button");
                 detailsButton.setOnAction(event -> {
                     Shuttle shuttle = getTableView().getItems().get(getIndex());
-                    showShuttleDetails(shuttle);
+                    System.out.println("[Manager Home] details for shuttle clicked");
+                    //Disabled because does not work :(
+                    //showShuttleDetails(shuttle);
                 });
                 setPadding(new Insets(0, 20, 0, 20));
             }
@@ -95,11 +73,7 @@ public class HomeViewController {
             @Override
             protected void updateItem(Void item, boolean empty) {
                 super.updateItem(item, empty);
-                if (empty) {
-                    setGraphic(null);
-                } else {
-                    setGraphic(detailsButton);
-                }
+                setGraphic(empty ? null : detailsButton);
             }
         });
     }
@@ -107,44 +81,47 @@ public class HomeViewController {
     private void showShuttleDetails(Shuttle shuttle) {
         try {
             viewManagerController.handleDetailButton(shuttle);
-        } catch (IOException e) {
-            throw new RuntimeException(e);
+        } catch (Exception e) {
+            e.printStackTrace();
+            throw new RuntimeException("Error opening shuttle details", e);
         }
     }
 
     public void loadTableContent() {
+        System.out.println("[ManagerHome] try loading shuttles");
         try {
-            //Shuttle
-            ArrayList<Shuttle> shuttles = Util.getShuttles(clientRequests, user);
+            List<Shuttle> shuttles;
+
+            // Test Data
+            shuttles = List.of(
+                    new Shuttle(1, "Shuttle F", "Gelandet", Date.valueOf("2025-05-01"), Time.valueOf("12:00:00"), "Mr. Dornige Chancen"),
+                    new Shuttle(2, "Shuttle S", "Gelandet", Date.valueOf("2025-05-02"), Time.valueOf("13:30:00"), "Nestlee Glöckner")
+            );
+
+            // Replace test data:
+            // ArrayList<Shuttle> shuttles = Util.getShuttles(clientRequests, user);
+
+            System.out.println("[ManagerHome] shuttles found: " + shuttles.size());
+
             shuttleTableView.setItems(FXCollections.observableArrayList(shuttles));
-
-            //Details button
-            setupDetailsButtonColumn();
-
-            // Task
-            ArrayList<Task> tasks = Util.getActiveTasks(clientRequests, user);
-            aufgabenTableView.setItems(FXCollections.observableArrayList(tasks));
-
+            shuttleTableView.refresh();
         } catch (Exception e) {
+            e.printStackTrace();
             Alert alert = new Alert(Alert.AlertType.ERROR);
             alert.setTitle("Loading Error");
             alert.setHeaderText(null);
             alert.setContentText(e.getMessage());
             alert.showAndWait();
-            System.exit(1);
         }
     }
 
     public void setClientRequests(ClientRequests clientRequests) {
+        System.out.println("[ManagerHome] clientRequests: " + (clientRequests != null));
         this.clientRequests = clientRequests;
         loadTableContent();
     }
 
     public void setViewManagerController(ViewManagerController viewManagerController) {
         this.viewManagerController = viewManagerController;
-    }
-
-    public void onStatistikenBoxClicked(MouseEvent mouseEvent) {
-        viewManagerController.handleStatistikenVBox();
     }
 }

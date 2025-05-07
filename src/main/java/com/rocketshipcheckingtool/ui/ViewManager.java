@@ -1,5 +1,6 @@
 package com.rocketshipcheckingtool.ui;
 
+import com.rocketshipcheckingtool.ui.auth.LoginViewController;
 import com.rocketshipcheckingtool.ui.technician.ClientRequests;
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
@@ -24,12 +25,11 @@ public class ViewManager extends Application {
         connectToServer();
 
         try {
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/rocketshipcheckingtool/ui/technician/MainView.fxml"));
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/rocketshipcheckingtool/ui/LoginView.fxml"));
             Parent root = loader.load();
 
-            ViewManagerController controller = loader.getController();
+            LoginViewController controller = loader.getController();
             controller.setClientRequests(clientRequests);
-            controller.initContent();
 
             Scene scene = new Scene(root);
             scene.getStylesheets().add(Objects.requireNonNull(getClass().getResource("/com/rocketshipcheckingtool/ui/style.css")).toExternalForm());
@@ -48,7 +48,11 @@ public class ViewManager extends Application {
 
             stage.getIcons().add(i);
             stage.setScene(scene);
-            stage.setMaximized(true);
+            Rectangle2D bounds = Screen.getPrimary().getVisualBounds();
+            stage.setX(bounds.getMinX());
+            stage.setY(bounds.getMinY());
+            stage.setWidth(bounds.getWidth());
+            stage.setHeight(bounds.getHeight());
             stage.show();
 
         } catch (Exception e) {

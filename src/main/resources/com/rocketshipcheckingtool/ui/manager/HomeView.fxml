@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.VBox?>
+<VBox xmlns="http://javafx.com/javafx"
+      xmlns:fx="http://javafx.com/fxml" maxWidth="Infinity" maxHeight="Infinity"
+      fx:controller="com.rocketshipcheckingtool.ui.manager.HomeViewController">
+    <padding>
+        <Insets bottom="40.0" left="40.0" right="40.0" top="40.0"/>
+    </padding>
+    <VBox VBox.vgrow="ALWAYS" styleClass="vBox">
+        <Label text="Shuttle Übersicht" styleClass="header"/>
+        <TableView fx:id="shuttleTableView" VBox.vgrow="ALWAYS" styleClass="table-view">
+            <columns>
+                <TableColumn fx:id="shuttleOverviewColumn" text="Shuttle"/>
+                <TableColumn fx:id="statusOverviewColumn" text="Status"/>
+                <TableColumn fx:id="landungOverviewColumn" text="Landung"/>
+                <TableColumn fx:id="mechanikerOverviewColumn" text="Lead-Mechaniker"/>
+                <TableColumn fx:id="detailsOverviewColumn"/>
+            </columns>
+        </TableView>
+    </VBox>
+</VBox>

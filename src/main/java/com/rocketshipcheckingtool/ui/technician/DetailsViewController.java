@@ -2,6 +2,7 @@ package com.rocketshipcheckingtool.ui.technician;
 
 import com.rocketshipcheckingtool.domain.Shuttle;
 import com.rocketshipcheckingtool.domain.Task;
+import com.rocketshipcheckingtool.ui.auth.UserSession;
 import com.rocketshipcheckingtool.ui.ViewManagerController;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -38,7 +39,7 @@ public class DetailsViewController {
     private ViewManagerController viewManagerController;
 
     private ClientRequests clientRequests;
-    private final String user = "technician";
+    private final String user = UserSession.getRole().name().toLowerCase();
     private final static Logger logger = LoggerFactory.getLogger(DetailsViewController.class);
 
 
