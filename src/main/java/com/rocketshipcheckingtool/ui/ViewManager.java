@@ -54,6 +54,7 @@ public class ViewManager extends Application {
             stage.setWidth(bounds.getWidth());
             stage.setHeight(bounds.getHeight());
             stage.show();
+            stage.setOnCloseRequest(e -> {System.exit(1);});
 
         } catch (Exception e) {
             logger.error("Error starting MainView", e);

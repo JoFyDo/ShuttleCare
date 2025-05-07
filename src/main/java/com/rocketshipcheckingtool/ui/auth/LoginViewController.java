@@ -69,6 +69,7 @@ public class LoginViewController {
             newStage.setWidth(bounds.getWidth());
             newStage.setHeight(bounds.getHeight());
             newStage.show();
+            newStage.setOnCloseRequest(e -> {System.exit(1);});
 
             Stage oldStage = (Stage) usernameField.getScene().getWindow();
             oldStage.close();
