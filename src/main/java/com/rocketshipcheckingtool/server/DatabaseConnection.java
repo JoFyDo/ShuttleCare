@@ -89,7 +89,7 @@ public class DatabaseConnection {
             Statement stmt = connection.createStatement();
             ResultSet rs = stmt.executeQuery("SELECT Tasks.*, Shuttles.Name AS ShuttleName FROM Tasks INNER JOIN Shuttles ON Tasks.ShuttleID = Shuttles.ID WHERE Aktiv = 'true'");
             while (rs.next()) {
-                tasks.add(new Task(rs.getString("Aufgabe"), rs.getString("Status"), rs.getString("Mechaniker"), rs.getString("ShuttleName"), rs.getInt("ID")));
+                tasks.add(new Task(rs.getString("Aufgabe"), rs.getString("Status"), rs.getString("Mechaniker"), rs.getString("ShuttleName"), rs.getInt("ID"), rs.getInt("TimeNeeded")));
             }
             return tasks;
         }catch (SQLException e) {
@@ -106,7 +106,7 @@ public class DatabaseConnection {
             ResultSet rs = stmt.executeQuery();
             ArrayList<Task> tasks = new ArrayList<>();
             while (rs.next()) {
-                tasks.add(new Task(rs.getString("Aufgabe"), rs.getString("Status"), rs.getString("Mechaniker"), rs.getString("ShuttleName"), rs.getInt("ID")));
+                tasks.add(new Task(rs.getString("Aufgabe"), rs.getString("Status"), rs.getString("Mechaniker"), rs.getString("ShuttleName"), rs.getInt("ID"), rs.getInt("TimeNeeded")));
             }
             return tasks;
         }catch (SQLException e) {
@@ -131,11 +131,12 @@ public class DatabaseConnection {
 
     public boolean createTask(String mechanic, String description, String shuttleID) throws IOException {
         try {
-            String query = "INSERT INTO Tasks (Aufgabe, Status, ShuttleID, Mechaniker, Aktiv) VALUES (?, 'Offen', ?, ?, 'true')";
+            String query = "INSERT INTO Tasks (Aufgabe, Status, ShuttleID, Mechaniker, Aktiv, TimeNeeded) VALUES (?, 'Offen', ?, ?, 'true', ?)";
             PreparedStatement stmt = connection.prepareStatement(query);
             stmt.setString(1, description);
             stmt.setString(2, shuttleID);
             stmt.setString(3, mechanic);
+            stmt.setString(4, String.valueOf(((int)((Math.random() * 6) + 1))));
             stmt.executeUpdate();
             return true;
         } catch (SQLException e){
@@ -152,7 +153,7 @@ public class DatabaseConnection {
             ResultSet rs = stmt.executeQuery();
             ArrayList<Task> tasks = new ArrayList<>();
             while (rs.next()) {
-                tasks.add(new Task(rs.getString("Aufgabe"), rs.getString("Status"), rs.getInt("ID"), rs.getString("ShuttleName")));
+                tasks.add(new Task(rs.getString("Aufgabe"), rs.getString("Status"), rs.getInt("ID"), rs.getString("ShuttleName"), rs.getInt("TimeNeeded")));
             }
             return tasks;
         } catch (SQLException e){
