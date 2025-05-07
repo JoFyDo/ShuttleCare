@@ -20,7 +20,6 @@
                 <TableColumn fx:id="kommentarColumn" text="Kommentar"/>
                 <TableColumn fx:id="ShuttleColumn" text="Shuttle"/>
                 <TableColumn fx:id="vonColumn" text="Von"/>
-                <TableColumn fx:id="datumColumn" text="Datum"/>
                 <TableColumn fx:id="loeschenColumn"/>
                 <TableColumn fx:id="erstellenColumn"/>
             </columns>

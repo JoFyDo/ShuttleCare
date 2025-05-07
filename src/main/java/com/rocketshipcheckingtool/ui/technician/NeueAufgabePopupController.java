@@ -22,13 +22,6 @@ public class NeueAufgabePopupController {
                 "Alois", "Boris", "Christian", "Deniz"
         ));
 
-        mechanikerComboBox.setOnAction(event -> {
-            String selected = mechanikerComboBox.getValue();
-            if (selected != null) {
-                mechanic.setText(selected);
-            }
-        });
-
         createButton.setOnAction(event -> {
             if (stage.isShowing()) {
                 if (getDescription().equals("") || getMechanic().equals("")) {
@@ -52,6 +45,6 @@ public class NeueAufgabePopupController {
     }
 
     public String getMechanic() {
-        return mechanic.getText();
+        return mechanikerComboBox.getValue();
     }
 }

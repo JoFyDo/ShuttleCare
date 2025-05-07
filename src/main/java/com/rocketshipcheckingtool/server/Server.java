@@ -1,5 +1,6 @@
 package com.rocketshipcheckingtool.server;
 
+import com.rocketshipcheckingtool.domain.Notification;
 import com.rocketshipcheckingtool.domain.Shuttle;
 import com.rocketshipcheckingtool.domain.Task;
 import com.sun.net.httpserver.HttpExchange;
@@ -104,6 +105,27 @@ public class Server {
             case "/requestParts":
                 if (headers.get("User").get(0).equals("technician")) {
                     sendResponse(exchange, 200, Util.combineJSONString(databaseConnection.getParts()));
+                }
+                break;
+            case "/updatePartQuantity":
+                if (headers.get("User").get(0).equals("technician")) {
+                    sendResponse(exchange, 200, String.valueOf(databaseConnection.updatePartQuantity(Integer.valueOf(headers.get("PartID").get(0)), Integer.valueOf(headers.get("Quantity").get(0)))));
+                }
+                break;
+            case "/requestNotifications":
+                if (headers.get("User").get(0).equals("technician")) {
+                    sendResponse(exchange, 200, Util.combineJSONString(databaseConnection.getNotifications()));
+                }
+                break;
+            case "/updateNotification":
+                if (headers.get("User").get(0).equals("technician")) {
+                    sendResponse(exchange, 200, String.valueOf(databaseConnection.updateNotification(Integer.valueOf(headers.get("NotificationID").get(0)), headers.get("Status").get(0))));
+                }
+                break;
+            case "/requestNotificationsByShuttle":
+                if (headers.get("User").get(0).equals("technician")) {
+                    ArrayList<Notification> notifications = databaseConnection.getNotificationsByShuttle(headers.get("ShuttleID").get(0));
+                    sendResponse(exchange, 200, Util.combineJSONString(notifications));
                 }
                 break;
         }

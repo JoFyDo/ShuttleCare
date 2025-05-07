@@ -15,6 +15,7 @@ public class BestellenPopupController {
     public Label teil;
 
     private int quantity = 1;
+    private boolean isBestellenButton = false;
 
     public void initialize() {
         quantityField.setText(String.valueOf(quantity));
@@ -34,6 +35,23 @@ public class BestellenPopupController {
             quantity++;
             quantityField.setText(String.valueOf(quantity));
             updateGesamtPreis();
+        });
+
+        quantityField.setOnAction(event -> {
+            try {
+                quantity = Integer.parseInt(quantityField.getText());
+                if (quantity < 1) {
+                    quantity = 1;
+                }
+                if (quantity > 999) {
+                    quantity = 999; // Prevent increasing quantity beyond 100
+                }
+                quantityField.setText(String.valueOf(quantity));
+                updateGesamtPreis();
+            } catch (NumberFormatException e) {
+                quantityField.setText("1");
+                quantity = 1;
+            }
         });
 
         bestellenButton.setOnAction(event -> {
@@ -70,5 +88,9 @@ public class BestellenPopupController {
 
     public void setTeil(String teil) {
         this.teil.setText(teil);
+    }
+
+    public boolean getIsBestellenButton() {
+        return isBestellenButton;
     }
 }

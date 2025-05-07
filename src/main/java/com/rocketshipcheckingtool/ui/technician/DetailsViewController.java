@@ -31,10 +31,10 @@ public class DetailsViewController {
     public Button inWartungButton;
     public Button inspektion2Button;
     public Button freigegebenButton;
-    //public Button erledigtButton;
     public HBox progressBar;
     public VBox aufgabenBox;
     public VBox zusaetzlichAufgabenBox;
+    public Button freigebenButton;
     private ViewManagerController viewManagerController;
 
     private ClientRequests clientRequests;
@@ -173,7 +173,6 @@ public class DetailsViewController {
             case "Freigegeben" -> 6;
             default -> -1;
         };
-        System.out.printf(shuttleSelected.getStatus());
         for (int i = 0; i < steps.size(); i++) {
             if (i < activeStep) {
                 steps.get(i).getStyleClass().add("progressLabel-complete");
@@ -181,6 +180,14 @@ public class DetailsViewController {
                 steps.get(i).getStyleClass().add("progressLabel-current");
             }
         }
+
+        if (activeStep < 4) {
+            freigebenButton.setText("Weiter");
+        }else {
+            freigebenButton.setText("Freigeben");
+        }
+        System.out.println(activeStep);
+
     }
 
 
@@ -279,7 +286,7 @@ public class DetailsViewController {
         }
     }
 
-    public void onFreigebenButtonClick(ActionEvent actionEvent) {
+    public void onFreigebenButtonClick(ActionEvent actionEvent) throws IOException {
         if (shuttleSelected == null) {
             selectShuttleInfoPopUp();
             return;
@@ -295,6 +302,9 @@ public class DetailsViewController {
 
         assert activeTasks != null;
         assert generalTasks != null;
+        if (checkRocketshipStage()){
+            return;
+        }
         boolean check = false;
         for (Task task : activeTasks) {
             if (task.getStatus().equals("Offen")){
@@ -387,7 +397,9 @@ public class DetailsViewController {
             }
             if (shuttleSelected.getStatus().equals(compareStatus)) {
                 try {
-                    Util.updateShuttleStatus(clientRequests, user, shuttleSelected.getId(), newStatus);
+                    if (!checkRocketshipStage()){
+                        Util.updateShuttleStatus(clientRequests, user, shuttleSelected.getId(), newStatus);
+                    }
                     loadShuttleContent(shuttleSelected.getShuttleName());
                 } catch (IOException e) {
                     logger.error(e.getMessage());
@@ -396,6 +408,61 @@ public class DetailsViewController {
             }
         });
 
+    }
+
+    public boolean checkRocketshipStage(){
+        try {
+            ArrayList<Task> activeTasks = Util.getActiveTasksByShuttleID(clientRequests, user, shuttleSelected.getId());
+            ArrayList<Task> generalTasks = Util.getGeneralTasksByShuttleID(clientRequests, user, shuttleSelected.getId());
+            if (!shuttleSelected.getStatus().equals("Inspektion 2")) {
+                if (!shuttleSelected.getStatus().equals("Freigegeben")) {
+                switch (shuttleSelected.getStatus()) {
+                    case "Gelandet":
+                        Util.updateShuttleStatus(clientRequests, user, shuttleSelected.getId(), "Inspektion 1");
+                        break;
+                    case "Inspektion 1":
+                        boolean hasOpenTasks = false;
+                        for (Task task : activeTasks) {
+                            if (task.getStatus().equals("Offen")) {
+                                hasOpenTasks = true;
+                                break;
+                            }
+                        }
+                        if (!hasOpenTasks) {
+                            for (Task task : generalTasks) {
+                                if (task.getStatus().equals("false")) {
+                                    hasOpenTasks = true;
+                                    break;
+                                }
+                            }
+                        }
+
+                        if (hasOpenTasks) {
+                            Alert alert = new Alert(Alert.AlertType.INFORMATION);
+                            alert.setTitle("Aufgaben nicht erledigt");
+                            alert.setHeaderText(null);
+                            alert.setContentText("Es müssen erst alle Aufgaben erledigt werden");
+                            alert.showAndWait();
+                        } else {
+                            Util.updateShuttleStatus(clientRequests, user, shuttleSelected.getId(), "In Wartung");
+                        }
+                        break;
+                    case "In Wartung":
+                        Util.updateShuttleStatus(clientRequests, user, shuttleSelected.getId(), "Inspektion 2");
+                        break;
+                }
+                loadShuttleContent(shuttleSelected.getShuttleName());
+                return true;
+            } else {
+                return false;
+                }
+            } else {
+                return false;
+            }
+        } catch (Exception e){
+            logger.error(e.getMessage());
+            throw new RuntimeException(e);
+        }
     }
 
     public void setViewManagerController(ViewManagerController viewManagerController) {

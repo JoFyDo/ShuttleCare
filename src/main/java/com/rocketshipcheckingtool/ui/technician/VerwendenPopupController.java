@@ -14,7 +14,9 @@ public class VerwendenPopupController {
     public Label teil;
     public Label gesamtPreis;
 
+    private int maxQuantity = 0;
     private int quantity = 1;
+    private boolean isVerwendenButton = false;
 
     public void initialize() {
         quantityField.setText(String.valueOf(quantity));
@@ -31,14 +33,35 @@ public class VerwendenPopupController {
         });
 
         plusButton.setOnAction(event -> {
+            if (quantity >= maxQuantity) {
+                return; // Prevent increasing quantity beyond max
+            }
             quantity++;
             quantityField.setText(String.valueOf(quantity));
             updateGesamtPreis();
         });
 
+        quantityField.setOnAction(event -> {
+            try {
+                quantity = Integer.parseInt(quantityField.getText());
+                if (quantity < 1) {
+                    quantity = 1;
+                }
+                if (quantity > maxQuantity) {
+                    quantity = maxQuantity; // Prevent increasing quantity beyond max
+                }
+                quantityField.setText(String.valueOf(quantity));
+                updateGesamtPreis();
+            } catch (NumberFormatException e) {
+                quantityField.setText("1");
+                quantity = 1;
+            }
+        });
+
         verwendenButton.setOnAction(event -> {
             System.out.println("[Verwenden Popup] quantity: " + quantity);
             Stage stage = (Stage) verwendenButton.getScene().getWindow();
+            isVerwendenButton = true;
             stage.close();
         });
     }
@@ -70,5 +93,13 @@ public class VerwendenPopupController {
 
     public void setTeil(String teil) {
         this.teil.setText(teil);
+    }
+
+    public void setMaxQuantity(int maxQuantity) {
+        this.maxQuantity = maxQuantity;
+    }
+
+    public boolean getIsVerwendenButton() {
+        return isVerwendenButton;
     }
 }

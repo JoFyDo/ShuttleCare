@@ -111,16 +111,25 @@ public class LagerViewController {
 
 
             Stage popupStage = new Stage();
-            Part part = lagerTableView.getItems().stream()
-                    .filter(Part::isSelected)
-                    .findFirst()
-                    .orElse(null);
-            popupStage.setTitle(part.getName() + " aus dem Lager entnehmen");
-            verwendenPopupController.setTeil(part.getName());
-            verwendenPopupController.setPreis(part.getPrice());
-            popupStage.setScene(new Scene(popupRoot));
-            popupStage.initModality(Modality.APPLICATION_MODAL);
-            popupStage.showAndWait();
+            try {
+                Part part = lagerTableView.getItems().stream()
+                        .filter(Part::isSelected)
+                        .findFirst()
+                        .orElse(null);
+                popupStage.setTitle(part.getName() + " aus dem Lager entnehmen");
+                verwendenPopupController.setTeil(part.getName());
+                verwendenPopupController.setPreis(part.getPrice());
+                verwendenPopupController.setMaxQuantity(part.getQuantity());
+                popupStage.setScene(new Scene(popupRoot));
+                popupStage.initModality(Modality.APPLICATION_MODAL);
+                popupStage.showAndWait();
+                if (verwendenPopupController.getIsVerwendenButton()) {
+                    Util.updatePartQuantity(clientRequests, user, part.getId(), part.getQuantity()-verwendenPopupController.getQuantity());
+                    loadTableContent();
+                }
+            } catch (NullPointerException e) {
+                alertDidntSelect();
+            }
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -133,15 +142,38 @@ public class LagerViewController {
 
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/rocketshipcheckingtool/ui/technician/BestellenPopupView.fxml"));
             Parent popupRoot = loader.load();
+            BestellenPopupController bestellenPopupController = loader.getController();
+            Part part = lagerTableView.getItems().stream()
+                    .filter(Part::isSelected)
+                    .findFirst()
+                    .orElse(null);
 
             Stage popupStage = new Stage();
-            popupStage.setTitle("Bestellen");
-            popupStage.setScene(new Scene(popupRoot));
-            popupStage.initModality(Modality.APPLICATION_MODAL);
-            popupStage.setResizable(false);
-            popupStage.showAndWait();
+            try {
+                popupStage.setTitle(part.getName() + " nachbestellen");
+                bestellenPopupController.setTeil(part.getName());
+                bestellenPopupController.setPreis(part.getPrice());
+                popupStage.setScene(new Scene(popupRoot));
+                popupStage.initModality(Modality.APPLICATION_MODAL);
+                popupStage.setResizable(false);
+                popupStage.showAndWait();
+                if (bestellenPopupController.getIsBestellenButton()) {
+                    Util.orderPart(clientRequests, user, part.getId(), bestellenPopupController.getQuantity());
+                    loadTableContent();
+                }
+            } catch (NullPointerException e) {
+                alertDidntSelect();
+            }
         } catch (IOException e) {
             e.printStackTrace();
         }
+    }
+
+    public void alertDidntSelect(){
+        Alert alert = new Alert(Alert.AlertType.INFORMATION);
+        alert.setTitle("Wähle bitte eine Zeile aus");
+        alert.setHeaderText(null);
+        alert.setContentText("Bitte wähle eine Zeile aus, um mit dem Artikel zu interagieren.");
+        alert.showAndWait();
     }
 }

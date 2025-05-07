@@ -1,5 +1,6 @@
 package com.rocketshipcheckingtool.ui.technician;
 
+import com.rocketshipcheckingtool.domain.Notification;
 import com.rocketshipcheckingtool.domain.Shuttle;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
@@ -14,6 +15,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 
 public class NachrichtenViewController {
@@ -22,18 +24,17 @@ public class NachrichtenViewController {
     // ────────────────────────────────────────────────────────────────────────────
     // EXAMPLE
     // ────────────────────────────────────────────────────────────────────────────
-    public TableView<DemoNachrichtItem> nachrichtenTableView;
-    public TableColumn<DemoNachrichtItem, String> nachrichtColumn;
-    public TableColumn<DemoNachrichtItem, String> kommentarColumn;
-    public TableColumn<DemoNachrichtItem, String> ShuttleColumn;
-    public TableColumn<DemoNachrichtItem, String> vonColumn;
-    public TableColumn<DemoNachrichtItem, String> datumColumn;
-    public TableColumn<DemoNachrichtItem, Void> loeschenColumn;
-    public TableColumn<DemoNachrichtItem, Void> erstellenColumn;
+    public TableView<Notification> nachrichtenTableView;
+    public TableColumn<Notification, String> nachrichtColumn;
+    public TableColumn<Notification, String> kommentarColumn;
+    public TableColumn<Notification, String> ShuttleColumn;
+    public TableColumn<Notification, String> vonColumn;
+    public TableColumn<Notification, Void> loeschenColumn;
+    public TableColumn<Notification, Void> erstellenColumn;
 
     private ClientRequests clientRequests;
     public List<Shuttle> shuttles;
-    public String shuttleSelected;
+    public Shuttle shuttleSelected;
     private final String user = "technician";
     private final static Logger logger = LoggerFactory.getLogger(NachrichtenViewController.class);
 
@@ -46,15 +47,13 @@ public class NachrichtenViewController {
 
     @FXML
     public void initialize() {
-        // ComboBox
         shuttleComboBox.valueProperty().addListener((obs, oldVal, newVal) -> {
             if (newVal != null) {
-                shuttleSelected = newVal;
-                if (newVal.equals("Alle Shuttles")) {
-                    System.out.println("[Nachrichten] selected ALLE shuttles");
-                } else {
-                    System.out.println("[Nachrichten] selected Shuttle: " + newVal);
-                }
+                shuttleSelected = shuttles.stream()
+                        .filter(sh -> sh.getShuttleName().equals(newVal))
+                        .findFirst()
+                        .orElse(null);
+                loadTableContent();
             }
         });
         shuttleComboBox.getStyleClass().add("comboBox");
@@ -65,20 +64,13 @@ public class NachrichtenViewController {
 
     private void loadTableContent() {
         try {
-            //Content
-
-            // ────────────────────────────────────────────────────────────────────────────
-            // EXAMPLE
-            // ────────────────────────────────────────────────────────────────────────────
-            ObservableList<NachrichtenViewController.DemoNachrichtItem> items = FXCollections.observableArrayList(
-                    new NachrichtenViewController.DemoNachrichtItem(
-                            "Alles Doof",
-                            "Leider funktioniert nichts",
-                            "Shuttle Ö",
-                            "LG Reiner",
-                            "Heute")
-            );
-            nachrichtenTableView.setItems(items);
+            ArrayList<Notification> notifications = null;
+            if (shuttleSelected != null) {
+                notifications = Util.requestNotificationsByShuttle(clientRequests, user, shuttleSelected.getId());
+            } else {
+                notifications = Util.requestNotifications(clientRequests, user);
+            }
+            nachrichtenTableView.setItems(FXCollections.observableArrayList(notifications));
 
             //Buttons
             setupLoeschenButtonColumn();
@@ -95,14 +87,18 @@ public class NachrichtenViewController {
     }
 
     private void setupTableColumns() {
-        // ────────────────────────────────────────────────────────────────────────────
-        // EXAMPLE
-        // ────────────────────────────────────────────────────────────────────────────
-        nachrichtColumn.setCellValueFactory(new PropertyValueFactory<>("nachricht"));
-        kommentarColumn.setCellValueFactory(new PropertyValueFactory<>("kommentar"));
-        ShuttleColumn.setCellValueFactory(new PropertyValueFactory<>("shuttle"));
-        vonColumn.setCellValueFactory(new PropertyValueFactory<>("von"));
-        datumColumn.setCellValueFactory(new PropertyValueFactory<>("datum"));
+        nachrichtColumn.setCellValueFactory(new PropertyValueFactory<>("message"));
+        kommentarColumn.setCellValueFactory(new PropertyValueFactory<>("comment"));
+        vonColumn.setCellValueFactory(new PropertyValueFactory<>("sender"));
+        ShuttleColumn.setCellValueFactory(cellData -> {
+            int shuttleID = cellData.getValue().getShuttleID();
+            Shuttle matchingShuttle = shuttles.stream()
+                    .filter(shuttle -> shuttle.getId() == shuttleID)
+                    .findFirst()
+                    .orElse(null);
+            return new SimpleStringProperty(matchingShuttle != null ? matchingShuttle.getShuttleName() : "Unknown");
+        });
+        vonColumn.setCellValueFactory(new PropertyValueFactory<>("sender"));
 
         loeschenColumn.setResizable(false);
         loeschenColumn.setPrefWidth(50);
@@ -129,8 +125,7 @@ public class NachrichtenViewController {
 
             {
                 button.setOnAction(event -> {
-                    DemoNachrichtItem item = getTableView().getItems().get(getIndex());
-                    System.out.println("[Nachrichten] Loeschen button clicked: " + item.nachrichtProperty().get());
+                    Notification item = getTableView().getItems().get(getIndex());
                 });
             }
 
@@ -148,8 +143,7 @@ public class NachrichtenViewController {
 
             {
                 button.setOnAction(event -> {
-                    DemoNachrichtItem item = getTableView().getItems().get(getIndex());
-                    System.out.println("[Nachrichten] Erstellen button clicked: " + item.nachrichtProperty().get());
+                    Notification item = getTableView().getItems().get(getIndex());
                 });
             }
 
@@ -178,9 +172,7 @@ public class NachrichtenViewController {
             shuttleComboBox.getItems().addAll(shuttles.stream()
                     .map(Shuttle::getShuttleName)
                     .toList());
-
-            shuttleComboBox.setValue("Alle Shuttles");
-            shuttleSelected = shuttleComboBox.getValue();
+            shuttleSelected = null;
 
         } catch (Exception e) {
             Alert alert = new Alert(Alert.AlertType.ERROR);
@@ -189,46 +181,6 @@ public class NachrichtenViewController {
             alert.setContentText(e.getMessage());
             alert.showAndWait();
             System.exit(1);
-        }
-    }
-
-    // ────────────────────────────────────────────────────────────────────────────
-    // EXAMPLE
-    // ────────────────────────────────────────────────────────────────────────────
-    public static class DemoNachrichtItem {
-        private final StringProperty nachricht = new SimpleStringProperty();
-        private final StringProperty kommentar = new SimpleStringProperty();
-        private final StringProperty shuttle = new SimpleStringProperty();
-        private final StringProperty von = new SimpleStringProperty();
-        private final StringProperty datum = new SimpleStringProperty();
-
-
-        public DemoNachrichtItem(String n, String k, String s, String v, String d) {
-            nachricht.set(n);
-            kommentar.set(k);
-            shuttle.set(s);
-            von.set(v);
-            datum.set(d);
-        }
-
-        public StringProperty nachrichtProperty() {
-            return nachricht;
-        }
-
-        public StringProperty kommentarProperty() {
-            return kommentar;
-        }
-
-        public StringProperty shuttleProperty() {
-            return shuttle;
-        }
-
-        public StringProperty vonProperty() {
-            return von;
-        }
-
-        public StringProperty datumProperty() {
-            return datum;
         }
     }
 }

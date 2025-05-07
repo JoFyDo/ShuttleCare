@@ -2,6 +2,7 @@ package com.rocketshipcheckingtool.ui.technician;
 
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
+import com.rocketshipcheckingtool.domain.Notification;
 import com.rocketshipcheckingtool.domain.Part;
 import com.rocketshipcheckingtool.domain.Shuttle;
 import com.rocketshipcheckingtool.domain.Task;
@@ -127,6 +128,57 @@ public class Util {
             String tasks = clientRequests.request("/requestParts", user);
             Gson gson = new Gson();
             Type shuttleListType = new TypeToken<ArrayList<Part>>() {}.getType();
+            return gson.fromJson(tasks, shuttleListType);
+        }catch (Exception e){
+            logger.error(e.getMessage());
+            throw new ConnectException(e.getMessage());
+        }
+    }
+
+    public static void updatePartQuantity(ClientRequests clientRequests, String user, int partID, int quantity) throws IOException {
+        try {
+            clientRequests.request("/updatePartQuantity", user, "PartID", String.valueOf(partID), "Quantity", String.valueOf(quantity));
+        } catch (Exception e){
+            logger.error(e.getMessage());
+            throw new ConnectException(e.getMessage());
+        }
+    }
+
+    public static void orderPart(ClientRequests clientRequests, String user, int partId, int quantity) {
+        try {
+            clientRequests.request("/orderPart", user, "PartID", String.valueOf(partId), "Quantity", String.valueOf(quantity));
+        } catch (Exception e){
+            logger.error(e.getMessage());
+            throw new RuntimeException(e);
+        }
+    }
+
+    public static ArrayList<Notification> requestNotifications(ClientRequests clientRequests, String user) throws IOException {
+        try {
+            String tasks = clientRequests.request("/requestNotifications", user);
+            Gson gson = new Gson();
+            Type shuttleListType = new TypeToken<ArrayList<Notification>>() {}.getType();
+            return gson.fromJson(tasks, shuttleListType);
+        }catch (Exception e){
+            logger.error(e.getMessage());
+            throw new ConnectException(e.getMessage());
+        }
+    }
+
+    public static void updateNotification(ClientRequests clientRequests, String user, int notificationID, String status) throws IOException {
+        try {
+            clientRequests.request("/updateNotification", user, "NotificationID", String.valueOf(notificationID), "Status", status);
+        } catch (Exception e){
+            logger.error(e.getMessage());
+            throw new ConnectException(e.getMessage());
+        }
+    }
+
+    public static ArrayList<Notification> requestNotificationsByShuttle(ClientRequests clientRequests, String user, int shuttleID) throws IOException {
+        try {
+            String tasks = clientRequests.request("/requestNotificationsByShuttle", user, "ShuttleID", String.valueOf(shuttleID));
+            Gson gson = new Gson();
+            Type shuttleListType = new TypeToken<ArrayList<Notification>>() {}.getType();
             return gson.fromJson(tasks, shuttleListType);
         }catch (Exception e){
             logger.error(e.getMessage());
