@@ -26,6 +26,7 @@
             <TextField fx:id="quantityField" text="1" alignment="CENTER" style="-fx-border-color: rgb(26, 41, 82)"/>
             <Button fx:id="plusButton" text="+" styleClass="buttonAmount" style="-fx-background-color: rgb(26, 41, 82)"/>
         </HBox>
+        <ComboBox fx:id="shuttleComboBox" promptText="chose Shuttle"/>
         <Button fx:id="bestellenButton" text="Bestellen" styleClass="buttonBig" style="-fx-background-color: rgb(26, 41, 82)"/>
     </VBox>
 </VBox>
