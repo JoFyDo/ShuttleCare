@@ -40,7 +40,7 @@ public class Util {
             for (Task task : additionalActiveTasks) {
                 timeNeeded += task.getTimeNeeded();
             }
-            System.out.println("Time needed: " + timeNeeded);
+            databaseConnection.
         }
 
 

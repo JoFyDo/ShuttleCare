@@ -129,6 +129,11 @@ public class Server {
                     sendResponse(exchange, 200, Util.combineJSONString(notifications));
                 }
                 break;
+            case "/requestMechanics":
+                if (headers.get("User").get(0).equals("technician")) {
+                    sendResponse(exchange, 200, Util.combineJSONString(databaseConnection.getMechanics()));
+                }
+                break;
         }
 
     }
