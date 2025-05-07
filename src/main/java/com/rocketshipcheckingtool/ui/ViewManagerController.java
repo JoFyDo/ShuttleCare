@@ -168,43 +168,16 @@ public class ViewManagerController {
         this.clientRequests = clientRequests;
     }
 
-    public void handleLogout(ActionEvent event) {
+    public void handleLogout(ActionEvent event){
+        UserSession.setRole(null);
+        Stage oldStage = (Stage) ((Node) event.getSource()).getScene().getWindow();
+        //oldStage.close();
         try {
-            UserSession.setRole(null);
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/rocketshipcheckingtool/ui/LoginView.fxml"));
-            Parent loginRoot = loader.load();
-
-            LoginViewController loginController = loader.getController();
-            loginController.setClientRequests(clientRequests);
-
-            Scene loginScene = new Scene(loginRoot);
-            loginScene.getStylesheets().add(
-                    Objects.requireNonNull(getClass().getResource("/com/rocketshipcheckingtool/ui/style.css")).toExternalForm()
-            );
-
-            Stage newStage = new Stage();
-            newStage.setTitle("Rocketship Checking Tool");
-            newStage.setScene(loginScene);
-            newStage.getIcons().add(new Image(Objects.requireNonNull(getClass().getResourceAsStream("/com/rocketshipcheckingtool/ui/graphics/icon.png"))));
-
-            Rectangle2D bounds = Screen.getPrimary().getVisualBounds();
-            newStage.setX(bounds.getMinX());
-            newStage.setY(bounds.getMinY());
-            newStage.setWidth(bounds.getWidth());
-            newStage.setHeight(bounds.getHeight());
-
-            newStage.show();
-
-            Stage oldStage = (Stage) ((Node) event.getSource()).getScene().getWindow();
-            oldStage.close();
-
-//            newStage.setScene(loginScene);
-//            newStage.setOnShown(e -> newStage.setMaximized(true));
-//            newStage.show();
-
-        } catch (IOException e) {
-            e.printStackTrace();
+            ViewManager.showLoginView(oldStage);
+        }catch (Exception e) {
+            System.out.println("[ViewManagerController] Error while logging out: " + e.getMessage());
         }
+
     }
 
     public void handleSidebarNavigation(String buttonId) {

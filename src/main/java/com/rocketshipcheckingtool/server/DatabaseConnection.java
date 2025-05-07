@@ -21,7 +21,6 @@ public class DatabaseConnection {
             this.connection = connect();
         }catch (SQLException e) {
             logger.error(e.getMessage());
-            e.printStackTrace();
         }
     }
 
