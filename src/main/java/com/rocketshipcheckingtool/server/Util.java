@@ -2,8 +2,6 @@ package com.rocketshipcheckingtool.server;
 
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
-import com.rocketshipcheckingtool.domain.Manage;
-import com.rocketshipcheckingtool.domain.Part;
 import com.rocketshipcheckingtool.domain.Shuttle;
 import com.rocketshipcheckingtool.domain.Task;
 import com.sun.net.httpserver.HttpExchange;
@@ -70,8 +68,8 @@ public class Util {
         return gson.toJson(items);
     }
 
-    public static void predictedDeployTimeUpdate(DatabaseConnection databaseConnection, int shuttleID, String status) {
-        if (status.equals("Inspektion 1") || status.equals("Inspektion 2")) {
+    public static void predictedReleaseTimeUpdate(DatabaseConnection databaseConnection, int shuttleID, String status) {
+        if (status.equals("Gelandet") || status.equals("Inspektion 1") || status.equals("Inspektion 2")) {
             ArrayList<Task> generalActiveTasks = databaseConnection.getGeneralTasksForShuttle(shuttleID);
             ArrayList<Task> additionalActiveTasks = databaseConnection.getActiveTaskByShuttleID(shuttleID);
             int timeNeeded = 0;
@@ -98,6 +96,12 @@ public class Util {
 
     public static void orderPartDelayShuttle(DatabaseConnection databaseConnection, int shuttleID) {
         int delay = new Random().nextInt(49) + 24;
+        System.out.println("[Helper] Delay: " + delay);
+        Calendar predictedReleaseTime = databaseConnection.getPredictedReleaseTime(shuttleID);
+        Shuttle shuttle = databaseConnection.getShuttle(shuttleID);
+        long timeDifferenceInHours = (predictedReleaseTime.getTimeInMillis() - shuttle.getLandingTime().getTimeInMillis()) / (60 * 60 * 1000);
+        delay += (int) timeDifferenceInHours;
+
         databaseConnection.updatePredictedReleaseTime(shuttleID, delay);
 
     }

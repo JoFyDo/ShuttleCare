@@ -22,6 +22,17 @@ public class DatabaseConnection {
         }
     }
 
+    public Connection connect() throws SQLException {
+        Connection c = DriverManager.getConnection(database);
+        logger.info("Connected to SQLite!");
+        return c;
+    }
+
+    public void disconnect() throws SQLException {
+        connection.close();
+        logger.info("Disconnected from SQLite!");
+    }
+
     public ArrayList<Shuttle> getShuttles() {
         try {
             ArrayList<Shuttle> shuttles = new ArrayList<>();
@@ -263,17 +274,6 @@ public class DatabaseConnection {
         }
     }
 
-    public Connection connect() throws SQLException {
-        Connection c = DriverManager.getConnection(database);
-        logger.info("Connected to SQLite!");
-        return c;
-    }
-
-    public void disconnect() throws SQLException {
-        connection.close();
-        logger.info("Disconnected from SQLite!");
-    }
-
     public boolean updatePartQuantity(Integer partID, Integer quantity) {
         try {
             String query = "UPDATE Parts SET Quantity = ? WHERE ID = ?";
@@ -358,10 +358,7 @@ public class DatabaseConnection {
                 return false;
             }
             // Get landing date and time from shuttle object
-            Calendar calendar = getPredictedReleaseTime(shuttleID);
-            if (calendar == null) {
-                calendar = shuttle.getLandingTime();
-            }
+            Calendar calendar = shuttle.getLandingTime();
 
             // Add maintenance time (in hours)
             calendar.add(Calendar.HOUR, time);

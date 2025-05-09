@@ -70,6 +70,7 @@ public class BestellenPopupController {
         bestellenButton.setOnAction(event -> {
             System.out.println("[Bestellen Popup] quantity: " + quantity);
             Stage stage = (Stage) bestellenButton.getScene().getWindow();
+            isBestellenButton = true;
             stage.close();
         });
     }
@@ -113,8 +114,11 @@ public class BestellenPopupController {
             shuttles = Util.getShuttles(clientRequests, user);
             shuttleComboBox.getItems().add("Kein Shuttle");
             for (Shuttle shuttle : shuttles) {
-                shuttleComboBox.getItems().add(shuttle.getShuttleName());
+                if (shuttle.getStatus().equals("Gelandet") || shuttle.getStatus().equals("Inspektion 1") || shuttle.getStatus().equals("InWartung")) {
+                    shuttleComboBox.getItems().add(shuttle.getShuttleName());
+                }
             }
+            shuttleComboBox.setValue("Kein Shuttle");
         } catch (Exception e){
             System.out.println("[Bestellen Popup] Error loading shuttles: " + e.getMessage());
             e.printStackTrace();

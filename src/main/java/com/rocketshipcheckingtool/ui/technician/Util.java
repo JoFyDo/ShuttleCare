@@ -170,11 +170,12 @@ public class Util {
         }
     }
 
-    public static void orderPart(ClientRequests clientRequests, String user, int partId, int quantity) {
+    public static void orderPart(ClientRequests clientRequests, String user, int partId, int quantity, int shuttleId) throws IOException {
         try {
             HashMap<String, String> params = new HashMap<>();
             params.put("PartID", String.valueOf(partId));
             params.put("Quantity", String.valueOf(quantity));
+            params.put("ShuttleID", String.valueOf(shuttleId));
             clientRequests.postRequest("/orderPart", user, params);
         } catch (Exception e) {
             logger.error(e.getMessage());

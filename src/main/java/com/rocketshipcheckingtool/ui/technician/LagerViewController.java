@@ -123,7 +123,7 @@ public class LagerViewController {
                 popupStage.initModality(Modality.APPLICATION_MODAL);
                 popupStage.showAndWait();
                 if (verwendenPopupController.getIsVerwendenButton()) {
-                    Util.usePart(clientRequests, user, part.getId(), part.getQuantity()-verwendenPopupController.getQuantity());
+                    Util.usePart(clientRequests, user, part.getId(), verwendenPopupController.getQuantity());
                     loadTableContent();
                 }
             } catch (NullPointerException e) {
@@ -158,11 +158,7 @@ public class LagerViewController {
                 popupStage.setResizable(false);
                 popupStage.showAndWait();
                 if (bestellenPopupController.getIsBestellenButton()) {
-                    Util.orderPart(clientRequests, user, part.getId(), bestellenPopupController.getQuantity());
-                    Shuttle selectedShuttle = bestellenPopupController.getSelectedShuttle();
-                    if (selectedShuttle != null) {
-
-                    }
+                    Util.orderPart(clientRequests, user, part.getId(), bestellenPopupController.getQuantity(), bestellenPopupController.getSelectedShuttle().getId());
                     loadTableContent();
                 }
             } catch (NullPointerException e) {

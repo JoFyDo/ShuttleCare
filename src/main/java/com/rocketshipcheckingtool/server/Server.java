@@ -134,7 +134,7 @@ public class Server {
                         int shuttleId = Integer.parseInt(parameters.get("ShuttleID"));
                         String status = parameters.get("Status");
                         sendResponse(exchange, 200, String.valueOf(databaseConnection.updateShuttleStatus(shuttleId, status)));
-                        Util.predictedDeployTimeUpdate(databaseConnection, shuttleId, status);
+                        Util.predictedReleaseTimeUpdate(databaseConnection, shuttleId, status);
                     }
                     break;
 
@@ -158,15 +158,6 @@ public class Server {
                         int quantity = Integer.parseInt(parameters.get("Quantity"));
                         Part part = databaseConnection.getPart(partId);
 
-                        if (part.getQuantity() < quantity) {
-                            sendResponse(exchange, 400, "Not enough parts in stock");
-                            return;
-                        }
-                        if (part.getQuantity() == 0) {
-                            sendResponse(exchange, 400, "No parts in stock");
-                            return;
-                        }
-
                         sendResponse(exchange, 200, String.valueOf(
                                 databaseConnection.updatePartQuantity(partId, part.getQuantity() - quantity)));
                     }
@@ -176,9 +167,11 @@ public class Server {
                     if ("POST".equals(requestMethod)) {
                         int partId = Integer.parseInt(parameters.get("PartID"));
                         int quantity = Integer.parseInt(parameters.get("Quantity"));
-                        int shuttleId = Integer.parseInt(parameters.get("ShuttleID"));
+                        try{
+                            int shuttleId = Integer.parseInt(parameters.get("ShuttleID"));
+                            Util.orderPartDelayShuttle(databaseConnection, shuttleId);
+                        }catch (Exception e){}
                         Part part = databaseConnection.getPart(partId);
-                        Util.orderPartDelayShuttle(databaseConnection, shuttleId);
                         sendResponse(exchange, 200, String.valueOf(databaseConnection.updatePartQuantity(partId, part.getQuantity() + quantity)));
                     }
                     break;
