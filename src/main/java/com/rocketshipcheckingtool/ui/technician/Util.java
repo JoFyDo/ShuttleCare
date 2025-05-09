@@ -6,6 +6,11 @@ import com.rocketshipcheckingtool.domain.Notification;
 import com.rocketshipcheckingtool.domain.Part;
 import com.rocketshipcheckingtool.domain.Shuttle;
 import com.rocketshipcheckingtool.domain.Task;
+import javafx.fxml.FXMLLoader;
+import javafx.scene.Parent;
+import javafx.scene.Scene;
+import javafx.stage.Modality;
+import javafx.stage.Stage;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -231,6 +236,37 @@ public class Util {
         } catch (Exception e) {
             logger.error(e.getMessage());
             throw new ConnectException(e.getMessage());
+        }
+    }
+
+    public static void newTaskForShuttle(ClientRequests clientRequests, String user, Shuttle shuttle, String preset) throws IOException {
+        FXMLLoader loader = new FXMLLoader(Util.class.getResource("/com/rocketshipcheckingtool/ui/technician/NeueAufgabePopupView.fxml"));
+        Parent popupRoot = loader.load();
+
+        // New Stage for the popup
+        Stage popupStage = new Stage();
+        popupStage.setTitle("Neue Aufgabe");
+        popupStage.setScene(new Scene(popupRoot));
+        popupStage.initModality(Modality.APPLICATION_MODAL);
+
+        NeueAufgabePopupController popupController = loader.getController();
+        if (preset != null) {
+            popupController.setDescription(preset);
+        }
+        popupController.setStage(popupStage);
+        popupController.initialize();
+        popupStage.showAndWait();
+
+        // Retrieve data from the popup
+        String description = popupController.getDescription();
+        String mechanic = popupController.getMechanic();
+        if (!description.equals("") || !mechanic.equals("")) {
+            description = description.strip();
+            mechanic = mechanic.strip();
+            Util.createTask(clientRequests, user, mechanic, description, shuttle.getId());
+            if (shuttle.getStatus().equals("In Wartung")) {
+                Util.updateShuttleStatus(clientRequests, user, shuttle.getId(), "Inspektion 1");
+            }
         }
     }
 }

@@ -1,6 +1,7 @@
 package com.rocketshipcheckingtool.ui.technician;
 
 import com.rocketshipcheckingtool.domain.Shuttle;
+import com.rocketshipcheckingtool.ui.auth.UserSession;
 import javafx.scene.control.Button;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
@@ -26,7 +27,7 @@ public class BestellenPopupController {
     private int quantity = 1;
     private boolean isBestellenButton = false;
     private ClientRequests clientRequests;
-    private String user = "technician";
+    private final String user = UserSession.getRole().name().toLowerCase();
     private ArrayList<Shuttle> shuttles;
 
     public void initialize() {

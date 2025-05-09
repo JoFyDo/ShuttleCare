@@ -24,10 +24,10 @@ public class NeueAufgabePopupController {
 
         createButton.setOnAction(event -> {
             if (stage.isShowing()) {
-                if (getDescription().equals("") || getMechanic().equals("")) {
+                if (getMechanic() == null || getDescription() == null || getDescription().isEmpty() || getMechanic().isEmpty()) {
                     Alert alert = new Alert(Alert.AlertType.ERROR);
                     alert.setTitle("Error");
-                    alert.setContentText("Please fill all the required fields");
+                    alert.setContentText("Alle Felder müssen ausgefüllt sein!");
                     alert.showAndWait();
                 }else {
                     stage.close();
@@ -46,5 +46,9 @@ public class NeueAufgabePopupController {
 
     public String getMechanic() {
         return mechanikerComboBox.getValue();
+    }
+
+    public void setDescription(String description) {
+        this.descriptionArea.setText(description);
     }
 }

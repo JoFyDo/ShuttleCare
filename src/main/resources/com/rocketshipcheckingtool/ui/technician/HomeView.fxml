@@ -31,8 +31,8 @@
             <ColumnConstraints percentWidth="50"/>
         </columnConstraints>
 
-        <VBox VBox.vgrow="ALWAYS" GridPane.columnIndex="0" styleClass="vBox">
-            <Label text="Aufgaben" styleClass="header"/>
+        <VBox VBox.vgrow="ALWAYS" GridPane.columnIndex="0" styleClass="vBox" onMouseClicked="#onBoxClicked">
+            <Label text="Zusätzliche Aufgaben" styleClass="header"/>
             <TableView fx:id="aufgabenTableView" VBox.vgrow="ALWAYS" styleClass="table-view">
                 <columns>
                     <TableColumn fx:id="aufgabeTaskColumn" text="Aufgabe"/>
@@ -42,8 +42,8 @@
                 </columns>
             </TableView>
         </VBox>
-        <VBox VBox.vgrow="ALWAYS" GridPane.columnIndex="1" styleClass="vBox" onMouseClicked="#onStatistikenBoxClicked">
-            <Label text="Statistiken" styleClass="header"/>
+        <VBox VBox.vgrow="ALWAYS" GridPane.columnIndex="1" styleClass="vBox" onMouseClicked="#onBoxClicked">
+            <Label text="Aufgaben Fortschritt" styleClass="header"/>
             <!--<BarChart fx:id="FortschrittBarChart" VBox.vgrow="ALWAYS" HBox.hgrow="ALWAYS"/>-->
         </VBox>
     </GridPane>

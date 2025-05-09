@@ -2,6 +2,7 @@ package com.rocketshipcheckingtool.ui.technician;
 
 import com.rocketshipcheckingtool.domain.Shuttle;
 import com.rocketshipcheckingtool.domain.Task;
+import com.rocketshipcheckingtool.ui.DetailsViewControllerMaster;
 import com.rocketshipcheckingtool.ui.auth.UserSession;
 import com.rocketshipcheckingtool.ui.ViewManagerController;
 import javafx.event.ActionEvent;
@@ -22,11 +23,8 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-public class DetailsViewController {
-    public ComboBox<String> shuttleComboBox;
-    public Shuttle shuttleSelected;
-    public List<String> shuttleList;
-    public List<Shuttle> shuttles;
+public class DetailsViewController extends DetailsViewControllerMaster {
+
     public Button gelandetButton;
     public Button inspektion1Button;
     public Button inWartungButton;
@@ -38,27 +36,18 @@ public class DetailsViewController {
     public Button freigebenButton;
     private ViewManagerController viewManagerController;
 
-    private ClientRequests clientRequests;
-    private final String user = UserSession.getRole().name().toLowerCase();
     private final static Logger logger = LoggerFactory.getLogger(DetailsViewController.class);
 
 
     @FXML
     public void initialize() {
-        shuttleComboBox.valueProperty().addListener((obs, oldVal, newVal) -> {
-            if (newVal != null) {
-                shuttleSelected = shuttles.stream()
-                        .filter(sh -> sh.getShuttleName().equals(newVal))
-                        .findFirst()
-                        .orElseThrow(() -> new IllegalArgumentException("Shuttle not found"));
-                loadMaintenanceProtocol();
-                loadAdditionalTasks();
-                loadLoadingBar();
-                System.out.println("[Details] selected Shuttle: " + newVal);
-            }
-        });
+        super.initialize();
+    }
 
-        shuttleComboBox.getStyleClass().add("comboBox");
+    public void reload(){
+        loadMaintenanceProtocol();
+        loadAdditionalTasks();
+        loadLoadingBar();
     }
 
 
@@ -199,42 +188,7 @@ public class DetailsViewController {
     }
 
 
-    //no preselected shuttle
-    private void loadShuttleContent() {
-        loadShuttleContent(null);
-    }
 
-    //preselected shuttle
-    private void loadShuttleContent(String preSelectedShuttle) {
-        try {
-            //Shuttle
-            shuttles = Util.getShuttles(clientRequests, user);
-
-            shuttleList = shuttles.stream()
-                    .map(Shuttle::getShuttleName)
-                    .toList();
-
-            shuttleComboBox.getItems().clear();
-            shuttleComboBox.getItems().addAll(shuttleList);
-
-            shuttleSelected = shuttles.stream()
-                    .filter(sh -> sh.getShuttleName().equals(preSelectedShuttle))
-                    .findFirst()
-                    .orElse(null);
-
-            if (preSelectedShuttle != null && shuttleList.contains(preSelectedShuttle)) {
-                shuttleComboBox.setValue(preSelectedShuttle);
-            }
-
-        } catch (Exception e) {
-            Alert alert = new Alert(Alert.AlertType.ERROR);
-            alert.setTitle("Loading Error");
-            alert.setHeaderText(null);
-            alert.setContentText(e.getMessage());
-            alert.showAndWait();
-            System.exit(1);
-        }
-    }
 
     public void setClientRequests(ClientRequests clientRequests) {
         this.clientRequests = clientRequests;
@@ -242,7 +196,11 @@ public class DetailsViewController {
     }
 
     public void selectShuttle(Shuttle shuttle) {
-        loadShuttleContent(shuttle.getShuttleName());
+        if (shuttleSelected != null) {
+            loadShuttleContent(shuttle.getShuttleName());
+        } else {
+            loadShuttleContent();
+        }
     }
 
     public void onNeueAufgabeClick(ActionEvent actionEvent) {
@@ -253,34 +211,8 @@ public class DetailsViewController {
         if (shuttleSelected.getStatus().equals("Gelandet") || shuttleSelected.getStatus().equals("In Wartung")) {
             try {
                 System.out.println("[Details] Neue Aufgabe Button Clicked");
-
-                FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/rocketshipcheckingtool/ui/technician/NeueAufgabePopupView.fxml"));
-                Parent popupRoot = loader.load();
-
-                // New Stage for the popup
-                Stage popupStage = new Stage();
-                popupStage.setTitle("Neue Aufgabe");
-                popupStage.setScene(new Scene(popupRoot));
-                popupStage.initModality(Modality.APPLICATION_MODAL);
-
-                NeueAufgabePopupController popupController = loader.getController();
-                popupController.setStage(popupStage);
-                popupController.initialize();
-                popupStage.showAndWait();
-
-                // Retrieve data from the popup
-                String description = popupController.getDescription();
-                String mechanic = popupController.getMechanic();
-                if (!description.equals("") || !mechanic.equals("")) {
-                    description = description.strip();
-                    mechanic = mechanic.strip();
-                    Util.createTask(clientRequests, user, mechanic, description, shuttleSelected.getId());
-                    if (shuttleSelected.getStatus().equals("In Wartung")) {
-                        Util.updateShuttleStatus(clientRequests, user, shuttleSelected.getId(), "Inspektion 1");
-                    }
-                    loadShuttleContent(shuttleSelected.getShuttleName());
-
-                }
+                Util.newTaskForShuttle(clientRequests, user, shuttleSelected, null);
+                loadShuttleContent(shuttleSelected.getShuttleName());
 
             } catch (IOException e) {
                 e.printStackTrace();

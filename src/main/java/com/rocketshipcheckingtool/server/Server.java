@@ -4,6 +4,7 @@ import com.rocketshipcheckingtool.domain.Notification;
 import com.rocketshipcheckingtool.domain.Part;
 import com.rocketshipcheckingtool.domain.Shuttle;
 import com.rocketshipcheckingtool.domain.Task;
+import com.rocketshipcheckingtool.ui.auth.UserRole;
 import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpServer;
 import org.slf4j.Logger;
@@ -46,10 +47,10 @@ public class Server {
         String requestMethod = exchange.getRequestMethod();
         String path = exchange.getRequestURI().getPath();
         Map<String, List<String>> headers = exchange.getRequestHeaders();
-        String user = headers.containsKey("User") ? headers.get("User").get(0) : "";
+        String user = headers.containsKey("User") ? headers.get("User").getFirst() : "";
 
         // Only process requests from technician users
-        if (!user.equals("technician")) {
+        if (!user.equals(UserRole.MANAGER.name().toLowerCase()) && !user.equals(UserRole.TECHNICIAN.name().toLowerCase())) {
             sendResponse(exchange, 403, "Unauthorized user");
             return;
         }
@@ -75,7 +76,7 @@ public class Server {
 
                 case "/requestShuttle":
                     if ("GET".equals(requestMethod)) {
-                        int shuttleId = Integer.parseInt(parameters.get("Shuttle"));
+                        int shuttleId = Integer.parseInt(parameters.get("ShuttleID"));
                         Shuttle shuttle = databaseConnection.getShuttle(shuttleId);
                         sendResponse(exchange, 200, shuttle.toJson());
                     }

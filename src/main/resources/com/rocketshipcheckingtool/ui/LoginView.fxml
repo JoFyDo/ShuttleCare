@@ -8,12 +8,12 @@
       style="-fx-background-color: rgb(206, 221, 255)" alignment="CENTER">
     <VBox alignment="CENTER" spacing="20" styleClass="vBox" focusTraversable="true" fx:id="focusTrap"
           VBox.vgrow="ALWAYS">
-        <Label text="Press 1 for technician, 2 for manager" styleClass="header"/>
-        <Label text="Username" styleClass="header"/>
-        <TextField fx:id="usernameField" promptText="username" alignment="CENTER"/>
+        <Label text="1 = Techniker - 2 = Manager" styleClass="header"/>
+        <Label text="Benutzername" styleClass="header"/>
+        <TextField fx:id="usernameField" promptText="Benutzername" alignment="CENTER"/>
 
-        <Label text="Password" styleClass="header"/>
-        <PasswordField fx:id="passwordField" promptText="password" alignment="CENTER"/>
+        <Label text="Passwort" styleClass="header"/>
+        <PasswordField fx:id="passwordField" promptText="passwort" alignment="CENTER"/>
 
         <Button text="Login" onAction="#handleLogin" styleClass="buttonBig"
                 style="-fx-background-color: rgb(26, 41, 82)"/>

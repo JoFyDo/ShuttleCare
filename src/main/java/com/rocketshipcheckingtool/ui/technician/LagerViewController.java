@@ -2,6 +2,7 @@ package com.rocketshipcheckingtool.ui.technician;
 
 import com.rocketshipcheckingtool.domain.Part;
 import com.rocketshipcheckingtool.domain.Shuttle;
+import com.rocketshipcheckingtool.ui.auth.UserSession;
 import javafx.collections.FXCollections;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -30,7 +31,7 @@ public class LagerViewController {
     public TableColumn<Part, Boolean> bestandColumn;
     public TableView<Part> lagerTableView;
     private ClientRequests clientRequests;
-    private final String user = "technician";
+    private final String user = UserSession.getRole().name().toLowerCase();
 
 
     public void setClientRequests(ClientRequests clientRequests) {

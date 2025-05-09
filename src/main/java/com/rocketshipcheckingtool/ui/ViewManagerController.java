@@ -1,7 +1,6 @@
 package com.rocketshipcheckingtool.ui;
 
 import com.rocketshipcheckingtool.domain.Shuttle;
-import com.rocketshipcheckingtool.ui.auth.LoginViewController;
 import com.rocketshipcheckingtool.ui.auth.UserRole;
 import com.rocketshipcheckingtool.ui.auth.UserSession;
 import com.rocketshipcheckingtool.ui.technician.ClientRequests;
@@ -10,15 +9,11 @@ import com.rocketshipcheckingtool.ui.technician.NachrichtenViewController;
 import com.rocketshipcheckingtool.ui.technician.StatistikenViewController;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXMLLoader;
-import javafx.geometry.Rectangle2D;
 import javafx.scene.Node;
 import javafx.scene.Parent;
-import javafx.scene.Scene;
 import javafx.scene.control.ToggleButton;
 import javafx.scene.control.ToggleGroup;
-import javafx.scene.image.Image;
 import javafx.scene.layout.*;
-import javafx.stage.Screen;
 import javafx.stage.Stage;
 
 import java.io.IOException;
@@ -155,10 +150,10 @@ public class ViewManagerController {
     public void showHome() {
         if (UserSession.getRole() == UserRole.TECHNICIAN && technicianHomeController != null) {
             technicianHomeController.initialize();
-            technicianHomeController.loadTableContent();
+            technicianHomeController.loadShuttleTableContent();
             showPage(technicianHomePage);
         } else if (UserSession.getRole() == UserRole.MANAGER && managerHomeController != null) {
-            managerHomeController.loadTableContent();
+            managerHomeController.loadShuttleTableContent();
             showPage(managerHomePage);
         }
         sidebarController.selectButton("btnHome");
