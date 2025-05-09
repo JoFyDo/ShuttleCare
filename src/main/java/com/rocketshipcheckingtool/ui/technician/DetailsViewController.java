@@ -51,8 +51,8 @@ public class DetailsViewController {
                         .filter(sh -> sh.getShuttleName().equals(newVal))
                         .findFirst()
                         .orElseThrow(() -> new IllegalArgumentException("Shuttle not found"));
-                loadAufgaben();
-                loadZusaetzlicheAufgaben();
+                loadMaintenanceProtocol();
+                loadAdditionalTasks();
                 loadLoadingBar();
                 System.out.println("[Details] selected Shuttle: " + newVal);
             }
@@ -62,7 +62,7 @@ public class DetailsViewController {
     }
 
 
-    private void loadZusaetzlicheAufgaben() {
+    private void loadAdditionalTasks() {
         zusaetzlichAufgabenBox.getChildren().clear();
 
         if (shuttleSelected == null) return;
@@ -87,6 +87,9 @@ public class DetailsViewController {
 
             CheckBox checkBox = new CheckBox();
 
+            boolean disableCheckbox = !shuttleSelected.getStatus().equals("Inspektion 1");
+            checkBox.setDisable(disableCheckbox);
+
             checkBox.setOnAction(event -> {
                 try {
                     if(checkBox.isSelected()) {
@@ -107,7 +110,7 @@ public class DetailsViewController {
         }
     }
 
-    private void loadAufgaben() {
+    private void loadMaintenanceProtocol() {
         if (shuttleSelected == null) return;
 
         aufgabenBox.getChildren().clear();
@@ -130,6 +133,9 @@ public class DetailsViewController {
             HBox.setHgrow(taskLabel, Priority.ALWAYS);
 
             CheckBox checkBox = new CheckBox();
+            boolean disableCheckbox = shuttleSelected.getStatus().equals("Freigegeben") ||
+                    shuttleSelected.getStatus().equals("Verschrottet") || shuttleSelected.getStatus().equals("Inspektion 2") || shuttleSelected.getStatus().equals("Flug");
+            checkBox.setDisable(disableCheckbox);
             checkBox.setOnAction(event -> {
                 try {
                     Util.updateGeneralTask(clientRequests, user, task.getId(), String.valueOf(checkBox.isSelected()));
@@ -156,6 +162,7 @@ public class DetailsViewController {
                 inspektion2Button,
                 freigegebenButton
         );
+        onLoadingBarButton(gelandetButton, "Flug", "Gelandet");
         onLoadingBarButton(inspektion1Button, "Gelandet", "Inspektion 1");
         onLoadingBarButton(inWartungButton, "Inspektion 1", "In Wartung");
         onLoadingBarButton(inspektion2Button, "In Wartung", "Inspektion 2");
@@ -303,7 +310,7 @@ public class DetailsViewController {
 
         assert activeTasks != null;
         assert generalTasks != null;
-        if (checkRocketshipStage()){
+        if (checkUpdateRocketshipStage()){
             return;
         }
         boolean check = false;
@@ -344,6 +351,7 @@ public class DetailsViewController {
                     try {
                         Util.updateShuttleStatus(clientRequests, user, shuttleSelected.getId(), "Freigegeben");
                         Util.updateAllTasksBelongToShuttle(clientRequests, user, shuttleSelected.getId(), false);
+                        Util.updatePredictedReleaseTime(clientRequests, user, shuttleSelected.getId(), null);
                         loadShuttleContent(shuttleSelected.getShuttleName());
                     } catch (IOException e) {
                         logger.error(e.getMessage());
@@ -398,7 +406,7 @@ public class DetailsViewController {
             }
             if (shuttleSelected.getStatus().equals(compareStatus)) {
                 try {
-                    if (!checkRocketshipStage()){
+                    if (!checkUpdateRocketshipStage()){
                         Util.updateShuttleStatus(clientRequests, user, shuttleSelected.getId(), newStatus);
                     }
                     loadShuttleContent(shuttleSelected.getShuttleName());
@@ -411,13 +419,16 @@ public class DetailsViewController {
 
     }
 
-    public boolean checkRocketshipStage(){
+    public boolean checkUpdateRocketshipStage(){
         try {
             ArrayList<Task> activeTasks = Util.getActiveTasksByShuttleID(clientRequests, user, shuttleSelected.getId());
             ArrayList<Task> generalTasks = Util.getGeneralTasksByShuttleID(clientRequests, user, shuttleSelected.getId());
             if (!shuttleSelected.getStatus().equals("Inspektion 2")) {
                 if (!shuttleSelected.getStatus().equals("Freigegeben")) {
                 switch (shuttleSelected.getStatus()) {
+                    case "Flug":
+                        Util.updateShuttleStatus(clientRequests, user, shuttleSelected.getId(), "Gelandet");
+                        break;
                     case "Gelandet":
                         Util.updateShuttleStatus(clientRequests, user, shuttleSelected.getId(), "Inspektion 1");
                         break;

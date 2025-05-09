@@ -1,6 +1,7 @@
 package com.rocketshipcheckingtool.server;
 
 import com.rocketshipcheckingtool.domain.Notification;
+import com.rocketshipcheckingtool.domain.Part;
 import com.rocketshipcheckingtool.domain.Shuttle;
 import com.rocketshipcheckingtool.domain.Task;
 import com.sun.net.httpserver.HttpExchange;
@@ -42,100 +43,189 @@ public class Server {
     }
 
     private void handle(HttpExchange exchange) throws IOException {
-        //Util.updateDatabase(databaseConnection);
-        var request = exchange.getRequestURI();
+        String requestMethod = exchange.getRequestMethod();
+        String path = exchange.getRequestURI().getPath();
         Map<String, List<String>> headers = exchange.getRequestHeaders();
+        String user = headers.containsKey("User") ? headers.get("User").get(0) : "";
 
-        switch (request.getPath()) {
-            case "/requestShuttles":
-                if(headers.get("User").get(0).equals("technician")) {
-                    ArrayList<Shuttle> shuttles = databaseConnection.getShuttles();
-                    sendResponse(exchange, 200, Util.combineJSONString(shuttles));
-                }
-                break;
-            case "/requestShuttle":
-                if(headers.get("User").get(0).equals("technician")) {
-                    Shuttle shuttle = databaseConnection.getShuttle(Integer.valueOf(headers.get("Shuttle").get(0)));
-                    sendResponse(exchange, 200, shuttle.toJson());
-                }
-                break;
-            case "/requestActiveTasks":
-                if(headers.get("User").get(0).equals("technician")) {
-                    ArrayList<Task> tasks = databaseConnection.getActiveTasks();
-                    sendResponse(exchange, 200, Util.combineJSONString(tasks));
-                }
-                break;
-            case "/requestActiveTaskForShuttle":
-                if(headers.get("User").get(0).equals("technician")) {
-                    ArrayList<Task> tasks = databaseConnection.getActiveTaskByShuttleID(Integer.valueOf(headers.get("Shuttle").get(0)));
-                    sendResponse(exchange, 200, Util.combineJSONString(tasks));
-                }
-                break;
-            case "/updateTask":
-                if(headers.get("User").get(0).equals("technician")) {
-                    sendResponse(exchange, 200, String.valueOf(databaseConnection.updateTask(Integer.valueOf(headers.get("TaskID").get(0)),headers.get("Status").get(0))));
-                }
-                break;
-            case "/createTask":
-                if(headers.get("User").get(0).equals("technician")) {
-                    sendResponse(exchange, 200, String.valueOf(databaseConnection.createTask(headers.get("Mechanic").get(0), headers.get("Description").get(0), headers.get("ShuttleID").get(0))));
-                }
-                break;
-            case "/requestGeneralTasksForShuttle":
-                if(headers.get("User").get(0).equals("technician")) {
-                    ArrayList<Task> tasks = databaseConnection.getGeneralTasksForShuttle(Integer.parseInt(headers.get("ShuttleID").get(0)));
-                    sendResponse(exchange, 200, Util.combineJSONString(tasks));
-                }
-                break;
-            case "/updateGeneralTasksForShuttle":
-                if(headers.get("User").get(0).equals("technician")) {
-                    sendResponse(exchange, 200, String.valueOf(databaseConnection.updateGeneralTask(Integer.parseInt(headers.get("TaskID").get(0)), headers.get("Status").get(0))));
-                }
-                break;
-            case "/updateShuttleStatus":
-                if(headers.get("User").get(0).equals("technician")) {
-                    sendResponse(exchange, 200, String.valueOf(databaseConnection.updateShuttleStatus(Integer.valueOf(headers.get("ShuttleID").get(0)), headers.get("Status").get(0))));
-                    Util.checkCurrentStatus(databaseConnection, Integer.valueOf(headers.get("ShuttleID").get(0)), headers.get("Status").get(0));
-                }
-                break;
-            case "/updateAllTasksBelongToShuttle":
-                if (headers.get("User").get(0).equals("technician")) {
-                    sendResponse(exchange, 200, String.valueOf(databaseConnection.updateAllTasksActivityBelongToShuttle(Integer.valueOf(headers.get("ShuttleID").get(0)), headers.get("Status").get(0))));
-                }
-                break;
-            case "/requestParts":
-                if (headers.get("User").get(0).equals("technician")) {
-                    sendResponse(exchange, 200, Util.combineJSONString(databaseConnection.getParts()));
-                }
-                break;
-            case "/updatePartQuantity":
-                if (headers.get("User").get(0).equals("technician")) {
-                    sendResponse(exchange, 200, String.valueOf(databaseConnection.updatePartQuantity(Integer.valueOf(headers.get("PartID").get(0)), Integer.valueOf(headers.get("Quantity").get(0)))));
-                }
-                break;
-            case "/requestNotifications":
-                if (headers.get("User").get(0).equals("technician")) {
-                    sendResponse(exchange, 200, Util.combineJSONString(databaseConnection.getNotifications()));
-                }
-                break;
-            case "/updateNotification":
-                if (headers.get("User").get(0).equals("technician")) {
-                    sendResponse(exchange, 200, String.valueOf(databaseConnection.updateNotification(Integer.valueOf(headers.get("NotificationID").get(0)), headers.get("Status").get(0))));
-                }
-                break;
-            case "/requestNotificationsByShuttle":
-                if (headers.get("User").get(0).equals("technician")) {
-                    ArrayList<Notification> notifications = databaseConnection.getNotificationsByShuttle(headers.get("ShuttleID").get(0));
-                    sendResponse(exchange, 200, Util.combineJSONString(notifications));
-                }
-                break;
-            case "/requestMechanics":
-                if (headers.get("User").get(0).equals("technician")) {
-                    sendResponse(exchange, 200, Util.combineJSONString(databaseConnection.getMechanics()));
-                }
-                break;
+        // Only process requests from technician users
+        if (!user.equals("technician")) {
+            sendResponse(exchange, 403, "Unauthorized user");
+            return;
         }
 
+        try {
+            // Parse parameters based on request method
+            Map<String, String> parameters;
+            if ("POST".equals(requestMethod)) {
+                // Read request body and parse JSON
+                parameters = Util.parseRequestBody(exchange);
+            } else {
+                // Parse query parameters from URL
+                parameters = Util.parseQueryParameters(exchange.getRequestURI().getQuery());
+            }
+
+            switch (path) {
+                case "/requestShuttles":
+                    if ("GET".equals(requestMethod)) {
+                        ArrayList<Shuttle> shuttles = databaseConnection.getShuttles();
+                        sendResponse(exchange, 200, Util.combineJSONString(shuttles));
+                    }
+                    break;
+
+                case "/requestShuttle":
+                    if ("GET".equals(requestMethod)) {
+                        int shuttleId = Integer.parseInt(parameters.get("Shuttle"));
+                        Shuttle shuttle = databaseConnection.getShuttle(shuttleId);
+                        sendResponse(exchange, 200, shuttle.toJson());
+                    }
+                    break;
+
+                case "/requestActiveTasks":
+                    if ("GET".equals(requestMethod)) {
+                        ArrayList<Task> tasks = databaseConnection.getActiveTasks();
+                        sendResponse(exchange, 200, Util.combineJSONString(tasks));
+                    }
+                    break;
+
+                case "/requestActiveTaskForShuttle":
+                    if ("GET".equals(requestMethod)) {
+                        int shuttleId = Integer.parseInt(parameters.get("ShuttleID"));
+                        ArrayList<Task> tasks = databaseConnection.getActiveTaskByShuttleID(shuttleId);
+                        sendResponse(exchange, 200, Util.combineJSONString(tasks));
+                    }
+                    break;
+
+                case "/updateTask":
+                    if ("POST".equals(requestMethod)) {
+                        int taskId = Integer.parseInt(parameters.get("TaskID"));
+                        String status = parameters.get("Status");
+                        sendResponse(exchange, 200, String.valueOf(databaseConnection.updateTask(taskId, status)));
+                    }
+                    break;
+
+                case "/createTask":
+                    if ("POST".equals(requestMethod)) {
+                        String mechanic = parameters.get("Mechanic");
+                        String description = parameters.get("Description");
+                        String shuttleId = parameters.get("ShuttleID");
+                        sendResponse(exchange, 200, String.valueOf(databaseConnection.createTask(mechanic, description, shuttleId)));
+                    }
+                    break;
+
+                case "/requestGeneralTasksForShuttle":
+                    if ("GET".equals(requestMethod)) {
+                        int shuttleId = Integer.parseInt(parameters.get("ShuttleID"));
+                        ArrayList<Task> tasks = databaseConnection.getGeneralTasksForShuttle(shuttleId);
+                        sendResponse(exchange, 200, Util.combineJSONString(tasks));
+                    }
+                    break;
+
+                case "/updateGeneralTasksForShuttle":
+                    if ("POST".equals(requestMethod)) {
+                        int taskId = Integer.parseInt(parameters.get("TaskID"));
+                        String status = parameters.get("Status");
+                        sendResponse(exchange, 200, String.valueOf(databaseConnection.updateGeneralTask(taskId, status)));
+                    }
+                    break;
+
+                case "/updateShuttleStatus":
+                    if ("POST".equals(requestMethod)) {
+                        int shuttleId = Integer.parseInt(parameters.get("ShuttleID"));
+                        String status = parameters.get("Status");
+                        sendResponse(exchange, 200, String.valueOf(databaseConnection.updateShuttleStatus(shuttleId, status)));
+                        Util.predictedDeployTimeUpdate(databaseConnection, shuttleId, status);
+                    }
+                    break;
+
+                case "/updateAllTasksBelongToShuttle":
+                    if ("POST".equals(requestMethod)) {
+                        int shuttleId = Integer.parseInt(parameters.get("ShuttleID"));
+                        boolean status = Boolean.parseBoolean(parameters.get("Status"));
+                        sendResponse(exchange, 200, String.valueOf(databaseConnection.updateAllTasksActivityBelongToShuttle(shuttleId, String.valueOf(status))));
+                    }
+                    break;
+
+                case "/requestParts":
+                    if ("GET".equals(requestMethod)) {
+                        sendResponse(exchange, 200, Util.combineJSONString(databaseConnection.getParts()));
+                    }
+                    break;
+
+                case "/usePart":
+                    if ("POST".equals(requestMethod)) {
+                        int partId = Integer.parseInt(parameters.get("PartID"));
+                        int quantity = Integer.parseInt(parameters.get("Quantity"));
+                        Part part = databaseConnection.getPart(partId);
+
+                        if (part.getQuantity() < quantity) {
+                            sendResponse(exchange, 400, "Not enough parts in stock");
+                            return;
+                        }
+                        if (part.getQuantity() == 0) {
+                            sendResponse(exchange, 400, "No parts in stock");
+                            return;
+                        }
+
+                        sendResponse(exchange, 200, String.valueOf(
+                                databaseConnection.updatePartQuantity(partId, part.getQuantity() - quantity)));
+                    }
+                    break;
+
+                case "/orderPart":
+                    if ("POST".equals(requestMethod)) {
+                        int partId = Integer.parseInt(parameters.get("PartID"));
+                        int quantity = Integer.parseInt(parameters.get("Quantity"));
+                        int shuttleId = Integer.parseInt(parameters.get("ShuttleID"));
+                        Part part = databaseConnection.getPart(partId);
+                        Util.orderPartDelayShuttle(databaseConnection, shuttleId);
+                        sendResponse(exchange, 200, String.valueOf(databaseConnection.updatePartQuantity(partId, part.getQuantity() + quantity)));
+                    }
+                    break;
+
+                case "/requestNotifications":
+                    if ("GET".equals(requestMethod)) {
+                        sendResponse(exchange, 200, Util.combineJSONString(databaseConnection.getNotifications()));
+                    }
+                    break;
+
+                case "/updateNotification":
+                    if ("POST".equals(requestMethod)) {
+                        int notificationId = Integer.parseInt(parameters.get("NotificationID"));
+                        String status = parameters.get("Status");
+                        sendResponse(exchange, 200, String.valueOf(databaseConnection.updateNotification(notificationId, status)));
+                    }
+                    break;
+
+                case "/requestNotificationsByShuttle":
+                    if ("GET".equals(requestMethod)) {
+                        String shuttleID = parameters.get("ShuttleID");
+                        ArrayList<Notification> notifications = databaseConnection.getNotificationsByShuttle(shuttleID);
+                        sendResponse(exchange, 200, Util.combineJSONString(notifications));
+                    }
+                    break;
+
+                case "/requestMechanics":
+                    if ("GET".equals(requestMethod)) {
+                        sendResponse(exchange, 200, Util.combineJSONString(databaseConnection.getMechanics()));
+                    }
+                    break;
+                case "/updatePredictedReleaseTime":
+                    if ("POST".equals(requestMethod)) {
+                        int shuttleId = Integer.parseInt(parameters.get("ShuttleID"));
+                        String predictedReleaseTime = parameters.get("PredictedReleaseTime");
+                        sendResponse(exchange, 200, String.valueOf(databaseConnection.setPredictedReleaseTime(shuttleId, predictedReleaseTime)));
+                    }
+                    break;
+
+                default:
+                    sendResponse(exchange, 404, "Endpoint not found");
+                    break;
+            }
+        } catch (Exception e) {
+            logger.error("Error handling request: {}", e.getMessage());
+            sendResponse(exchange, 500, "Server error: " + e.getMessage());
+        }
     }
 
     private void sendResponse(HttpExchange exchange, int responseCode, String message) throws IOException {;
@@ -163,3 +253,5 @@ public class Server {
         logger.info( "Server started: {}", server.getAddress( ) );
     }
 }
+
+

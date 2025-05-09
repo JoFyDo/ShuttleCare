@@ -13,6 +13,7 @@ import java.io.IOException;
 import java.lang.reflect.Type;
 import java.net.ConnectException;
 import java.util.ArrayList;
+import java.util.HashMap;
 
 public class Util {
 
@@ -20,23 +21,25 @@ public class Util {
 
     public static ArrayList<Shuttle> getShuttles(ClientRequests clientRequests, String user) throws IOException {
         try {
-            String tasks = clientRequests.request("/requestShuttles", user);
+            String tasks = clientRequests.getRequest("/requestShuttles", user, null);
             Gson gson = new Gson();
             Type shuttleListType = new TypeToken<ArrayList<Shuttle>>() {}.getType();
             return gson.fromJson(tasks, shuttleListType);
-        }catch (Exception e){
+        } catch (Exception e) {
             logger.error(e.getMessage());
             throw new ConnectException(e.getMessage());
         }
     }
 
-    public static Shuttle getShuttle(ClientRequests clientRequests, String user, int i) throws IOException {
+    public static Shuttle getShuttle(ClientRequests clientRequests, String user, int shuttleID) throws IOException {
         try {
-            String tasks = clientRequests.request("/requestShuttle", user, "Shuttle", String.valueOf(i));
+            HashMap<String, String> params = new HashMap<>();
+            params.put("ShuttleID", String.valueOf(shuttleID));
+            String tasks = clientRequests.getRequest("/requestShuttle", user, params);
             Gson gson = new Gson();
             Type shuttleType = new TypeToken<Shuttle>() {}.getType();
             return gson.fromJson(tasks, shuttleType);
-        }catch (Exception e){
+        } catch (Exception e) {
             logger.error(e.getMessage());
             throw new ConnectException(e.getMessage());
         }
@@ -44,23 +47,25 @@ public class Util {
 
     public static ArrayList<Task> getActiveTasks(ClientRequests clientRequests, String user) throws IOException {
         try {
-            String tasks = clientRequests.request("/requestActiveTasks", user);
+            String tasks = clientRequests.getRequest("/requestActiveTasks", user, null);
             Gson gson = new Gson();
             Type shuttleListType = new TypeToken<ArrayList<Task>>() {}.getType();
             return gson.fromJson(tasks, shuttleListType);
-        }catch (Exception e){
+        } catch (Exception e) {
             logger.error(e.getMessage());
             throw new ConnectException(e.getMessage());
         }
     }
 
-    public static ArrayList<Task> getActiveTasksByShuttleID(ClientRequests clientRequests, String user, int ShuttleID) throws IOException {
+    public static ArrayList<Task> getActiveTasksByShuttleID(ClientRequests clientRequests, String user, int shuttleID) throws IOException {
         try {
-            String tasks = clientRequests.request("/requestActiveTaskForShuttle", user, "Shuttle", String.valueOf(ShuttleID));
+            HashMap<String, String> params = new HashMap<>();
+            params.put("ShuttleID", String.valueOf(shuttleID));
+            String tasks = clientRequests.getRequest("/requestActiveTaskForShuttle", user, params);
             Gson gson = new Gson();
             Type shuttleListType = new TypeToken<ArrayList<Task>>() {}.getType();
             return gson.fromJson(tasks, shuttleListType);
-        }catch (Exception e){
+        } catch (Exception e) {
             logger.error(e.getMessage());
             throw new ConnectException(e.getMessage());
         }
@@ -68,8 +73,11 @@ public class Util {
 
     public static void updateTaskStatus(ClientRequests clientRequests, String user, int taskID, String status) throws IOException {
         try {
-            clientRequests.request("/updateTask", user, "TaskID", String.valueOf(taskID), "status", String.valueOf(status));
-        } catch (Exception e){
+            HashMap<String, String> params = new HashMap<>();
+            params.put("TaskID", String.valueOf(taskID));
+            params.put("Status", status);
+            clientRequests.postRequest("/updateTask", user, params);
+        } catch (Exception e) {
             logger.error(e.getMessage());
             throw new ConnectException(e.getMessage());
         }
@@ -77,8 +85,12 @@ public class Util {
 
     public static void createTask(ClientRequests clientRequests, String user, String mechanic, String description, int shuttleID) throws IOException {
         try {
-            clientRequests.request("/createTask", user, "Mechanic", mechanic, "Description", description, "ShuttleID", String.valueOf(shuttleID));
-        } catch (Exception e){
+            HashMap<String, String> params = new HashMap<>();
+            params.put("Mechanic", mechanic);
+            params.put("Description", description);
+            params.put("ShuttleID", String.valueOf(shuttleID));
+            clientRequests.postRequest("/createTask", user, params);
+        } catch (Exception e) {
             logger.error(e.getMessage());
             throw new ConnectException(e.getMessage());
         }
@@ -86,11 +98,13 @@ public class Util {
 
     public static ArrayList<Task> getGeneralTasksByShuttleID(ClientRequests clientRequests, String user, int shuttleID) throws IOException {
         try {
-            String tasks = clientRequests.request("/requestGeneralTasksForShuttle", user, "ShuttleID", String.valueOf(shuttleID));
+            HashMap<String, String> params = new HashMap<>();
+            params.put("ShuttleID", String.valueOf(shuttleID));
+            String tasks = clientRequests.getRequest("/requestGeneralTasksForShuttle", user, params);
             Gson gson = new Gson();
             Type shuttleListType = new TypeToken<ArrayList<Task>>() {}.getType();
             return gson.fromJson(tasks, shuttleListType);
-        } catch (Exception e){
+        } catch (Exception e) {
             logger.error(e.getMessage());
             throw new ConnectException(e.getMessage());
         }
@@ -98,8 +112,11 @@ public class Util {
 
     public static void updateGeneralTask(ClientRequests clientRequests, String user, int taskID, String status) throws IOException {
         try {
-            clientRequests.request("/updateGeneralTasksForShuttle", user, "TaskID", String.valueOf(taskID), "Status", status);
-        } catch (Exception e){
+            HashMap<String, String> params = new HashMap<>();
+            params.put("TaskID", String.valueOf(taskID));
+            params.put("Status", status);
+            clientRequests.postRequest("/updateGeneralTasksForShuttle", user, params);
+        } catch (Exception e) {
             logger.error(e.getMessage());
             throw new ConnectException(e.getMessage());
         }
@@ -107,8 +124,11 @@ public class Util {
 
     public static void updateShuttleStatus(ClientRequests clientRequests, String user, int shuttleID, String status) throws IOException {
         try {
-            clientRequests.request("/updateShuttleStatus", user, "ShuttleID", String.valueOf(shuttleID), "Status", status);
-        } catch (Exception e){
+            HashMap<String, String> params = new HashMap<>();
+            params.put("ShuttleID", String.valueOf(shuttleID));
+            params.put("Status", status);
+            clientRequests.postRequest("/updateShuttleStatus", user, params);
+        } catch (Exception e) {
             logger.error(e.getMessage());
             throw new ConnectException(e.getMessage());
         }
@@ -116,8 +136,11 @@ public class Util {
 
     public static void updateAllTasksBelongToShuttle(ClientRequests clientRequest, String user, int shuttleID, boolean status) throws IOException {
         try {
-            clientRequest.request("/updateAllTasksBelongToShuttle", user, "ShuttleID", String.valueOf(shuttleID), "Status", String.valueOf(status));
-        } catch (Exception e){
+            HashMap<String, String> params = new HashMap<>();
+            params.put("ShuttleID", String.valueOf(shuttleID));
+            params.put("Status", String.valueOf(status));
+            clientRequest.postRequest("/updateAllTasksBelongToShuttle", user, params);
+        } catch (Exception e) {
             logger.error(e.getMessage());
             throw new ConnectException(e.getMessage());
         }
@@ -125,20 +148,23 @@ public class Util {
 
     public static ArrayList<Part> getParts(ClientRequests clientRequests, String user) throws IOException {
         try {
-            String tasks = clientRequests.request("/requestParts", user);
+            String tasks = clientRequests.getRequest("/requestParts", user, null);
             Gson gson = new Gson();
             Type shuttleListType = new TypeToken<ArrayList<Part>>() {}.getType();
             return gson.fromJson(tasks, shuttleListType);
-        }catch (Exception e){
+        } catch (Exception e) {
             logger.error(e.getMessage());
             throw new ConnectException(e.getMessage());
         }
     }
 
-    public static void updatePartQuantity(ClientRequests clientRequests, String user, int partID, int quantity) throws IOException {
+    public static void usePart(ClientRequests clientRequests, String user, int partID, int quantity) throws IOException {
         try {
-            clientRequests.request("/updatePartQuantity", user, "PartID", String.valueOf(partID), "Quantity", String.valueOf(quantity));
-        } catch (Exception e){
+            HashMap<String, String> params = new HashMap<>();
+            params.put("PartID", String.valueOf(partID));
+            params.put("Quantity", String.valueOf(quantity));
+            clientRequests.postRequest("/usePart", user, params);
+        } catch (Exception e) {
             logger.error(e.getMessage());
             throw new ConnectException(e.getMessage());
         }
@@ -146,8 +172,11 @@ public class Util {
 
     public static void orderPart(ClientRequests clientRequests, String user, int partId, int quantity) {
         try {
-            clientRequests.request("/orderPart", user, "PartID", String.valueOf(partId), "Quantity", String.valueOf(quantity));
-        } catch (Exception e){
+            HashMap<String, String> params = new HashMap<>();
+            params.put("PartID", String.valueOf(partId));
+            params.put("Quantity", String.valueOf(quantity));
+            clientRequests.postRequest("/orderPart", user, params);
+        } catch (Exception e) {
             logger.error(e.getMessage());
             throw new RuntimeException(e);
         }
@@ -155,11 +184,11 @@ public class Util {
 
     public static ArrayList<Notification> requestNotifications(ClientRequests clientRequests, String user) throws IOException {
         try {
-            String tasks = clientRequests.request("/requestNotifications", user);
+            String tasks = clientRequests.getRequest("/requestNotifications", user, null);
             Gson gson = new Gson();
             Type shuttleListType = new TypeToken<ArrayList<Notification>>() {}.getType();
             return gson.fromJson(tasks, shuttleListType);
-        }catch (Exception e){
+        } catch (Exception e) {
             logger.error(e.getMessage());
             throw new ConnectException(e.getMessage());
         }
@@ -167,8 +196,11 @@ public class Util {
 
     public static void updateNotification(ClientRequests clientRequests, String user, int notificationID, String status) throws IOException {
         try {
-            clientRequests.request("/updateNotification", user, "NotificationID", String.valueOf(notificationID), "Status", status);
-        } catch (Exception e){
+            HashMap<String, String> params = new HashMap<>();
+            params.put("NotificationID", String.valueOf(notificationID));
+            params.put("Status", status);
+            clientRequests.postRequest("/updateNotification", user, params);
+        } catch (Exception e) {
             logger.error(e.getMessage());
             throw new ConnectException(e.getMessage());
         }
@@ -176,11 +208,26 @@ public class Util {
 
     public static ArrayList<Notification> requestNotificationsByShuttle(ClientRequests clientRequests, String user, int shuttleID) throws IOException {
         try {
-            String tasks = clientRequests.request("/requestNotificationsByShuttle", user, "ShuttleID", String.valueOf(shuttleID));
+            HashMap<String, String> params = new HashMap<>();
+            params.put("ShuttleID", String.valueOf(shuttleID));
+            String tasks = clientRequests.getRequest("/requestNotificationsByShuttle", user, params);
             Gson gson = new Gson();
             Type shuttleListType = new TypeToken<ArrayList<Notification>>() {}.getType();
             return gson.fromJson(tasks, shuttleListType);
-        }catch (Exception e){
+        } catch (Exception e) {
+            logger.error(e.getMessage());
+            throw new ConnectException(e.getMessage());
+        }
+    }
+
+    public static boolean updatePredictedReleaseTime(ClientRequests clientRequests, String user, int shuttleID, String status) throws IOException {
+        try {
+            HashMap<String, String> params = new HashMap<>();
+            params.put("ShuttleID", String.valueOf(shuttleID));
+            params.put("Status", status);
+            clientRequests.postRequest("/updatePredictedReleaseTime", user, params);
+            return true;
+        } catch (Exception e) {
             logger.error(e.getMessage());
             throw new ConnectException(e.getMessage());
         }

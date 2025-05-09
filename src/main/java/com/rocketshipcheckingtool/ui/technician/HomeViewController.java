@@ -62,9 +62,8 @@ public class HomeViewController {
     private void setupTableColumns() {
         shuttleOverviewColumn.setCellValueFactory(new PropertyValueFactory<>("shuttleName"));
         statusOverviewColumn.setCellValueFactory(new PropertyValueFactory<>("status"));
-        landungOverviewColumn.setCellValueFactory(cellData -> new SimpleStringProperty(cellData.getValue().getLandungDate() + " " + cellData.getValue().getLandungTime()));
+        landungOverviewColumn.setCellValueFactory(cellData -> new SimpleStringProperty(cellData.getValue().getLandingTimeString()));
         mechanikerOverviewColumn.setCellValueFactory(new PropertyValueFactory<>("mechanic"));
-
         aufgabeTaskColumn.setCellValueFactory(new PropertyValueFactory<>("task"));
         shuttleTaskColumn.setCellValueFactory(new PropertyValueFactory<>("shuttleName"));
         mechanikerTaskColumn.setCellValueFactory(new PropertyValueFactory<>("mechanic"));

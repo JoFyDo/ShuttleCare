@@ -1,12 +1,19 @@
 package com.rocketshipcheckingtool.ui.technician;
 
+import com.rocketshipcheckingtool.domain.Shuttle;
 import javafx.scene.control.Button;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 import javafx.stage.Stage;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import java.util.ArrayList;
+import java.util.Collection;
 
 public class BestellenPopupController {
+    private static final Logger log = LoggerFactory.getLogger(BestellenPopupController.class);
     public Button minusButton;
     public TextField quantityField;
     public Button plusButton;
@@ -18,9 +25,13 @@ public class BestellenPopupController {
 
     private int quantity = 1;
     private boolean isBestellenButton = false;
+    private ClientRequests clientRequests;
+    private String user = "technician";
+    private ArrayList<Shuttle> shuttles;
 
     public void initialize() {
         quantityField.setText(String.valueOf(quantity));
+        shuttleComboBox.getStyleClass().add("comboBox");
         setupButtons();
     }
 
@@ -94,5 +105,35 @@ public class BestellenPopupController {
 
     public boolean getIsBestellenButton() {
         return isBestellenButton;
+    }
+
+    public void loadCombobox(){
+        shuttleComboBox.getItems().clear();
+        try {
+            shuttles = Util.getShuttles(clientRequests, user);
+            shuttleComboBox.getItems().add("Kein Shuttle");
+            for (Shuttle shuttle : shuttles) {
+                shuttleComboBox.getItems().add(shuttle.getShuttleName());
+            }
+        } catch (Exception e){
+            System.out.println("[Bestellen Popup] Error loading shuttles: " + e.getMessage());
+            e.printStackTrace();
+        }
+    }
+
+    public void setClientRequests(ClientRequests clientRequests) {
+        this.clientRequests = clientRequests;
+        loadCombobox();
+    }
+
+    public Shuttle getSelectedShuttle() {
+        String selectedShuttleName = shuttleComboBox.getValue();
+        if (selectedShuttleName != null && !selectedShuttleName.equals("Kein Shuttle")) {
+            return shuttles.stream()
+                    .filter(shuttle -> shuttle.getShuttleName().equals(selectedShuttleName))
+                    .findFirst()
+                    .orElse(null);
+        }
+        return null;
     }
 }

@@ -28,7 +28,7 @@ public class DatabaseConnection {
             Statement stmt = connection.createStatement();
             ResultSet rs = stmt.executeQuery("SELECT * FROM Shuttles WHERE Status != 'Verschrottet'");
             while (rs.next()) {
-                shuttles.add(new Shuttle(rs.getInt("ID"), rs.getString("Name"), rs.getString("Status"), rs.getDate("Landung"), rs.getTime("Landung"), rs.getString("Mechaniker")));
+                shuttles.add(new Shuttle(rs.getInt("ID"), rs.getString("Name"), rs.getString("Status"), rs.getString("Landung"), rs.getString("Mechaniker")));
             }
             return shuttles;
         } catch (SQLException e) {
@@ -44,7 +44,7 @@ public class DatabaseConnection {
             stmt.setString(1, name);
             ResultSet rs = stmt.executeQuery();
             if (rs.next()) {
-                return new Shuttle(rs.getInt("ID"), rs.getString("Name"), rs.getString("Status"), rs.getDate("Landung"), rs.getTime("Landung"), rs.getString("Mechaniker"));
+                return new Shuttle(rs.getInt("ID"), rs.getString("Name"), rs.getString("Status"), rs.getString("Landung"), rs.getString("Mechaniker"));
             } else {
                 return null;
             }
@@ -61,7 +61,7 @@ public class DatabaseConnection {
             stmt.setString(1, Integer.toString(id));
             ResultSet rs = stmt.executeQuery();
             if (rs.next()) {
-                return new Shuttle(rs.getInt("ID"), rs.getString("Name"), rs.getString("Status"), rs.getDate("Landung"), rs.getTime("Landung"), rs.getString("Mechaniker"));
+                return new Shuttle(rs.getInt("ID"), rs.getString("Name"), rs.getString("Status"), rs.getString("Landung"), rs.getString("Mechaniker"));
             } else {
                 return null;
             }
@@ -246,6 +246,23 @@ public class DatabaseConnection {
         }
     }
 
+    public Part getPart(int partID) {
+        try {
+            String query = "SELECT * FROM Parts WHERE ID = ?";
+            PreparedStatement stmt = connection.prepareStatement(query);
+            stmt.setString(1, String.valueOf(partID));
+            ResultSet rs = stmt.executeQuery();
+            if (rs.next()) {
+                return new Part(rs.getInt("ID"), rs.getString("Name"), String.format("%.2f", (double) rs.getInt("Price") / 100), rs.getInt("Quantity"));
+            } else {
+                return null;
+            }
+        } catch (SQLException e) {
+            logger.error(e.getMessage());
+            throw new RuntimeException(e);
+        }
+    }
+
     public Connection connect() throws SQLException {
         Connection c = DriverManager.getConnection(database);
         logger.info("Connected to SQLite!");
@@ -334,24 +351,19 @@ public class DatabaseConnection {
         }
     }
 
-    public boolean updatePredictedTime(int shuttleID, int time) {
+    public boolean updatePredictedReleaseTime(int shuttleID, int time) {
         try {
             Shuttle shuttle = getShuttle(shuttleID);
             if (shuttle == null) {
                 return false;
             }
             // Get landing date and time from shuttle object
-            java.sql.Date landingDate = shuttle.getLandungDate();
-            java.sql.Time landingTime = shuttle.getLandungTime();
+            Calendar calendar = getPredictedReleaseTime(shuttleID);
+            if (calendar == null) {
+                calendar = shuttle.getLandingTime();
+            }
 
-            // Combine into a calendar for date/time manipulation
-            Calendar calendar = Calendar.getInstance();
-            calendar.setTime(landingDate);
-            calendar.set(Calendar.HOUR_OF_DAY, landingTime.getHours());
-            calendar.set(Calendar.MINUTE, landingTime.getMinutes());
-            calendar.set(Calendar.SECOND, landingTime.getSeconds());
-
-            // Add maintenance time (in minutes)
+            // Add maintenance time (in hours)
             calendar.add(Calendar.HOUR, time);
 
             // Format timestamp for database
@@ -364,6 +376,45 @@ public class DatabaseConnection {
             String query = "UPDATE Shuttles SET VorFreigabeDatum = ? WHERE ID = ?";
             PreparedStatement stmt = connection.prepareStatement(query);
             stmt.setString(1, String.valueOf(predictedTimeStr));
+            stmt.setString(2, String.valueOf(shuttleID));
+            stmt.executeUpdate();
+            return true;
+        } catch (SQLException e){
+            logger.error(e.getMessage());
+            throw new RuntimeException(e);
+        }
+    }
+
+    public Calendar getPredictedReleaseTime(int shuttleID) {
+        try {
+            String query = "SELECT VorFreigabeDatum FROM Shuttles WHERE ID = ?";
+            PreparedStatement stmt = connection.prepareStatement(query);
+            stmt.setString(1, String.valueOf(shuttleID));
+            ResultSet rs = stmt.executeQuery();
+            if (rs.next()) {
+                try{
+                    java.sql.Timestamp predictedReleaseTime = rs.getTimestamp("VorFreigabeDatum");
+                    Calendar calendar = Calendar.getInstance();
+                    calendar.setTime(predictedReleaseTime);
+                    return calendar;
+                } catch (Exception e) {
+                    System.err.println("Failed to parse predicted release time: " + rs.getString("VorFreigabeDatum"));
+                    return null;
+                }
+            } else {
+                return null;
+            }
+        } catch (SQLException e){
+            logger.error(e.getMessage());
+            throw new RuntimeException(e);
+        }
+    }
+
+    public boolean setPredictedReleaseTime(int shuttleID, String predictedReleaseTime) {
+        try {
+            String query = "UPDATE Shuttles SET VorFreigabeDatum = ? WHERE ID = ?";
+            PreparedStatement stmt = connection.prepareStatement(query);
+            stmt.setString(1, predictedReleaseTime);
             stmt.setString(2, String.valueOf(shuttleID));
             stmt.executeUpdate();
             return true;

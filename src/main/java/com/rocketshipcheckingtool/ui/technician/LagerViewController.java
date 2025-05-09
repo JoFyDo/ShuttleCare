@@ -1,9 +1,8 @@
 package com.rocketshipcheckingtool.ui.technician;
 
 import com.rocketshipcheckingtool.domain.Part;
-import javafx.beans.property.*;
+import com.rocketshipcheckingtool.domain.Shuttle;
 import javafx.collections.FXCollections;
-import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -124,7 +123,7 @@ public class LagerViewController {
                 popupStage.initModality(Modality.APPLICATION_MODAL);
                 popupStage.showAndWait();
                 if (verwendenPopupController.getIsVerwendenButton()) {
-                    Util.updatePartQuantity(clientRequests, user, part.getId(), part.getQuantity()-verwendenPopupController.getQuantity());
+                    Util.usePart(clientRequests, user, part.getId(), part.getQuantity()-verwendenPopupController.getQuantity());
                     loadTableContent();
                 }
             } catch (NullPointerException e) {
@@ -143,6 +142,7 @@ public class LagerViewController {
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/rocketshipcheckingtool/ui/technician/BestellenPopupView.fxml"));
             Parent popupRoot = loader.load();
             BestellenPopupController bestellenPopupController = loader.getController();
+            bestellenPopupController.setClientRequests(clientRequests);
             Part part = lagerTableView.getItems().stream()
                     .filter(Part::isSelected)
                     .findFirst()
@@ -159,6 +159,10 @@ public class LagerViewController {
                 popupStage.showAndWait();
                 if (bestellenPopupController.getIsBestellenButton()) {
                     Util.orderPart(clientRequests, user, part.getId(), bestellenPopupController.getQuantity());
+                    Shuttle selectedShuttle = bestellenPopupController.getSelectedShuttle();
+                    if (selectedShuttle != null) {
+
+                    }
                     loadTableContent();
                 }
             } catch (NullPointerException e) {

@@ -21,6 +21,7 @@ public class ResetShuttle {
             databaseConnection.changeShuttleStatus(shuttleId, "Gelandet");
             databaseConnection.updateAllTasksStatusBelongToShuttle(shuttleId, "Offen");
             databaseConnection.updateAllGeneralTasksStatusBelongToShuttle(shuttleId, "false");
+            databaseConnection.setPredictedReleaseTime(shuttleId, null);
         } catch (NumberFormatException e) {
             System.out.println("Invalid input. Please enter a valid shuttle ID.");
             System.exit(1);

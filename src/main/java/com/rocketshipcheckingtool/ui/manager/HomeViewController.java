@@ -42,8 +42,7 @@ public class HomeViewController {
     private void setupTableColumns() {
         shuttleOverviewColumn.setCellValueFactory(new PropertyValueFactory<>("shuttleName"));
         statusOverviewColumn.setCellValueFactory(new PropertyValueFactory<>("status"));
-        landungOverviewColumn.setCellValueFactory(data -> new SimpleStringProperty(
-                data.getValue().getLandungDate() + " " + data.getValue().getLandungTime()));
+        landungOverviewColumn.setCellValueFactory(new PropertyValueFactory<>("landingTime"));
         mechanikerOverviewColumn.setCellValueFactory(new PropertyValueFactory<>("mechanic"));
 
         setupDetailsButtonColumn();
@@ -94,8 +93,8 @@ public class HomeViewController {
 
             // Test Data
             shuttles = List.of(
-                    new Shuttle(1, "Shuttle F", "Gelandet", Date.valueOf("2025-05-01"), Time.valueOf("12:00:00"), "Mr. Dornige Chancen"),
-                    new Shuttle(2, "Shuttle S", "Gelandet", Date.valueOf("2025-05-02"), Time.valueOf("13:30:00"), "Nestlee Glöckner")
+                    new Shuttle(1, "Shuttle F", "Gelandet", "h", "Mr. Dornige Chancen"),
+                    new Shuttle(2, "Shuttle S", "Gelandet", "h", "Nestlee Glöckner")
             );
 
             // Replace test data:
