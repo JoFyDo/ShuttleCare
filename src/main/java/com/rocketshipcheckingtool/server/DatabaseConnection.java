@@ -352,15 +352,18 @@ public class DatabaseConnection {
             calendar.set(Calendar.SECOND, landingTime.getSeconds());
 
             // Add maintenance time (in minutes)
-            calendar.add(Calendar.MINUTE, time);
+            calendar.add(Calendar.HOUR, time);
 
             // Format timestamp for database
             java.sql.Timestamp predictedReleaseTime = new java.sql.Timestamp(calendar.getTimeInMillis());
             String predictedTimeStr = predictedReleaseTime.toString();
 
+            System.out.println("Predicted Release Time: " + predictedTimeStr);
+            System.out.println("Time Needed: " + time);
+
             String query = "UPDATE Shuttles SET VorFreigabeDatum = ? WHERE ID = ?";
             PreparedStatement stmt = connection.prepareStatement(query);
-            stmt.setString(1, String.valueOf(time));
+            stmt.setString(1, String.valueOf(predictedTimeStr));
             stmt.setString(2, String.valueOf(shuttleID));
             stmt.executeUpdate();
             return true;
