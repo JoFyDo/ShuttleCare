@@ -7,6 +7,7 @@ public class Task implements Manage {
     private Shuttle shuttle;
     private String shuttleName;
     private int id;
+    private int timeNeeded;
 
     public Task(String task, String status, String mechanic, Shuttle shuttle, int id) {
         this.task = task;
@@ -16,19 +17,21 @@ public class Task implements Manage {
         this.id = id;
     }
 
-    public Task(String task, String status, String mechanic, String shuttleName, int id) {
+    public Task(String task, String status, String mechanic, String shuttleName, int id, int timeNeeded) {
         this.task = task;
         this.status = status;
         this.mechanic = mechanic;
         this.shuttleName = shuttleName;
         this.id = id;
+        this.timeNeeded = timeNeeded;
     }
 
-    public Task (String task, String status, int id, String shuttleName) {
+    public Task (String task, String status, int id, String shuttleName, int timeNeeded) {
         this.task = task;
         this.status = status;
         this.id = id;
         this.shuttleName = shuttleName;
+        this.timeNeeded = timeNeeded;
     }
 
     public String toJson() {
@@ -74,6 +77,10 @@ public class Task implements Manage {
 
     public String getShuttleName() {
         return shuttleName;
+    }
+
+    public int getTimeNeeded() {
+        return timeNeeded;
     }
 
     public int getId() { return id; }

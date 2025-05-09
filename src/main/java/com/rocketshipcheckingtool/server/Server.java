@@ -95,6 +95,7 @@ public class Server {
             case "/updateShuttleStatus":
                 if(headers.get("User").get(0).equals("technician")) {
                     sendResponse(exchange, 200, String.valueOf(databaseConnection.updateShuttleStatus(Integer.valueOf(headers.get("ShuttleID").get(0)), headers.get("Status").get(0))));
+                    Util.checkCurrentStatus(databaseConnection, Integer.valueOf(headers.get("ShuttleID").get(0)), headers.get("Status").get(0));
                 }
                 break;
             case "/updateAllTasksBelongToShuttle":
@@ -126,6 +127,11 @@ public class Server {
                 if (headers.get("User").get(0).equals("technician")) {
                     ArrayList<Notification> notifications = databaseConnection.getNotificationsByShuttle(headers.get("ShuttleID").get(0));
                     sendResponse(exchange, 200, Util.combineJSONString(notifications));
+                }
+                break;
+            case "/requestMechanics":
+                if (headers.get("User").get(0).equals("technician")) {
+                    sendResponse(exchange, 200, Util.combineJSONString(databaseConnection.getMechanics()));
                 }
                 break;
         }

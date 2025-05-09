@@ -28,32 +28,21 @@ public class Util {
 
     }
 
-    public static void updateDatabase(DatabaseConnection databaseConnection) {
-        ArrayList<Task> tasks = databaseConnection.getActiveTasks();
-        Map<String, ArrayList<Task>> taskMap = new HashMap<String, ArrayList<Task>>();
-        for (Task task : tasks) {
-            if (taskMap.containsKey(task.getShuttleName())){
-                ArrayList<Task> listTask =  taskMap.get(task.getShuttleName());
-                listTask.add(task);
-            } else {
-                ArrayList<Task> listTask = new ArrayList<>();
-                listTask.add(task);
-                taskMap.put(task.getShuttleName(), listTask);
+    public static void checkCurrentStatus(DatabaseConnection databaseConnection, int shuttleID, String status) {
+        Map<Integer, String> shuttleStatusMap = new HashMap<>();
+        if (status.equals("Inspektion 1") || status.equals("Inspektion 2")) {
+            ArrayList<Task> generalActiveTasks = databaseConnection.getGeneralTasksForShuttle(shuttleID);
+            ArrayList<Task> additionalActiveTasks = databaseConnection.getActiveTaskByShuttleID(shuttleID);
+            int timeNeeded = 0;
+            for (Task task : generalActiveTasks) {
+                timeNeeded += task.getTimeNeeded();
             }
+            for (Task task : additionalActiveTasks) {
+                timeNeeded += task.getTimeNeeded();
+            }
+            databaseConnection.updatePredictedTime(shuttleID, timeNeeded);
         }
 
-        for (Map.Entry<String, ArrayList<Task>> entry : taskMap.entrySet()) {
-            ArrayList<Task> taskList = entry.getValue();
-            int c = 0;
-            for (Task task : taskList) {
-                if (task.getStatus().equals("Erledigt")){
-                    c++;
-                }
-                if (c == taskList.size()) {
-                    Shuttle shuttle = databaseConnection.getShuttle(task.getShuttleName());
-                    databaseConnection.changeShuttleStatus(shuttle.getId(), "Erledigt - Warte auf Freigabe");
-                }
-            }
-        }
+
     }
 }
