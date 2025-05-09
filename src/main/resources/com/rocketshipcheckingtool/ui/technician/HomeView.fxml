@@ -4,6 +4,7 @@
 <?import javafx.scene.chart.PieChart?>
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
+<?import javafx.scene.chart.BarChart?>
 <VBox spacing="40.0"
       xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1"
       fx:controller="com.rocketshipcheckingtool.ui.technician.HomeViewController" maxWidth="Infinity" maxHeight="Infinity">
@@ -43,7 +44,7 @@
         </VBox>
         <VBox VBox.vgrow="ALWAYS" GridPane.columnIndex="1" styleClass="vBox" onMouseClicked="#onStatistikenBoxClicked">
             <Label text="Statistiken" styleClass="header"/>
-            <PieChart fx:id="pieChart" VBox.vgrow="ALWAYS" HBox.hgrow="ALWAYS" styleClass="pieChart"/>
+            <!--<BarChart fx:id="FortschrittBarChart" VBox.vgrow="ALWAYS" HBox.hgrow="ALWAYS"/>-->
         </VBox>
     </GridPane>
 

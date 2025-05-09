@@ -1,6 +1,7 @@
 package com.rocketshipcheckingtool.ui.technician;
 
 import javafx.scene.control.Button;
+import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 import javafx.stage.Stage;
@@ -13,6 +14,7 @@ public class VerwendenPopupController {
     public Label preis;
     public Label teil;
     public Label gesamtPreis;
+    public ComboBox<String> shuttleComboBox;
 
     private int maxQuantity = 0;
     private int quantity = 1;

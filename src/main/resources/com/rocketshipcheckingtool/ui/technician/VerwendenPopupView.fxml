@@ -29,6 +29,7 @@
             <Button fx:id="plusButton" text="+" styleClass="buttonAmount"
                     style="-fx-background-color: rgb(76, 126, 79)"/>
         </HBox>
+        <ComboBox fx:id="shuttleComboBox" promptText="choose Shuttle"/>
         <Button fx:id="verwendenButton" text="Verwenden" styleClass="buttonBig"
                 style="-fx-background-color: rgb(76, 126, 79)"/>
     </VBox>

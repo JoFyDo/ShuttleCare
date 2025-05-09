@@ -9,6 +9,7 @@ import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.geometry.Insets;
+import javafx.scene.chart.BarChart;
 import javafx.scene.chart.PieChart;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
@@ -22,6 +23,7 @@ import java.util.ArrayList;
 public class HomeViewController {
 
     public PieChart pieChart;
+    //public BarChart FortschrittBarChart;
     private ClientRequests clientRequests;
     private final String user = UserSession.getRole().name().toLowerCase();
     private final static Logger logger = LoggerFactory.getLogger(HomeViewController.class);
@@ -54,8 +56,7 @@ public class HomeViewController {
     @FXML
     public void initialize() {
         setupTableColumns();
-        ObservableList<PieChart.Data> data = FXCollections.observableArrayList(new PieChart.Data("new", 25), new PieChart.Data("in use", 35), new PieChart.Data("worn", 15), new PieChart.Data("critical", 25));
-        pieChart.setData(data);
+
     }
 
     private void setupTableColumns() {
