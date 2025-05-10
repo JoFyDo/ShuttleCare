@@ -1,7 +1,7 @@
 package com.rocketshipcheckingtool.ui.auth;
 
 import com.rocketshipcheckingtool.ui.ViewManagerController;
-import com.rocketshipcheckingtool.ui.technician.ClientRequests;
+import com.rocketshipcheckingtool.ui.roles.technician.ClientRequests;
 import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;

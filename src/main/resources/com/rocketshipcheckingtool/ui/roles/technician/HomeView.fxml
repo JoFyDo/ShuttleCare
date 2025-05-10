@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<VBox spacing="40.0"
+      xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1"
+      fx:controller="com.rocketshipcheckingtool.ui.roles.technician.HomeViewController" maxWidth="Infinity"
+      maxHeight="Infinity">
+    <padding>
+        <Insets bottom="40.0" left="40.0" right="40.0" top="40.0"/>
+    </padding>
+
+    <VBox VBox.vgrow="ALWAYS" styleClass="vBox">
+        <Label text="Shuttle Übersicht" styleClass="header"/>
+        <TableView fx:id="shuttleTableView" VBox.vgrow="ALWAYS" styleClass="table-view">
+            <columns>
+                <TableColumn fx:id="shuttleOverviewColumn" text="Shuttle"/>
+                <TableColumn fx:id="statusOverviewColumn" text="Status"/>
+                <TableColumn fx:id="landungOverviewColumn" text="Landung"/>
+                <TableColumn fx:id="mechanikerOverviewColumn" text="Lead-Mechaniker"/>
+                <TableColumn fx:id="detailsOverviewColumn"/>
+            </columns>
+        </TableView>
+    </VBox>
+
+    <GridPane VBox.vgrow="ALWAYS" hgap="40">
+        <columnConstraints>
+            <ColumnConstraints percentWidth="50"/>
+            <ColumnConstraints percentWidth="50"/>
+        </columnConstraints>
+
+        <VBox VBox.vgrow="ALWAYS" GridPane.columnIndex="0" styleClass="vBox" onMouseClicked="#onBoxClicked">
+            <Label text="Zusätzliche Aufgaben" styleClass="header"/>
+            <TableView fx:id="aufgabenTableView" VBox.vgrow="ALWAYS" styleClass="table-view">
+                <columns>
+                    <TableColumn fx:id="aufgabeTaskColumn" text="Aufgabe"/>
+                    <TableColumn fx:id="shuttleTaskColumn" text="Shuttle"/>
+                    <TableColumn fx:id="mechanikerTaskColumn" text="Mechaniker"/>
+                    <TableColumn fx:id="statusTaskColumn" text="Status"/>
+                </columns>
+            </TableView>
+        </VBox>
+        <VBox VBox.vgrow="ALWAYS" GridPane.columnIndex="1" styleClass="vBox" onMouseClicked="#onBoxClicked">
+            <Label text="Aufgaben Fortschritt" styleClass="header"/>
+            <ScrollPane fitToWidth="true" VBox.vgrow="ALWAYS" style="-fx-border-color: white">
+                <VBox fx:id="shuttleProgressContainer" styleClass="progress-container" spacing="10"
+                      style="-fx-border-color: white">
+                    <!-- Progress bars will be added programmatically in the controller -->
+                    <Label text="No tasks in progress" fx:id="noTasksLabel"/>
+                </VBox>
+            </ScrollPane>
+        </VBox>
+    </GridPane>
+
+</VBox>

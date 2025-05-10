@@ -6,6 +6,7 @@ public class StartSoftware {
         Server server = new Server();
         server.start();
 
+
         ViewManager.main(args);
 
     }

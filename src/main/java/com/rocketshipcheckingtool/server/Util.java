@@ -2,8 +2,9 @@ package com.rocketshipcheckingtool.server;
 
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
-import com.rocketshipcheckingtool.domain.Shuttle;
-import com.rocketshipcheckingtool.domain.Task;
+import com.rocketshipcheckingtool.server.datamodel.Shuttle;
+import com.rocketshipcheckingtool.server.datamodel.Task;
+import com.rocketshipcheckingtool.server.database.DatabaseFacade;
 import com.sun.net.httpserver.HttpExchange;
 
 import java.io.BufferedReader;
@@ -16,23 +17,6 @@ import java.util.*;
 public class Util {
 
     private static Gson gson = new Gson();
-
-//    public static String combineJSONString(ArrayList<? extends Manage> items) {
-//        StringBuilder sb = new StringBuilder();
-//        sb.append("[\n");
-//
-//        for (int i = 0; i < items.size(); i++) {
-//            Manage item = items.get(i);
-//            sb.append(item.toJson());
-//            if (i < items.size() - 1) {
-//                sb.append(",\n");
-//            }
-//        }
-//        sb.append("\n]");
-//        return sb.toString();
-//
-//
-//    }
 
     public static Map<String, String> parseRequestBody(HttpExchange exchange) throws IOException {
         try (BufferedReader reader = new BufferedReader(new InputStreamReader(exchange.getRequestBody(), StandardCharsets.UTF_8))) {
@@ -68,7 +52,7 @@ public class Util {
         return gson.toJson(items);
     }
 
-    public static void predictedReleaseTimeUpdate(DatabaseConnection databaseConnection, int shuttleID, String status) {
+    public static void predictedReleaseTimeUpdate(DatabaseFacade databaseConnection, int shuttleID, String status) {
         if (status.equals("Gelandet") || status.equals("Inspektion 1") || status.equals("Inspektion 2")) {
             ArrayList<Task> generalActiveTasks = databaseConnection.getGeneralTasksForShuttle(shuttleID);
             ArrayList<Task> additionalActiveTasks = databaseConnection.getActiveTaskByShuttleID(shuttleID);
@@ -94,7 +78,7 @@ public class Util {
         }
     }
 
-    public static void orderPartDelayShuttle(DatabaseConnection databaseConnection, int shuttleID) {
+    public static void orderPartDelayShuttle(DatabaseFacade databaseConnection, int shuttleID) {
         int delay = new Random().nextInt(49) + 24;
         System.out.println("[Helper] Delay: " + delay);
         Calendar predictedReleaseTime = databaseConnection.getPredictedReleaseTime(shuttleID);

@@ -1,6 +1,6 @@
 package com.rocketshipcheckingtool;
 
-import com.rocketshipcheckingtool.domain.Shuttle;
+import com.rocketshipcheckingtool.server.datamodel.Shuttle;
 
 import java.sql.Connection;
 import java.sql.DriverManager;

@@ -1,6 +1,6 @@
 package com.rocketshipcheckingtool;
 
-import com.rocketshipcheckingtool.server.DatabaseConnection;
+import com.rocketshipcheckingtool.server.database.DatabaseFacade;
 
 import java.util.ArrayList;
 import java.util.Scanner;
@@ -8,7 +8,7 @@ import java.util.Scanner;
 public class ResetShuttle {
     public static void main(String[] args) {
         // Create a new instance of the DatabaseConnection class
-        DatabaseConnection databaseConnection = new DatabaseConnection();
+        DatabaseFacade databaseConnection = new DatabaseFacade();
 
         // Call the resetShuttle method to reset the shuttle status
         databaseConnection.getShuttles().forEach(shuttle -> {

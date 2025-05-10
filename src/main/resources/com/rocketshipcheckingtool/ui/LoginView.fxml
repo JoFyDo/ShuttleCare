@@ -19,6 +19,6 @@
                 style="-fx-background-color: rgb(26, 41, 82)"/>
     </VBox>
     <padding>
-        <Insets left="300" right="300" top="200" bottom="200"/>
+        <Insets left="100" right="100" top="100" bottom="100"/>
     </padding>
 </VBox>

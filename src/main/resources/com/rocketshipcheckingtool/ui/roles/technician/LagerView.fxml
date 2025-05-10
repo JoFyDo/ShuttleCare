@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<VBox xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1"
+      fx:controller="com.rocketshipcheckingtool.ui.roles.technician.LagerViewController" spacing="40">
+    <GridPane>
+        <VBox.margin>
+            <Insets top="40"/>
+        </VBox.margin>
+        <columnConstraints>
+            <ColumnConstraints hgrow="ALWAYS" percentWidth="50.0"/>
+            <ColumnConstraints hgrow="ALWAYS" percentWidth="25.0"/>
+            <ColumnConstraints hgrow="ALWAYS" percentWidth="25.0"/>
+        </columnConstraints>
+        <TextField fx:id="searchField" promptText="Search" styleClass="searchField" GridPane.columnIndex="0"
+                   GridPane.halignment="CENTER" GridPane.rowIndex="0">
+            <GridPane.margin>
+                <Insets left="40"/>
+            </GridPane.margin>
+
+        </TextField>
+        <Button fx:id="verwendenButton" mnemonicParsing="false" style="-fx-background-color: rgb(76, 126, 79)"
+                styleClass="buttonBig" text="Verwenden" GridPane.columnIndex="1" GridPane.halignment="RIGHT"
+                GridPane.rowIndex="0" onAction="#onVerwendenButtonClick"/>
+        <Button fx:id="bestellenButton" mnemonicParsing="false" style="-fx-background-color: rgb(26, 41, 82)"
+                styleClass="buttonBig" text="Bestellen" GridPane.columnIndex="2" GridPane.halignment="RIGHT"
+                GridPane.rowIndex="0" onAction="#onBestellenButtonClick">
+            <GridPane.margin>
+                <Insets right="40"/>
+            </GridPane.margin>
+        </Button>
+        <rowConstraints>
+            <RowConstraints/>
+        </rowConstraints>
+    </GridPane>
+    <VBox VBox.vgrow="ALWAYS" styleClass="vBox" style="-fx-background-radius: 0;">
+        <TableView fx:id="lagerTableView" StackPane.alignment="TOP_CENTER" VBox.vgrow="ALWAYS">
+            <columns>
+                <TableColumn fx:id="checkBoxColumn"/>
+                <TableColumn fx:id="nrColumn" text="Nr."/>
+                <TableColumn fx:id="nameColumn" text="Name"/>
+                <TableColumn fx:id="preisColumn" text="Preis"/>
+                <TableColumn fx:id="bestandColumn" text="Bestand"/>
+            </columns>
+        </TableView>
+    </VBox>
+</VBox>
