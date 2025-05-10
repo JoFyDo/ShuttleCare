@@ -27,7 +27,7 @@ public class ResetShuttle {
             }
             for (int i = 0; i < shuttles.size(); i++) {
                 databaseConnection.changeShuttleStatus(shuttles.get(i), "Flug");
-                databaseConnection.updateAllTasksStatusBelongToShuttle(shuttles.get(i), "Offen");
+                databaseConnection.updateAllTasksStatusBelongToShuttle(shuttles.get(i), "false");
                 databaseConnection.updateAllGeneralTasksStatusBelongToShuttle(shuttles.get(i), "false");
                 databaseConnection.setPredictedReleaseTime(shuttles.get(i), null);
                 System.out.println("Shuttle ID " + shuttles.get(i) + " wurde zurückgesetzt.");

@@ -151,6 +151,7 @@ public class ViewManagerController {
         if (UserSession.getRole() == UserRole.TECHNICIAN && technicianHomeController != null) {
             technicianHomeController.initialize();
             technicianHomeController.loadShuttleTableContent();
+            technicianHomeController.load();
             showPage(technicianHomePage);
         } else if (UserSession.getRole() == UserRole.MANAGER && managerHomeController != null) {
             managerHomeController.loadShuttleTableContent();

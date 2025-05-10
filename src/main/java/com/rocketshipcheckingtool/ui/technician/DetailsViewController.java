@@ -75,16 +75,16 @@ public class DetailsViewController extends DetailsViewControllerMaster {
             checkBox.setOnAction(event -> {
                 try {
                     if(checkBox.isSelected()) {
-                        Util.updateTaskStatus(clientRequests, user, task.getId(), "Erledigt");
+                        Util.updateTaskStatus(clientRequests, user, task.getId(), "true");
                     }else {
-                        Util.updateTaskStatus(clientRequests, user, task.getId(), "Offen");
+                        Util.updateTaskStatus(clientRequests, user, task.getId(), "false");
                     }
                 } catch (Exception e) {
                     logger.error(e.getMessage());
                     throw new RuntimeException(e);
                 }
             });
-            if (task.getStatus().equals("Erledigt")){
+            if (task.getStatus().equals("true")){
                 checkBox.setSelected(true);
             }
             taskItem.getChildren().addAll(taskLabel, checkBox);
@@ -233,7 +233,7 @@ public class DetailsViewController extends DetailsViewControllerMaster {
         }
         boolean check = false;
         for (Task task : activeTasks) {
-            if (task.getStatus().equals("Offen")){
+            if (task.getStatus().equals("false")){
                 check = true;
             }
         }
@@ -361,7 +361,7 @@ public class DetailsViewController extends DetailsViewControllerMaster {
                     case "Inspektion 1":
                         boolean hasOpenTasks = false;
                         for (Task task : activeTasks) {
-                            if (task.getStatus().equals("Offen")) {
+                            if (task.getStatus().equals("false")) {
                                 hasOpenTasks = true;
                                 break;
                             }
