@@ -2,14 +2,14 @@ package com.rocketshipcheckingtool.domain;
 
 public class Task implements Manage {
     private String task;
-    private String status;
+    private Boolean status;
     private String mechanic;
     private Shuttle shuttle;
     private String shuttleName;
     private int id;
     private int timeNeeded;
 
-    public Task(String task, String status, String mechanic, Shuttle shuttle, int id) {
+    public Task(String task, Boolean status, String mechanic, Shuttle shuttle, int id) {
         this.task = task;
         this.status = status;
         this.mechanic = mechanic;
@@ -17,7 +17,7 @@ public class Task implements Manage {
         this.id = id;
     }
 
-    public Task(String task, String status, String mechanic, String shuttleName, int id, int timeNeeded) {
+    public Task(String task, Boolean status, String mechanic, String shuttleName, int id, int timeNeeded) {
         this.task = task;
         this.status = status;
         this.mechanic = mechanic;
@@ -26,7 +26,7 @@ public class Task implements Manage {
         this.timeNeeded = timeNeeded;
     }
 
-    public Task (String task, String status, int id, String shuttleName, int timeNeeded) {
+    public Task (String task, Boolean status, int id, String shuttleName, int timeNeeded) {
         this.task = task;
         this.status = status;
         this.id = id;
@@ -53,7 +53,13 @@ public class Task implements Manage {
         return switch (index) {
             case 0 -> task;
             case 2 -> mechanic;
-            case 3 -> status;
+            case 3 -> {
+                if (status) {
+                    yield "In Bearbeitung";
+                } else {
+                    yield "Fertig";
+                }
+            }
             case 1 -> shuttleName;
             default -> null;
         };
@@ -63,7 +69,7 @@ public class Task implements Manage {
         return task;
     }
 
-    public String getStatus() {
+    public Boolean getStatus() {
         return status;
     }
 

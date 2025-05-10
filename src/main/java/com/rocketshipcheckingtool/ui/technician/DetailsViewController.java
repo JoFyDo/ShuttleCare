@@ -2,19 +2,14 @@ package com.rocketshipcheckingtool.ui.technician;
 
 import com.rocketshipcheckingtool.domain.Shuttle;
 import com.rocketshipcheckingtool.domain.Task;
-import com.rocketshipcheckingtool.ui.auth.UserSession;
-import com.rocketshipcheckingtool.ui.ViewManagerController;
+import com.rocketshipcheckingtool.ui.DetailsViewControllerMaster;
+import com.rocketshipcheckingtool.ui.Util;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
-import javafx.fxml.FXMLLoader;
-import javafx.scene.Parent;
-import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
-import javafx.stage.Modality;
-import javafx.stage.Stage;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -22,11 +17,8 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-public class DetailsViewController {
-    public ComboBox<String> shuttleComboBox;
-    public Shuttle shuttleSelected;
-    public List<String> shuttleList;
-    public List<Shuttle> shuttles;
+public class DetailsViewController extends DetailsViewControllerMaster {
+
     public Button gelandetButton;
     public Button inspektion1Button;
     public Button inWartungButton;
@@ -36,33 +28,23 @@ public class DetailsViewController {
     public VBox aufgabenBox;
     public VBox zusaetzlichAufgabenBox;
     public Button freigebenButton;
-    private ViewManagerController viewManagerController;
 
-    private ClientRequests clientRequests;
-    private final String user = UserSession.getRole().name().toLowerCase();
     private final static Logger logger = LoggerFactory.getLogger(DetailsViewController.class);
 
 
     @FXML
     public void initialize() {
-        shuttleComboBox.valueProperty().addListener((obs, oldVal, newVal) -> {
-            if (newVal != null) {
-                shuttleSelected = shuttles.stream()
-                        .filter(sh -> sh.getShuttleName().equals(newVal))
-                        .findFirst()
-                        .orElseThrow(() -> new IllegalArgumentException("Shuttle not found"));
-                loadAufgaben();
-                loadZusaetzlicheAufgaben();
-                loadLoadingBar();
-                System.out.println("[Details] selected Shuttle: " + newVal);
-            }
-        });
+        super.initialize();
+    }
 
-        shuttleComboBox.getStyleClass().add("comboBox");
+    public void reload(){
+        loadMaintenanceProtocol();
+        loadAdditionalTasks();
+        loadLoadingBar();
     }
 
 
-    private void loadZusaetzlicheAufgaben() {
+    private void loadAdditionalTasks() {
         zusaetzlichAufgabenBox.getChildren().clear();
 
         if (shuttleSelected == null) return;
@@ -87,19 +69,22 @@ public class DetailsViewController {
 
             CheckBox checkBox = new CheckBox();
 
+            boolean disableCheckbox = !shuttleSelected.getStatus().equals("Inspektion 1");
+            checkBox.setDisable(disableCheckbox);
+
             checkBox.setOnAction(event -> {
                 try {
                     if(checkBox.isSelected()) {
-                        Util.updateTaskStatus(clientRequests, user, task.getId(), "Erledigt");
+                        Util.updateTaskStatus(clientRequests, user, task.getId(), "true");
                     }else {
-                        Util.updateTaskStatus(clientRequests, user, task.getId(), "Offen");
+                        Util.updateTaskStatus(clientRequests, user, task.getId(), "false");
                     }
                 } catch (Exception e) {
                     logger.error(e.getMessage());
                     throw new RuntimeException(e);
                 }
             });
-            if (task.getStatus().equals("Erledigt")){
+            if (task.getStatus().equals("true")){
                 checkBox.setSelected(true);
             }
             taskItem.getChildren().addAll(taskLabel, checkBox);
@@ -107,7 +92,7 @@ public class DetailsViewController {
         }
     }
 
-    private void loadAufgaben() {
+    private void loadMaintenanceProtocol() {
         if (shuttleSelected == null) return;
 
         aufgabenBox.getChildren().clear();
@@ -130,6 +115,9 @@ public class DetailsViewController {
             HBox.setHgrow(taskLabel, Priority.ALWAYS);
 
             CheckBox checkBox = new CheckBox();
+            boolean disableCheckbox = shuttleSelected.getStatus().equals("Freigegeben") ||
+                    shuttleSelected.getStatus().equals("Verschrottet") || shuttleSelected.getStatus().equals("Inspektion 2") || shuttleSelected.getStatus().equals("Flug");
+            checkBox.setDisable(disableCheckbox);
             checkBox.setOnAction(event -> {
                 try {
                     Util.updateGeneralTask(clientRequests, user, task.getId(), String.valueOf(checkBox.isSelected()));
@@ -149,6 +137,7 @@ public class DetailsViewController {
     }
 
     private void loadLoadingBar() {
+        if (shuttleSelected == null) return;
         List<Button> steps = List.of(
                 gelandetButton,
                 inspektion1Button,
@@ -156,6 +145,7 @@ public class DetailsViewController {
                 inspektion2Button,
                 freigegebenButton
         );
+        onLoadingBarButton(gelandetButton, "Flug", "Gelandet");
         onLoadingBarButton(inspektion1Button, "Gelandet", "Inspektion 1");
         onLoadingBarButton(inWartungButton, "Inspektion 1", "In Wartung");
         onLoadingBarButton(inspektion2Button, "In Wartung", "Inspektion 2");
@@ -191,51 +181,12 @@ public class DetailsViewController {
 
     }
 
-
-    //no preselected shuttle
-    private void loadShuttleContent() {
-        loadShuttleContent(null);
-    }
-
-    //preselected shuttle
-    private void loadShuttleContent(String preSelectedShuttle) {
-        try {
-            //Shuttle
-            shuttles = Util.getShuttles(clientRequests, user);
-
-            shuttleList = shuttles.stream()
-                    .map(Shuttle::getShuttleName)
-                    .toList();
-
-            shuttleComboBox.getItems().clear();
-            shuttleComboBox.getItems().addAll(shuttleList);
-
-            shuttleSelected = shuttles.stream()
-                    .filter(sh -> sh.getShuttleName().equals(preSelectedShuttle))
-                    .findFirst()
-                    .orElse(null);
-
-            if (preSelectedShuttle != null && shuttleList.contains(preSelectedShuttle)) {
-                shuttleComboBox.setValue(preSelectedShuttle);
-            }
-
-        } catch (Exception e) {
-            Alert alert = new Alert(Alert.AlertType.ERROR);
-            alert.setTitle("Loading Error");
-            alert.setHeaderText(null);
-            alert.setContentText(e.getMessage());
-            alert.showAndWait();
-            System.exit(1);
-        }
-    }
-
-    public void setClientRequests(ClientRequests clientRequests) {
-        this.clientRequests = clientRequests;
-        loadShuttleContent();
-    }
-
     public void selectShuttle(Shuttle shuttle) {
-        loadShuttleContent(shuttle.getShuttleName());
+        if (shuttle != null) {
+            loadShuttleContent(shuttle.getShuttleName());
+        } else {
+            loadShuttleContent();
+        }
     }
 
     public void onNeueAufgabeClick(ActionEvent actionEvent) {
@@ -246,34 +197,8 @@ public class DetailsViewController {
         if (shuttleSelected.getStatus().equals("Gelandet") || shuttleSelected.getStatus().equals("In Wartung")) {
             try {
                 System.out.println("[Details] Neue Aufgabe Button Clicked");
-
-                FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/rocketshipcheckingtool/ui/technician/NeueAufgabePopupView.fxml"));
-                Parent popupRoot = loader.load();
-
-                // New Stage for the popup
-                Stage popupStage = new Stage();
-                popupStage.setTitle("Neue Aufgabe");
-                popupStage.setScene(new Scene(popupRoot));
-                popupStage.initModality(Modality.APPLICATION_MODAL);
-
-                NeueAufgabePopupController popupController = loader.getController();
-                popupController.setStage(popupStage);
-                popupController.initialize();
-                popupStage.showAndWait();
-
-                // Retrieve data from the popup
-                String description = popupController.getDescription();
-                String mechanic = popupController.getMechanic();
-                if (!description.equals("") || !mechanic.equals("")) {
-                    description = description.strip();
-                    mechanic = mechanic.strip();
-                    Util.createTask(clientRequests, user, mechanic, description, shuttleSelected.getId());
-                    if (shuttleSelected.getStatus().equals("In Wartung")) {
-                        Util.updateShuttleStatus(clientRequests, user, shuttleSelected.getId(), "Inspektion 1");
-                    }
-                    loadShuttleContent(shuttleSelected.getShuttleName());
-
-                }
+                Util.newTaskForShuttle(clientRequests, user, shuttleSelected, null);
+                loadShuttleContent(shuttleSelected.getShuttleName());
 
             } catch (IOException e) {
                 e.printStackTrace();
@@ -303,12 +228,12 @@ public class DetailsViewController {
 
         assert activeTasks != null;
         assert generalTasks != null;
-        if (checkRocketshipStage()){
+        if (checkUpdateRocketshipStage()){
             return;
         }
         boolean check = false;
         for (Task task : activeTasks) {
-            if (task.getStatus().equals("Offen")){
+            if (task.getStatus().equals("false")){
                 check = true;
             }
         }
@@ -344,6 +269,7 @@ public class DetailsViewController {
                     try {
                         Util.updateShuttleStatus(clientRequests, user, shuttleSelected.getId(), "Freigegeben");
                         Util.updateAllTasksBelongToShuttle(clientRequests, user, shuttleSelected.getId(), false);
+                        Util.updatePredictedReleaseTime(clientRequests, user, shuttleSelected.getId(), null);
                         loadShuttleContent(shuttleSelected.getShuttleName());
                     } catch (IOException e) {
                         logger.error(e.getMessage());
@@ -398,7 +324,7 @@ public class DetailsViewController {
             }
             if (shuttleSelected.getStatus().equals(compareStatus)) {
                 try {
-                    if (!checkRocketshipStage()){
+                    if (!checkUpdateRocketshipStage()){
                         Util.updateShuttleStatus(clientRequests, user, shuttleSelected.getId(), newStatus);
                     }
                     loadShuttleContent(shuttleSelected.getShuttleName());
@@ -411,20 +337,31 @@ public class DetailsViewController {
 
     }
 
-    public boolean checkRocketshipStage(){
+    public boolean checkUpdateRocketshipStage(){
         try {
             ArrayList<Task> activeTasks = Util.getActiveTasksByShuttleID(clientRequests, user, shuttleSelected.getId());
             ArrayList<Task> generalTasks = Util.getGeneralTasksByShuttleID(clientRequests, user, shuttleSelected.getId());
             if (!shuttleSelected.getStatus().equals("Inspektion 2")) {
                 if (!shuttleSelected.getStatus().equals("Freigegeben")) {
                 switch (shuttleSelected.getStatus()) {
+                    case "Flug":
+                        Util.updateShuttleStatus(clientRequests, user, shuttleSelected.getId(), "Gelandet");
+                        break;
                     case "Gelandet":
-                        Util.updateShuttleStatus(clientRequests, user, shuttleSelected.getId(), "Inspektion 1");
+                        if (Util.allCommandsDone(clientRequests, user, shuttleSelected.getId())) {
+                            Util.updateShuttleStatus(clientRequests, user, shuttleSelected.getId(), "Inspektion 1");
+                        }else{
+                            Alert alert = new Alert(Alert.AlertType.INFORMATION);
+                            alert.setTitle("Aufgaben ausstehend");
+                            alert.setHeaderText(null);
+                            alert.setContentText("Der Manager muss erst alle Kommentare bearbeiten");
+                            alert.showAndWait();
+                        }
                         break;
                     case "Inspektion 1":
                         boolean hasOpenTasks = false;
                         for (Task task : activeTasks) {
-                            if (task.getStatus().equals("Offen")) {
+                            if (task.getStatus().equals("false")) {
                                 hasOpenTasks = true;
                                 break;
                             }
@@ -466,7 +403,4 @@ public class DetailsViewController {
         }
     }
 
-    public void setViewManagerController(ViewManagerController viewManagerController) {
-        this.viewManagerController = viewManagerController;
-    }
 }

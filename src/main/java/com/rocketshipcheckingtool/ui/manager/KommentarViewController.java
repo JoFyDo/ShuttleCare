@@ -1,5 +1,10 @@
 package com.rocketshipcheckingtool.ui.manager;
 
+import com.rocketshipcheckingtool.domain.Comment;
+import com.rocketshipcheckingtool.domain.Shuttle;
+import com.rocketshipcheckingtool.ui.Util;
+import com.rocketshipcheckingtool.ui.auth.UserSession;
+import com.rocketshipcheckingtool.ui.technician.ClientRequests;
 import com.rocketshipcheckingtool.ui.technician.LagerViewController;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleStringProperty;
@@ -17,6 +22,7 @@ import javafx.stage.Modality;
 import javafx.stage.Stage;
 
 import java.io.IOException;
+import java.util.ArrayList;
 
 public class KommentarViewController {
     public TextField searchField;
@@ -25,10 +31,13 @@ public class KommentarViewController {
     public TableColumn<Comment, Boolean> checkBoxColumn;
     public TableColumn<Comment, String> kommentarColumn;
 
+    private ClientRequests clientRequests;
+    private Shuttle shuttleSelected;
+    private final String user = UserSession.getRole().name().toLowerCase();
+
     
-    public void initialize() {
+    public void initialize() throws IOException {
         setupTableColumns();
-        kommentarTableView.setItems(commentData);
     }
 
     private void setupTableColumns() {
@@ -43,7 +52,6 @@ public class KommentarViewController {
                 if (row >= 0 && row < kommentarTableView.getItems().size()) {
                     Comment item = kommentarTableView.getItems().get(row);
                     item.selectedProperty().set(!item.selectedProperty().get());
-                    System.out.println("[Kommentar] Clicked row: " + item.getText());
                 }
                 evt.consume();
             });
@@ -51,7 +59,7 @@ public class KommentarViewController {
             return cell;
         });
 
-        kommentarColumn.setCellValueFactory(new PropertyValueFactory<>("text"));
+        kommentarColumn.setCellValueFactory(new PropertyValueFactory<>("comment"));
         checkBoxColumn.setCellValueFactory(cellData -> cellData.getValue().selectedProperty());
 
         checkBoxColumn.setResizable(false);
@@ -63,57 +71,89 @@ public class KommentarViewController {
 
     public void onWeiterleitenButtonClick(ActionEvent actionEvent) throws IOException {
         System.out.println("[Kommentar] Weiterleiten Button Clicked");
+        boolean hasSelectedComment = false;
+        for (Comment comment : kommentarTableView.getItems()) {
+            if (comment.selectedProperty().get()) {
+                hasSelectedComment = true;
+                break;
+            }
+        }
 
-        FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/rocketshipcheckingtool/ui/manager/WeiterleitenPopupView.fxml"));
-        Parent popupRoot = loader.load();
+        if (hasSelectedComment) {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/rocketshipcheckingtool/ui/manager/WeiterleitenPopupView.fxml"));
+            Parent popupRoot = loader.load();
 
-        // New Stage for the popup
-        Stage popupStage = new Stage();
-        popupStage.setTitle("Weiterleiten");
-        popupStage.setScene(new Scene(popupRoot));
-        popupStage.initModality(Modality.APPLICATION_MODAL);
+            WeiterleitenPopupViewController popupController = loader.getController();
 
-        WeiterleitenPopupViewController popupController = loader.getController();
-        popupController.setStage(popupStage);
-        popupController.initialize();
-        popupStage.showAndWait();
+            ArrayList<Comment> selectedComments = new ArrayList<>();
+            for (Comment comment : kommentarTableView.getItems()) {
+                if (comment.selectedProperty().get()) {
+                    selectedComments.add(comment);
+                }
+            }
+
+            popupController.setClientRequests(clientRequests);
+            popupController.setComments(selectedComments);
+
+            // New Stage for the popup
+            Stage popupStage = new Stage();
+            popupStage.setTitle("Weiterleiten");
+            popupStage.setScene(new Scene(popupRoot));
+            popupStage.initModality(Modality.APPLICATION_MODAL);
+
+            popupController.setStage(popupStage);
+            popupController.initialize();
+            popupController.setStage(popupStage);
+            popupStage.showAndWait();
+
+            if (popupController.isSuccessfull()) {
+                Alert alert = new Alert(Alert.AlertType.INFORMATION);
+                alert.setTitle("Erfolg");
+                alert.setHeaderText(null);
+                alert.setContentText("Kommentare wurden erfolgreich weitergeleitet.");
+                for (Comment comment : selectedComments ) {
+                    Util.updateComment(clientRequests, user, comment.getId(), "false");
+                }
+                popupStage.close();
+                alert.showAndWait();
+                loadData();
+            } else {
+                Alert alert = new Alert(Alert.AlertType.ERROR);
+                alert.setTitle("Fehler");
+                alert.setHeaderText(null);
+                alert.setContentText("Fehler beim Weiterleiten der Kommentare.");
+                alert.showAndWait();
+            }
+        } else {
+            Alert alert = new Alert(Alert.AlertType.WARNING);
+            alert.setTitle("Kein Kommentar ausgewählt");
+            alert.setHeaderText(null);
+            alert.setContentText("Bitte wählen Sie mindestens einen Kommentar aus, um ihn weiterzuleiten.");
+            alert.showAndWait();
+        }
+
     }
 
-    // Testiees
-    private final ObservableList<Comment> commentData = FXCollections.observableArrayList(
-            new Comment("Kommis", false),
-            new Comment("Kommis2", true),
-            new Comment("Kommis3", false)
-    );
-
-    public static class Comment {
-        private final SimpleStringProperty text;
-        private final SimpleBooleanProperty selected;
-
-        public Comment(String text, boolean selected) {
-            this.text = new SimpleStringProperty(text);
-            this.selected = new SimpleBooleanProperty(selected);
+    public void loadData() {
+        if (shuttleSelected == null) {
+            return;
         }
+        try {
+            kommentarTableView.setItems(FXCollections.observableArrayList(Util.getCommentsForShuttle(clientRequests, user, shuttleSelected.getId())));
+        } catch (Exception e) {
 
-        public String getText() {
-            return text.get();
-        }
-
-        public void setText(String text) {
-            this.text.set(text);
-        }
-
-        public boolean isSelected() {
-            return selected.get();
-        }
-
-        public void setSelected(boolean selected) {
-            this.selected.set(selected);
-        }
-
-        public SimpleBooleanProperty selectedProperty() {
-            return selected;
         }
     }
+
+    public void setClientRequests(ClientRequests clientRequests) {
+        this.clientRequests = clientRequests;
+        loadData();
+    }
+
+    public void setShuttle(Shuttle shuttleSelected) {
+        this.shuttleSelected = shuttleSelected;
+    }
+
+
 
 }

@@ -2,46 +2,31 @@ package com.rocketshipcheckingtool.ui.technician;
 
 import com.rocketshipcheckingtool.domain.Shuttle;
 import com.rocketshipcheckingtool.domain.Task;
-import com.rocketshipcheckingtool.ui.auth.UserSession;
-import com.rocketshipcheckingtool.ui.ViewManagerController;
-import javafx.beans.property.SimpleStringProperty;
+import com.rocketshipcheckingtool.ui.HomeViewControllerMaster;
+import com.rocketshipcheckingtool.ui.Util;
 import javafx.collections.FXCollections;
-import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
-import javafx.geometry.Insets;
 import javafx.scene.chart.BarChart;
 import javafx.scene.chart.PieChart;
+import javafx.scene.chart.XYChart;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.input.MouseEvent;
+import javafx.scene.layout.VBox;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
-public class HomeViewController {
-
-    public PieChart pieChart;
-    //public BarChart FortschrittBarChart;
-    private ClientRequests clientRequests;
-    private final String user = UserSession.getRole().name().toLowerCase();
-    private final static Logger logger = LoggerFactory.getLogger(HomeViewController.class);
-    private ViewManagerController viewManagerController;
-
+public class HomeViewController extends HomeViewControllerMaster {
     @FXML
-    public TableView<Shuttle> shuttleTableView;
+    private VBox shuttleProgressContainer;
     @FXML
-    private TableColumn<Shuttle, String> shuttleOverviewColumn;
-    @FXML
-    private TableColumn<Shuttle, String> statusOverviewColumn;
-    @FXML
-    private TableColumn<Shuttle, String> landungOverviewColumn;
-    @FXML
-    private TableColumn<Shuttle, String> mechanikerOverviewColumn;
-    @FXML
-    private TableColumn<Shuttle, Void> detailsOverviewColumn;
-
+    private Label noTasksLabel;
     @FXML
     private TableView<Task> aufgabenTableView;
     @FXML
@@ -53,99 +38,135 @@ public class HomeViewController {
     @FXML
     private TableColumn<Task, String> statusTaskColumn;
 
+    private final static Logger logger = LoggerFactory.getLogger(HomeViewController.class);
+
     @FXML
     public void initialize() {
         setupTableColumns();
 
     }
 
-    private void setupTableColumns() {
-        shuttleOverviewColumn.setCellValueFactory(new PropertyValueFactory<>("shuttleName"));
-        statusOverviewColumn.setCellValueFactory(new PropertyValueFactory<>("status"));
-        landungOverviewColumn.setCellValueFactory(cellData -> new SimpleStringProperty(cellData.getValue().getLandungDate() + " " + cellData.getValue().getLandungTime()));
-        mechanikerOverviewColumn.setCellValueFactory(new PropertyValueFactory<>("mechanic"));
+    public void setupTableColumns(){
+        super.setupTableColumns();
 
         aufgabeTaskColumn.setCellValueFactory(new PropertyValueFactory<>("task"));
         shuttleTaskColumn.setCellValueFactory(new PropertyValueFactory<>("shuttleName"));
         mechanikerTaskColumn.setCellValueFactory(new PropertyValueFactory<>("mechanic"));
-        statusTaskColumn.setCellValueFactory(new PropertyValueFactory<>("status"));
-
-        // resize column width
-        detailsOverviewColumn.setResizable(false);
-        detailsOverviewColumn.setPrefWidth(140);
-        shuttleTableView.setSelectionModel(null);
+        statusTaskColumn.setCellValueFactory(cellData -> new javafx.beans.property.SimpleStringProperty(
+                cellData.getValue().getStatus() ? "Erledigt" : "in Bearbeitung"));
         aufgabenTableView.setSelectionModel(null);
-        shuttleTableView.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY_ALL_COLUMNS);
         aufgabenTableView.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY_ALL_COLUMNS);
+
     }
 
-    private void setupDetailsButtonColumn() {
-        detailsOverviewColumn.setCellValueFactory(param -> null);
-        detailsOverviewColumn.setCellFactory(param -> new TableCell<Shuttle, Void>() {
-            private final Button detailsButton = new Button("Details");
+    public void loadTaskTableContent() {
+        try {
+            ArrayList<Task> tasks = Util.getActiveTasks(clientRequests, user);
+            aufgabenTableView.setItems(FXCollections.observableArrayList(tasks));
+        }catch (Exception e) {
+            logger.error("Error loading tasks: ", e);
+        }
+    }
 
-            {
-                detailsButton.getStyleClass().add("details-button");
-                detailsButton.setOnAction(event -> {
-                    Shuttle shuttle = getTableView().getItems().get(getIndex());
-                    showShuttleDetails(shuttle);
-                });
-                setPadding(new Insets(0, 20, 0, 20));
-            }
+    public void loadProgressBar() {
+        // Ensure UI operations run on JavaFX application thread
+        javafx.application.Platform.runLater(() -> {
+            try {
+                // Clear existing content
+                shuttleProgressContainer.getChildren().clear();
 
-            @Override
-            protected void updateItem(Void item, boolean empty) {
-                super.updateItem(item, empty);
-                if (empty) {
-                    setGraphic(null);
-                } else {
-                    setGraphic(detailsButton);
+                // Sample shuttle data with progress percentages (0.0 to 1.0)
+                // In production, this should come from your data source
+                Map<String, Double> shuttleProgress = getShuttleProgressData();
+
+                if (shuttleProgress.isEmpty()) {
+                    noTasksLabel.setVisible(true);
+                    return;
                 }
+
+                noTasksLabel.setVisible(false);
+
+                // Create a progress bar for each shuttle
+                for (Map.Entry<String, Double> entry : shuttleProgress.entrySet()) {
+                    String shuttleName = entry.getKey();
+                    Double progress = entry.getValue();
+
+                    Label shuttleLabel = new Label(shuttleName);
+                    shuttleLabel.getStyleClass().add("shuttle-name");
+                    shuttleLabel.setStyle("-fx-font-weight: bold; -fx-padding: 0 0 0 0");
+
+                    ProgressBar progressBar = new ProgressBar(progress);
+                    progressBar.setPrefWidth(Double.MAX_VALUE);
+                    progressBar.setMinHeight(20); // Ensure visible height
+                    progressBar.setStyle("-fx-accent: #4CAF50;"); // Green progress color
+
+                    // More visible percentage label
+//                    Label percentLabel = new Label(String.format("%.0f%%  complete", progress * 100));
+//                    percentLabel.setStyle("-fx-font-weight: bold;");
+
+                    VBox shuttleBox = new VBox(5);
+                    shuttleBox.getChildren().addAll(shuttleLabel, progressBar);
+                    shuttleBox.setStyle("-fx-border-color: #e0e0e0; -fx-border-width: 0 0 1 0;");
+
+                    shuttleProgressContainer.getChildren().add(shuttleBox);
+                }
+            } catch (Exception e) {
+                logger.error("Error loading progress bars: ", e);
+                // Display error in UI for better debugging
+                Label errorLabel = new Label("Error loading progress data: " + e.getMessage());
+                errorLabel.setStyle("-fx-text-fill: red;");
+                shuttleProgressContainer.getChildren().add(errorLabel);
             }
         });
     }
 
-    private void showShuttleDetails(Shuttle shuttle) {
-        try {
-            viewManagerController.handleDetailButton(shuttle);
-        } catch (IOException e) {
-            throw new RuntimeException(e);
+    private Map<String, Double> getShuttleProgressData() throws IOException {
+        ArrayList<Shuttle> shuttles = Util.getShuttles(clientRequests, user);
+        Map<String, Double> progressMap = new java.util.HashMap<>();
+
+        for (Shuttle shuttle : shuttles) {
+            ArrayList<Task> generalTasks = Util.getGeneralTasksByShuttleID(clientRequests, user, shuttle.getId());
+            ArrayList<Task> tasks = Util.getActiveTasksByShuttleID(clientRequests, user, shuttle.getId());
+
+            int completedTasks = 0;
+            int totalTasks = tasks.size() + generalTasks.size();
+
+            // Count completed tasks
+            for (Task task : tasks) {
+                if (task.getStatus()) {
+                    completedTasks++;
+                }
+            }
+            for (Task task : generalTasks) {
+                if (task.getStatus()) {
+                    completedTasks++;
+                }
+            }
+
+            // Avoid division by zero
+            double progress = (totalTasks > 0) ? (double) completedTasks / totalTasks : 0.0;
+            progressMap.put(shuttle.getShuttleName(), progress);
+
+            logger.info("Shuttle: {} - Completed: {}/{} tasks, Progress: {:.2f}%",
+                    shuttle.getShuttleName(), completedTasks, totalTasks, progress * 100);
+
         }
+
+        return progressMap;
     }
 
-    public void loadTableContent() {
-        try {
-            //Shuttle
-            ArrayList<Shuttle> shuttles = Util.getShuttles(clientRequests, user);
-            shuttleTableView.setItems(FXCollections.observableArrayList(shuttles));
 
-            //Details button
-            setupDetailsButtonColumn();
-
-            // Task
-            ArrayList<Task> tasks = Util.getActiveTasks(clientRequests, user);
-            aufgabenTableView.setItems(FXCollections.observableArrayList(tasks));
-
-        } catch (Exception e) {
-            Alert alert = new Alert(Alert.AlertType.ERROR);
-            alert.setTitle("Loading Error");
-            alert.setHeaderText(null);
-            alert.setContentText(e.getMessage());
-            alert.showAndWait();
-            System.exit(1);
-        }
+    public void onBoxClicked(MouseEvent mouseEvent) throws IOException {
+        super.viewManagerController.handleDetailButton(null);
     }
 
-    public void setClientRequests(ClientRequests clientRequests) {
-        this.clientRequests = clientRequests;
-        loadTableContent();
-    }
+//    public void load(){
+//        loadTaskTableContent();
+//        loadProgressBar();
+//    }
 
-    public void setViewManagerController(ViewManagerController viewManagerController) {
-        this.viewManagerController = viewManagerController;
-    }
-
-    public void onStatistikenBoxClicked(MouseEvent mouseEvent) {
-        viewManagerController.handleStatistikenVBox();
+    public void load(){
+        loadTaskTableContent();
+        loadProgressBar();
     }
 }

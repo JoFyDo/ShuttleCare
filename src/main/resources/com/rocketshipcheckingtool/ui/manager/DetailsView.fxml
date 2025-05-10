@@ -23,7 +23,6 @@
 
         <HBox alignment="CENTER" spacing="200">
             <Button text="Kommentar" styleClass="buttonBig" style="-fx-background-color: rgb(26, 41, 82)" onAction="#onKommentarButtonClicked"/>
-            <Button text="Freigeben" styleClass="buttonBig" style="-fx-background-color: rgb(129, 38, 39)" onAction="#onFreigebenButtonClicked"/>
         </HBox>
     </VBox>
 

@@ -2,6 +2,7 @@ package com.rocketshipcheckingtool;
 
 import com.rocketshipcheckingtool.server.DatabaseConnection;
 
+import java.util.ArrayList;
 import java.util.Scanner;
 
 public class ResetShuttle {
@@ -16,11 +17,21 @@ public class ResetShuttle {
         System.out.println("Bitte ID des Shuttles eingeben, das zurückgesetzt werden soll:");
         Scanner scanner = new Scanner(System.in);
         int shuttleId = 0;
+        ArrayList<Integer> shuttles = new ArrayList<>();
         try {
             shuttleId = Integer.parseInt(scanner.nextLine());
-            databaseConnection.changeShuttleStatus(shuttleId, "Gelandet");
-            databaseConnection.updateAllTasksStatusBelongToShuttle(shuttleId, "Offen");
-            databaseConnection.updateAllGeneralTasksStatusBelongToShuttle(shuttleId, "false");
+            if (shuttleId < 0) {
+                databaseConnection.getShuttles().forEach(shuttle -> {shuttles.add(shuttle.getId());});
+            } else {
+                shuttles.add(shuttleId);
+            }
+            for (int i = 0; i < shuttles.size(); i++) {
+                databaseConnection.changeShuttleStatus(shuttles.get(i), "Flug");
+                databaseConnection.updateAllTasksStatusBelongToShuttle(shuttles.get(i), "false");
+                databaseConnection.updateAllGeneralTasksStatusBelongToShuttle(shuttles.get(i), "false");
+                databaseConnection.setPredictedReleaseTime(shuttles.get(i), null);
+                System.out.println("Shuttle ID " + shuttles.get(i) + " wurde zurückgesetzt.");
+            }
         } catch (NumberFormatException e) {
             System.out.println("Invalid input. Please enter a valid shuttle ID.");
             System.exit(1);
@@ -36,7 +47,10 @@ public class ResetShuttle {
         try{
             String input = scanner.nextLine();
             if (input.equalsIgnoreCase("Y")) {
-                databaseConnection.updateAllTasksActivityBelongToShuttle(shuttleId, "false");
+                for (int i = 0; i < shuttles.size(); i++) {
+                    databaseConnection.updateAllTasksActivityBelongToShuttle(shuttles.get(i), "false");
+                    System.out.println("Alle Aufgaben für Shuttle ID " + shuttles.get(i) + " wurden gelöscht.");
+                }
                 System.out.println("Alle Aufgaben wurden gelöscht.");
             } else if (input.equalsIgnoreCase("N")) {
                 System.out.println("Aufgaben wurden nicht gelöscht.");

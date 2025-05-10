@@ -1,22 +1,22 @@
 package com.rocketshipcheckingtool.domain;
 
 public class Notification implements Manage{
-    private int ID;
+    private int Id;
     private String message;
     private int shuttleID;
     private String sender;
     private String comment;
 
-    public Notification(int ID, String message, int shuttleID, String sender, String comment) {
-        this.ID = ID;
+    public Notification(int Id, String message, int shuttleID, String sender, String comment) {
+        this.Id = Id;
         this.message = message;
         this.shuttleID = shuttleID;
         this.sender = sender;
         this.comment = comment;
     }
 
-    public int getID() {
-        return ID;
+    public int getId() {
+        return Id;
     }
 
     public String getMessage() {

@@ -1,10 +1,12 @@
 package com.rocketshipcheckingtool.ui.manager;
 
+import com.rocketshipcheckingtool.domain.QuestionnaireRating;
 import com.rocketshipcheckingtool.domain.Shuttle;
+import com.rocketshipcheckingtool.ui.DetailsViewControllerMaster;
+import com.rocketshipcheckingtool.ui.Util;
 import com.rocketshipcheckingtool.ui.ViewManagerController;
 import com.rocketshipcheckingtool.ui.auth.UserSession;
 import com.rocketshipcheckingtool.ui.technician.ClientRequests;
-import com.rocketshipcheckingtool.ui.technician.Util;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
@@ -20,45 +22,32 @@ import javafx.scene.control.cell.PropertyValueFactory;
 import java.io.IOException;
 import java.util.List;
 
-public class DetailsViewController {
-    public TableView<UmfrageResult> umfrageTableView;
-    public TableColumn<UmfrageResult, String> befragtePunkteColumn;
-    public TableColumn<UmfrageResult, String> bewertungColumn;
-    public ViewManagerController viewManagerController;
-    public ComboBox<String> shuttleComboBox;
-    public Shuttle shuttleSelected;
-    public List<String> shuttleList;
-    public List<Shuttle> shuttles;
-    private ClientRequests clientRequests;
-    private final String user = UserSession.getRole().name().toLowerCase();
+public class DetailsViewController extends DetailsViewControllerMaster {
+    public TableView<QuestionnaireRating> umfrageTableView;
+    public TableColumn<QuestionnaireRating, String> befragtePunkteColumn;
+    public TableColumn<QuestionnaireRating, String> bewertungColumn;
 
     @FXML
     public void initialize() {
-        setUpTableColumns();
-        // Only to display example:
-        loadData();
-
-        shuttleComboBox.valueProperty().addListener((obs, oldVal, newVal) -> {
-            if (newVal != null) {
-                shuttleSelected = shuttles.stream()
-                        .filter(sh -> sh.getShuttleName().equals(newVal))
-                        .findFirst()
-                        .orElseThrow(() -> new IllegalArgumentException("Shuttle not found"));
-                System.out.println("[Manager Details] selected Shuttle: " + newVal);
-                //loadData();
-            }
-        });
-        shuttleComboBox.getStyleClass().add("comboBox");
-
+        super.initialize();
     }
 
     public void onKommentarButtonClicked(ActionEvent actionEvent) throws IOException {
         System.out.println("[Manager Details] Kommentar Button Clicked");
-
+        if (shuttleSelected == null) {
+            Alert alert = new Alert(Alert.AlertType.ERROR);
+            alert.setTitle("Error");
+            alert.setHeaderText(null);
+            alert.setContentText("Bitte wählen Sie ein Shuttle aus.");
+            alert.showAndWait();
+            return;
+        }
         FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/rocketshipcheckingtool/ui/manager/KommentarView.fxml"));
         Parent kommentarPage = loader.load();
 
         KommentarViewController kommentarViewController = loader.getController();
+        kommentarViewController.setShuttle(shuttleSelected);
+        kommentarViewController.setClientRequests(clientRequests);
         kommentarViewController.initialize();
 
         if (viewManagerController != null) {
@@ -68,10 +57,6 @@ public class DetailsViewController {
         }
     }
 
-    public void setViewManagerController(ViewManagerController viewManagerController) {
-        this.viewManagerController = viewManagerController;
-    }
-
     public void onFreigebenButtonClicked(ActionEvent actionEvent) {
         Alert alert = new Alert(Alert.AlertType.CONFIRMATION, "Bitte bestätigen Sie die Freigabe");
         alert.setHeaderText(null);
@@ -79,60 +64,26 @@ public class DetailsViewController {
         alert.show();
     }
 
-    public void setClientRequests(ClientRequests clientRequests) {
-        this.clientRequests = clientRequests;
-        // loadShuttleContent();
-    }
-
     public void selectShuttle(Shuttle shuttle) {
         loadShuttleContent(shuttle.getShuttleName());
     }
 
-
     private void setUpTableColumns() {
-        befragtePunkteColumn.setCellValueFactory(new PropertyValueFactory<>("punkt"));
-        bewertungColumn.setCellValueFactory(new PropertyValueFactory<>("bewertung"));
+        befragtePunkteColumn.setCellValueFactory(new PropertyValueFactory<>("topic"));
+        bewertungColumn.setCellValueFactory(cellData ->
+                new javafx.beans.property.SimpleStringProperty(
+                        cellData.getValue().getRating() + "/10"));
         umfrageTableView.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY_ALL_COLUMNS);
     }
 
     private void loadData() {
-        ObservableList<UmfrageResult> mockData = FXCollections.observableArrayList(
-                new UmfrageResult("Sicherheit", "2"),
-                new UmfrageResult("Zuverlässigkeit", "1"),
-                new UmfrageResult("Effizienz", "2")
-        );
-        umfrageTableView.setItems(mockData);
-    }
-
-    // Combobox
-
-    //no preselected shuttle
-    private void loadShuttleContent() {
-        loadShuttleContent(null);
-    }
-
-    //preselected shuttle
-    private void loadShuttleContent(String preSelectedShuttle) {
+        if (shuttleSelected == null) {
+            return;
+        }
         try {
-            //Shuttle
-            shuttles = Util.getShuttles(clientRequests, user);
-
-            shuttleList = shuttles.stream()
-                    .map(Shuttle::getShuttleName)
-                    .toList();
-
-            shuttleComboBox.getItems().clear();
-            shuttleComboBox.getItems().addAll(shuttleList);
-
-            shuttleSelected = shuttles.stream()
-                    .filter(sh -> sh.getShuttleName().equals(preSelectedShuttle))
-                    .findFirst()
-                    .orElse(null);
-
-            if (preSelectedShuttle != null && shuttleList.contains(preSelectedShuttle)) {
-                shuttleComboBox.setValue(preSelectedShuttle);
-            }
-
+            List<QuestionnaireRating> questionnaire = Util.getQuestionnaireForShuttle(clientRequests, user, shuttleSelected.getId());
+            ObservableList<QuestionnaireRating> observableList = FXCollections.observableArrayList(questionnaire);
+            umfrageTableView.setItems(observableList);
         } catch (Exception e) {
             Alert alert = new Alert(Alert.AlertType.ERROR);
             alert.setTitle("Loading Error");
@@ -143,22 +94,10 @@ public class DetailsViewController {
         }
     }
 
-    // Testiessss
-    public static class UmfrageResult {
-        private final String punkt;
-        private final String bewertung;
-
-        public UmfrageResult(String punkt, String bewertung) {
-            this.punkt = punkt;
-            this.bewertung = bewertung;
-        }
-
-        public String getPunkt() {
-            return punkt;
-        }
-
-        public String getBewertung() {
-            return bewertung;
-        }
+    @Override
+    protected void reload() {
+        setUpTableColumns();
+        loadData();
     }
+
 }

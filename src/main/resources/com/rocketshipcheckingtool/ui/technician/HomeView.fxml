@@ -5,6 +5,8 @@
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 <?import javafx.scene.chart.BarChart?>
+<?import javafx.scene.chart.NumberAxis?>
+<?import javafx.scene.chart.CategoryAxis?>
 <VBox spacing="40.0"
       xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1"
       fx:controller="com.rocketshipcheckingtool.ui.technician.HomeViewController" maxWidth="Infinity" maxHeight="Infinity">
@@ -31,8 +33,8 @@
             <ColumnConstraints percentWidth="50"/>
         </columnConstraints>
 
-        <VBox VBox.vgrow="ALWAYS" GridPane.columnIndex="0" styleClass="vBox">
-            <Label text="Aufgaben" styleClass="header"/>
+        <VBox VBox.vgrow="ALWAYS" GridPane.columnIndex="0" styleClass="vBox" onMouseClicked="#onBoxClicked">
+            <Label text="Zusätzliche Aufgaben" styleClass="header"/>
             <TableView fx:id="aufgabenTableView" VBox.vgrow="ALWAYS" styleClass="table-view">
                 <columns>
                     <TableColumn fx:id="aufgabeTaskColumn" text="Aufgabe"/>
@@ -42,9 +44,15 @@
                 </columns>
             </TableView>
         </VBox>
-        <VBox VBox.vgrow="ALWAYS" GridPane.columnIndex="1" styleClass="vBox" onMouseClicked="#onStatistikenBoxClicked">
-            <Label text="Statistiken" styleClass="header"/>
+        <VBox VBox.vgrow="ALWAYS" GridPane.columnIndex="1" styleClass="vBox" onMouseClicked="#onBoxClicked">
+            <Label text="Aufgaben Fortschritt" styleClass="header"/>
             <!--<BarChart fx:id="FortschrittBarChart" VBox.vgrow="ALWAYS" HBox.hgrow="ALWAYS"/>-->
+            <ScrollPane fitToWidth="true" VBox.vgrow="ALWAYS">
+                <VBox fx:id="shuttleProgressContainer" styleClass="progress-container" spacing="10">
+                    <!-- Progress bars will be added programmatically in the controller -->
+                    <Label text="No tasks in progress" fx:id="noTasksLabel"/>
+                </VBox>
+            </ScrollPane>
         </VBox>
     </GridPane>
 
