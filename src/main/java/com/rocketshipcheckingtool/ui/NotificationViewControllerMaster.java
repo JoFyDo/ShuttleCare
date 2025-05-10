@@ -1,9 +1,10 @@
-package com.rocketshipcheckingtool.ui.technician;
+package com.rocketshipcheckingtool.ui;
 
 import com.rocketshipcheckingtool.domain.Notification;
 import com.rocketshipcheckingtool.domain.Shuttle;
-import com.rocketshipcheckingtool.ui.Util;
 import com.rocketshipcheckingtool.ui.auth.UserSession;
+import com.rocketshipcheckingtool.ui.technician.ClientRequests;
+import com.rocketshipcheckingtool.ui.technician.NotificationViewController;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
 import javafx.fxml.FXML;
@@ -18,36 +19,33 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-public class NachrichtenViewController {
-    public ComboBox<String> shuttleComboBox;
-
-    // ────────────────────────────────────────────────────────────────────────────
-    // EXAMPLE
-    // ────────────────────────────────────────────────────────────────────────────
-    public TableView<Notification> nachrichtenTableView;
-    public TableColumn<Notification, String> nachrichtColumn;
-    public TableColumn<Notification, String> kommentarColumn;
-    public TableColumn<Notification, String> ShuttleColumn;
-    public TableColumn<Notification, String> vonColumn;
-    public TableColumn<Notification, Void> loeschenColumn;
-    public TableColumn<Notification, Void> erstellenColumn;
-
-    private ClientRequests clientRequests;
-    public List<Shuttle> shuttles;
-    public Shuttle shuttleSelected;
-    private final String user = UserSession.getRole().name().toLowerCase();
-
-    private final static Logger logger = LoggerFactory.getLogger(NachrichtenViewController.class);
-
-
-    public void setClientRequests(ClientRequests clientRequests) {
-        this.clientRequests = clientRequests;
-        loadShuttleContent();
-        loadTableContent();
-    }
-
+public abstract class NotificationViewControllerMaster {
     @FXML
-    public void initialize() {
+    protected ComboBox<String> shuttleComboBox;
+    @FXML
+    protected TableView<Notification> nachrichtenTableView;
+    @FXML
+    protected TableColumn<Notification, String> nachrichtColumn;
+    @FXML
+    protected TableColumn<Notification, String> kommentarColumn;
+    @FXML
+    protected TableColumn<Notification, String> shuttleColumn;
+    @FXML
+    protected TableColumn<Notification, String> vonColumn;
+    @FXML
+    protected TableColumn<Notification, Void> loeschenColumn;
+
+    protected Shuttle shuttleSelected;
+
+    protected ClientRequests clientRequests;
+    protected final String user = UserSession.getRole().name().toLowerCase();
+
+    protected List<Shuttle> shuttles;
+    protected final static Logger logger = LoggerFactory.getLogger(NotificationViewController.class);
+
+    protected ViewManagerController viewManagerController;
+
+    public void initialize(){
         shuttleComboBox.valueProperty().addListener((obs, oldVal, newVal) -> {
             if (newVal != null) {
                 shuttleSelected = shuttles.stream()
@@ -63,7 +61,7 @@ public class NachrichtenViewController {
         setupTableColumns();
     }
 
-    private void loadTableContent() {
+    public void loadTableContent(){
         try {
             ArrayList<Notification> notifications = null;
             if (shuttleSelected != null) {
@@ -75,7 +73,7 @@ public class NachrichtenViewController {
 
             //Buttons
             setupLoeschenButtonColumn();
-            setupErstellenButtonColumn();
+            load();
 
         } catch (Exception e) {
             Alert alert = new Alert(Alert.AlertType.ERROR);
@@ -87,11 +85,13 @@ public class NachrichtenViewController {
         }
     }
 
-    private void setupTableColumns() {
+    protected abstract void load();
+
+    protected void setupTableColumns() {
         nachrichtColumn.setCellValueFactory(new PropertyValueFactory<>("message"));
         kommentarColumn.setCellValueFactory(new PropertyValueFactory<>("comment"));
         vonColumn.setCellValueFactory(new PropertyValueFactory<>("sender"));
-        ShuttleColumn.setCellValueFactory(cellData -> {
+        shuttleColumn.setCellValueFactory(cellData -> {
             int shuttleID = cellData.getValue().getShuttleID();
             Shuttle matchingShuttle = shuttles.stream()
                     .filter(shuttle -> shuttle.getId() == shuttleID)
@@ -100,14 +100,14 @@ public class NachrichtenViewController {
             return new SimpleStringProperty(matchingShuttle != null ? matchingShuttle.getShuttleName() : "Unknown");
         });
         vonColumn.setCellValueFactory(new PropertyValueFactory<>("sender"));
-
         loeschenColumn.setResizable(false);
         loeschenColumn.setPrefWidth(50);
-        erstellenColumn.setResizable(false);
-        erstellenColumn.setPrefWidth(50);
         nachrichtenTableView.setSelectionModel(null);
         nachrichtenTableView.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY_ALL_COLUMNS);
+        setupTableErstellenContent();
     }
+
+    protected abstract void setupTableErstellenContent();
 
     private SVGPath loadSvgIcon(String filename) {
         try {
@@ -155,31 +155,7 @@ public class NachrichtenViewController {
         });
     }
 
-    private void setupErstellenButtonColumn() {
-        erstellenColumn.setCellFactory(col -> new TableCell<>() {
-            private final Button button = createIconButton("add.fxml");
-                {
-                    button.setOnAction(event -> {
-                    Notification item = getTableView().getItems().get(getIndex());
-                    try {
-                        Util.newTaskForShuttle(clientRequests, user, Util.getShuttle(clientRequests, user, item.getShuttleID()), item.getMessage() + ": " + item.getComment());
-                        Util.updateNotification(clientRequests, user, item.getId(), "false");
-                        loadTableContent();
-                    }catch (Exception e) {
-                        System.out.println("[Nachrichten] Error creating task: " + e.getMessage());
-                    }
-                });
-            }
-
-            @Override
-            protected void updateItem(Void item, boolean empty) {
-                super.updateItem(item, empty);
-                setGraphic(empty ? null : button);
-            }
-        });
-    }
-
-    private Button createIconButton(String iconFile) {
+    protected Button createIconButton(String iconFile) {
         Button button = new Button();
         button.getStyleClass().add("iconButton");
         button.setGraphic(loadSvgIcon(iconFile));
@@ -207,4 +183,17 @@ public class NachrichtenViewController {
             System.exit(1);
         }
     }
+
+    public void setViewManagerController(ViewManagerController viewManagerController) {
+        this.viewManagerController = viewManagerController;
+    }
+
+    public void setClientRequests(ClientRequests clientRequests) {
+        this.clientRequests = clientRequests;
+        loadShuttleContent();
+        loadTableContent();
+    }
+
+
+
 }

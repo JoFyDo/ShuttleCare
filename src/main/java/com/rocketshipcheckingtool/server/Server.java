@@ -176,7 +176,7 @@ public class Server {
 
                 case "/requestNotifications":
                     if ("GET".equals(requestMethod)) {
-                        sendResponse(exchange, 200, Util.combineJSONString(databaseConnection.getNotifications()));
+                        sendResponse(exchange, 200, Util.combineJSONString(databaseConnection.getNotifications(user)));
                     }
                     break;
 
@@ -191,7 +191,7 @@ public class Server {
                 case "/requestNotificationsByShuttle":
                     if ("GET".equals(requestMethod)) {
                         String shuttleID = parameters.get("ShuttleID");
-                        ArrayList<Notification> notifications = databaseConnection.getNotificationsByShuttle(shuttleID);
+                        ArrayList<Notification> notifications = databaseConnection.getNotificationsByShuttle(shuttleID, user);
                         sendResponse(exchange, 200, Util.combineJSONString(notifications));
                     }
                     break;
