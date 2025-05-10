@@ -5,7 +5,6 @@ import com.rocketshipcheckingtool.ui.auth.UserRole;
 import com.rocketshipcheckingtool.ui.auth.UserSession;
 import com.rocketshipcheckingtool.ui.technician.ClientRequests;
 import com.rocketshipcheckingtool.ui.technician.LagerViewController;
-import com.rocketshipcheckingtool.ui.technician.NachrichtenViewController;
 import com.rocketshipcheckingtool.ui.technician.StatistikenViewController;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXMLLoader;
@@ -30,8 +29,8 @@ public class ViewManagerController {
     public ToggleGroup toggleGroup;
     public ToggleButton btnHome, btnDetails, btnStatistiken, btnLager, btnNachrichten;
     public StackPane contentArea;
-    private Node technicianHomePage, technicianDetailsPage, statistikenPage, lagerPage, nachrichtenPage;
-    private Node managerHomePage, managerDetailsPage;
+    private Node technicianHomePage, technicianDetailsPage, statistikenPage, lagerPage, technicianNotificationPage;
+    private Node managerHomePage, managerDetailsPage, managerNotificationPage;
     private com.rocketshipcheckingtool.ui.technician.DetailsViewController technicianDetailsController;
     private com.rocketshipcheckingtool.ui.technician.HomeViewController technicianHomeController;
     private com.rocketshipcheckingtool.ui.manager.HomeViewController managerHomeController;
@@ -68,15 +67,15 @@ public class ViewManagerController {
                 technicianDetailsPage = loadPage("/com/rocketshipcheckingtool/ui/technician/DetailsView.fxml");
                 statistikenPage = loadPage("/com/rocketshipcheckingtool/ui/technician/StatistikenView.fxml");
                 lagerPage = loadPage("/com/rocketshipcheckingtool/ui/technician/LagerView.fxml");
-                nachrichtenPage = loadPage("/com/rocketshipcheckingtool/ui/technician/NachrichtenView.fxml");
+                technicianNotificationPage = loadPage("/com/rocketshipcheckingtool/ui/technician/NachrichtenView.fxml");
 
-                contentArea.getChildren().addAll(technicianHomePage, technicianDetailsPage, statistikenPage, lagerPage, nachrichtenPage);
+                contentArea.getChildren().addAll(technicianHomePage, technicianDetailsPage, statistikenPage, lagerPage, technicianNotificationPage);
             }
             case MANAGER -> {
                 managerHomePage = loadPage("/com/rocketshipcheckingtool/ui/manager/HomeView.fxml");
                 managerDetailsPage = loadPage("/com/rocketshipcheckingtool/ui/manager/DetailsView.fxml");
-
-                contentArea.getChildren().addAll(managerHomePage, managerDetailsPage);
+                managerNotificationPage = loadPage("/com/rocketshipcheckingtool/ui/manager/NachrichtenView.fxml");
+                contentArea.getChildren().addAll(managerHomePage, managerDetailsPage, managerNotificationPage);
             }
         }
 
@@ -111,7 +110,9 @@ public class ViewManagerController {
             svc.setViewManagerController(this);
         } else if (controller instanceof LagerViewController lvc) {
             lvc.setClientRequests(clientRequests);
-        } else if (controller instanceof NachrichtenViewController nvc) {
+        } else if (controller instanceof com.rocketshipcheckingtool.ui.technician.NotificationViewController nvc) {
+            nvc.setClientRequests(clientRequests);
+        } else if (controller instanceof com.rocketshipcheckingtool.ui.manager.NotificationViewController nvc) {
             nvc.setClientRequests(clientRequests);
         }
 
@@ -140,11 +141,6 @@ public class ViewManagerController {
     public void handleBestellenButton() {
         showPage(lagerPage);
         sidebarController.selectButton("btnLager");
-    }
-
-    public void handleStatistikenVBox() {
-        showPage(statistikenPage);
-        sidebarController.selectButton("btnStatistiken");
     }
 
     public void showHome() {
@@ -201,9 +197,11 @@ public class ViewManagerController {
             }
             case "btnNachrichten" -> {
                 if (UserSession.getRole() == UserRole.TECHNICIAN) {
-                    showPage(nachrichtenPage);
-                    sidebarController.selectButton("btnNachrichten");
+                    showPage(technicianNotificationPage);
+                } else if (UserSession.getRole() == UserRole.MANAGER) {
+                    showPage(managerNotificationPage);
                 }
+                sidebarController.selectButton("btnNachrichten");
             }
             default -> System.err.println("Unknown buttonId: " + buttonId);
         }

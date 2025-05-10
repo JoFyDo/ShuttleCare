@@ -36,6 +36,20 @@
             </padding>
         </Label>
     </VBox>
+    <VBox alignment="TOP_CENTER">
+        <ToggleButton fx:id="btnNachrichten" onAction="#handleSidebarClick" styleClass="buttonSidebar"
+                      toggleGroup="$toggleGroup">
+            <graphic>
+                <fx:include source="/com/rocketshipcheckingtool/ui/graphics/nachrichten.fxml"/>
+            </graphic>
+
+        </ToggleButton>
+        <Label alignment="CENTER" text="Nachrichten" textFill="white">
+            <padding>
+                <Insets top="5.0"/>
+            </padding>
+        </Label>
+    </VBox>
     <Pane fx:id="spacer" VBox.vgrow="ALWAYS"/>
     <ToggleButton fx:id="btnLogout" onAction="#handleLogout" styleClass="transparent-button">
         <graphic>

@@ -16,6 +16,7 @@ import org.slf4j.LoggerFactory;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 public class DetailsViewController extends DetailsViewControllerMaster {
 
@@ -84,7 +85,7 @@ public class DetailsViewController extends DetailsViewControllerMaster {
                     throw new RuntimeException(e);
                 }
             });
-            if (task.getStatus().equals("true")){
+            if (task.getStatus()){
                 checkBox.setSelected(true);
             }
             taskItem.getChildren().addAll(taskLabel, checkBox);
@@ -127,7 +128,7 @@ public class DetailsViewController extends DetailsViewControllerMaster {
                 }
 
             });
-            if (task.getStatus().equals("true")){
+            if (!task.getStatus()){
                 checkBox.setSelected(true);
             }
 
@@ -233,13 +234,13 @@ public class DetailsViewController extends DetailsViewControllerMaster {
         }
         boolean check = false;
         for (Task task : activeTasks) {
-            if (task.getStatus().equals("false")){
+            if (!task.getStatus()){
                 check = true;
             }
         }
 
         for (Task task : generalTasks) {
-            if (task.getStatus().equals("false")){
+            if (!task.getStatus()){
                 check = true;
             }
         }
@@ -292,7 +293,15 @@ public class DetailsViewController extends DetailsViewControllerMaster {
         alert.setOnHidden(event -> {
             if (alert.getResult() == ButtonType.OK) {
                 try {
+                    TextInputDialog reasonDialog = new TextInputDialog();
+                    reasonDialog.setTitle("Grund für Verschrottung");
+                    reasonDialog.setHeaderText("Bitte geben Sie den Grund für die Verschrottung ein");
+                    reasonDialog.setContentText("Grund:");
+
+                    Optional<String> result = reasonDialog.showAndWait();
+                    String reason = result.orElse("Kein Grund angegeben");
                     Util.updateShuttleStatus(clientRequests, user, shuttleSelected.getId(), "Verschrottet");
+                    Util.createNotification(clientRequests, user, shuttleSelected.getId(), "Das Shuttle wurde verschrottet", user, reason);
                     Util.updateAllTasksBelongToShuttle(clientRequests, user, shuttleSelected.getId(), false);
                     shuttleSelected = null;
                     viewManagerController.showHome();

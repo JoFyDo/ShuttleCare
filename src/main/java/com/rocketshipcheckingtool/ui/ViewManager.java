@@ -17,7 +17,6 @@ import java.util.Objects;
 
 public class ViewManager extends Application {
     private static ClientRequests clientRequests;
-    private final String user = "technician";
     private final static Logger logger = LoggerFactory.getLogger(ViewManagerController.class);
 
     @Override

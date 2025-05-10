@@ -289,10 +289,11 @@ public class DatabaseConnection {
         }
     }
 
-    public ArrayList<Notification> getNotifications() {
+    public ArrayList<Notification> getNotifications(String user) {
         try {
-            String query = "SELECT * FROM Notifications WHERE Aktiv = 'true'";
+            String query = "SELECT * FROM Notifications WHERE Aktiv = 'true' AND Absender != ?";
             PreparedStatement stmt = connection.prepareStatement(query);
+            stmt.setString(1, user);
             ResultSet rs = stmt.executeQuery();
             ArrayList<Notification> notifications = new ArrayList<>();
             while (rs.next()) {
@@ -319,11 +320,12 @@ public class DatabaseConnection {
         }
     }
 
-    public ArrayList<Notification> getNotificationsByShuttle(String shuttleID) {
+    public ArrayList<Notification> getNotificationsByShuttle(String shuttleID, String user) {
         try {
-            String query = "SELECT * FROM Notifications WHERE ShuttleID = ? AND Aktiv = 'true'";
+            String query = "SELECT * FROM Notifications WHERE ShuttleID = ? AND Aktiv = 'true' AND Absender != ?";
             PreparedStatement stmt = connection.prepareStatement(query);
             stmt.setString(1, shuttleID);
+            stmt.setString(2, user);
             ResultSet rs = stmt.executeQuery();
             ArrayList<Notification> notifications = new ArrayList<>();
             while (rs.next()) {
