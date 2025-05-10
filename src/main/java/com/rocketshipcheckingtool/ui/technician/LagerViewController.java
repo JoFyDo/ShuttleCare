@@ -3,6 +3,7 @@ package com.rocketshipcheckingtool.ui.technician;
 import com.rocketshipcheckingtool.domain.Part;
 import com.rocketshipcheckingtool.ui.Util;
 import com.rocketshipcheckingtool.ui.auth.UserSession;
+import com.rocketshipcheckingtool.ui.TableSearchHelper;
 import javafx.collections.FXCollections;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -17,6 +18,7 @@ import javafx.stage.Modality;
 import javafx.stage.Stage;
 
 import java.io.IOException;
+import java.util.List;
 
 public class LagerViewController {
     public TextField searchField;
@@ -32,6 +34,7 @@ public class LagerViewController {
     public TableView<Part> lagerTableView;
     private ClientRequests clientRequests;
     private final String user = UserSession.getRole().name().toLowerCase();
+    private TableSearchHelper<Part> searchHelper;
 
 
     public void setClientRequests(ClientRequests clientRequests) {
@@ -42,6 +45,11 @@ public class LagerViewController {
     @FXML
     public void initialize() {
         setupTableColumns();
+        searchHelper = new TableSearchHelper<>(
+                lagerTableView,
+                searchField,
+                Part::getName
+        );
     }
 
     private void setupTableColumns() {
@@ -71,9 +79,6 @@ public class LagerViewController {
             return cell;
         });
 
-        // ────────────────────────────────────────────────────────────────────────────
-        // EXAMPLE
-        // ────────────────────────────────────────────────────────────────────────────
         nameColumn.setCellValueFactory(new PropertyValueFactory<>("name"));
         nrColumn.setCellValueFactory(new PropertyValueFactory<>("id"));
         preisColumn.setCellValueFactory(new PropertyValueFactory<>("price"));
@@ -82,15 +87,29 @@ public class LagerViewController {
         checkBoxColumn.setResizable(false);
         checkBoxColumn.setPrefWidth(50);
 
-        lagerTableView.setSelectionModel(null);
+        lagerTableView.getSelectionModel().setCellSelectionEnabled(false);
+        lagerTableView.setRowFactory(tv -> {
+            TableRow<Part> row = new TableRow<>();
+            row.setOnMousePressed(event -> {
+                if (!event.getTarget().toString().contains("CheckBox")) {
+                    lagerTableView.getSelectionModel().clearSelection();
+                }
+            });
+            return row;
+        });
         lagerTableView.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY_ALL_COLUMNS);
+
     }
 
 
     private void loadTableContent() {
         try {
             lagerTableView.setItems(FXCollections.observableArrayList(Util.getParts(clientRequests, user)));
-
+            List<Part> parts = Util.getParts(clientRequests, user);
+            lagerTableView.setItems(FXCollections.observableArrayList(parts));
+            if (searchHelper != null) {
+                searchHelper.setItems(parts);
+            }
         } catch (Exception e) {
             Alert alert = new Alert(Alert.AlertType.ERROR);
             alert.setTitle("Loading Error");
@@ -170,7 +189,7 @@ public class LagerViewController {
         }
     }
 
-    public void alertDidntSelect(){
+    public void alertDidntSelect() {
         Alert alert = new Alert(Alert.AlertType.INFORMATION);
         alert.setTitle("Wähle bitte eine Zeile aus");
         alert.setHeaderText(null);
