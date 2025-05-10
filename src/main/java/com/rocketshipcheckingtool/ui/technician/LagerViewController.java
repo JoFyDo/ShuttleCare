@@ -1,6 +1,7 @@
 package com.rocketshipcheckingtool.ui.technician;
 
 import com.rocketshipcheckingtool.domain.Part;
+import com.rocketshipcheckingtool.domain.Shuttle;
 import com.rocketshipcheckingtool.ui.Util;
 import com.rocketshipcheckingtool.ui.auth.UserSession;
 import javafx.collections.FXCollections;
@@ -159,7 +160,12 @@ public class LagerViewController {
                 popupStage.setResizable(false);
                 popupStage.showAndWait();
                 if (bestellenPopupController.getIsBestellenButton()) {
-                    Util.orderPart(clientRequests, user, part.getId(), bestellenPopupController.getQuantity(), bestellenPopupController.getSelectedShuttle().getId());
+                    Shuttle shuttle = bestellenPopupController.getSelectedShuttle();
+                    if (shuttle != null) {
+                        Util.orderPart(clientRequests, user, part.getId(), bestellenPopupController.getQuantity(), bestellenPopupController.getSelectedShuttle().getId());
+                    } else {
+                        Util.orderPart(clientRequests, user, part.getId(), bestellenPopupController.getQuantity(), null);
+                    }
                     loadTableContent();
                 }
             } catch (NullPointerException e) {

@@ -174,7 +174,7 @@ public class Util {
         }
     }
 
-    public static void orderPart(ClientRequests clientRequests, String user, int partId, int quantity, int shuttleId) throws IOException {
+    public static void orderPart(ClientRequests clientRequests, String user, int partId, int quantity, Integer shuttleId) throws IOException {
         try {
             HashMap<String, String> params = new HashMap<>();
             params.put("PartID", String.valueOf(partId));
