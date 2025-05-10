@@ -1,15 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <?import javafx.geometry.Insets?>
-<?import javafx.scene.chart.PieChart?>
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
-<?import javafx.scene.chart.BarChart?>
-<?import javafx.scene.chart.NumberAxis?>
-<?import javafx.scene.chart.CategoryAxis?>
 <VBox spacing="40.0"
       xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1"
-      fx:controller="com.rocketshipcheckingtool.ui.technician.HomeViewController" maxWidth="Infinity" maxHeight="Infinity">
+      fx:controller="com.rocketshipcheckingtool.ui.technician.HomeViewController" maxWidth="Infinity"
+      maxHeight="Infinity">
     <padding>
         <Insets bottom="40.0" left="40.0" right="40.0" top="40.0"/>
     </padding>
@@ -46,9 +43,9 @@
         </VBox>
         <VBox VBox.vgrow="ALWAYS" GridPane.columnIndex="1" styleClass="vBox" onMouseClicked="#onBoxClicked">
             <Label text="Aufgaben Fortschritt" styleClass="header"/>
-            <!--<BarChart fx:id="FortschrittBarChart" VBox.vgrow="ALWAYS" HBox.hgrow="ALWAYS"/>-->
-            <ScrollPane fitToWidth="true" VBox.vgrow="ALWAYS">
-                <VBox fx:id="shuttleProgressContainer" styleClass="progress-container" spacing="10">
+            <ScrollPane fitToWidth="true" VBox.vgrow="ALWAYS" style="-fx-border-color: white">
+                <VBox fx:id="shuttleProgressContainer" styleClass="progress-container" spacing="10"
+                      style="-fx-border-color: white">
                     <!-- Progress bars will be added programmatically in the controller -->
                     <Label text="No tasks in progress" fx:id="noTasksLabel"/>
                 </VBox>
