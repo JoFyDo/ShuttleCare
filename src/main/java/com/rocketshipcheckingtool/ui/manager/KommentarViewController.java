@@ -1,7 +1,9 @@
 package com.rocketshipcheckingtool.ui.manager;
 
 import com.rocketshipcheckingtool.domain.Comment;
+import com.rocketshipcheckingtool.domain.Part;
 import com.rocketshipcheckingtool.domain.Shuttle;
+import com.rocketshipcheckingtool.ui.TableSearchHelper;
 import com.rocketshipcheckingtool.ui.Util;
 import com.rocketshipcheckingtool.ui.auth.UserSession;
 import com.rocketshipcheckingtool.ui.technician.ClientRequests;
@@ -34,10 +36,16 @@ public class KommentarViewController {
     private ClientRequests clientRequests;
     private Shuttle shuttleSelected;
     private final String user = UserSession.getRole().name().toLowerCase();
+    private TableSearchHelper<Comment> searchHelper;
 
     
     public void initialize() throws IOException {
         setupTableColumns();
+        searchHelper = new TableSearchHelper<>(
+                kommentarTableView,
+                searchField,
+                Comment::getComment
+        );
     }
 
     private void setupTableColumns() {
@@ -65,7 +73,6 @@ public class KommentarViewController {
         checkBoxColumn.setResizable(false);
         checkBoxColumn.setPrefWidth(50);
 
-        kommentarTableView.setSelectionModel(null);
         kommentarTableView.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY_ALL_COLUMNS);
     }
 
@@ -140,6 +147,9 @@ public class KommentarViewController {
         }
         try {
             kommentarTableView.setItems(FXCollections.observableArrayList(Util.getCommentsForShuttle(clientRequests, user, shuttleSelected.getId())));
+            if (searchHelper != null) {
+                searchHelper.setItems(kommentarTableView.getItems());
+            }
         } catch (Exception e) {
 
         }
