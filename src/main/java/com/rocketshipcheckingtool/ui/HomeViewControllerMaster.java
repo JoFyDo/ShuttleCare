@@ -1,10 +1,8 @@
 package com.rocketshipcheckingtool.ui;
 
 import com.rocketshipcheckingtool.domain.Shuttle;
-import com.rocketshipcheckingtool.domain.Task;
 import com.rocketshipcheckingtool.ui.auth.UserSession;
 import com.rocketshipcheckingtool.ui.technician.ClientRequests;
-import com.rocketshipcheckingtool.ui.technician.Util;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
 import javafx.fxml.FXML;
@@ -106,4 +104,12 @@ public abstract class HomeViewControllerMaster {
     public void setViewManagerController(ViewManagerController viewManagerController) {
         this.viewManagerController = viewManagerController;
     }
+
+    public void setClientRequests(ClientRequests clientRequests) {
+        this.clientRequests = clientRequests;
+        loadShuttleTableContent();
+        load();
+    }
+
+    public abstract void load();
 }

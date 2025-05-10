@@ -45,6 +45,7 @@
         <VBox VBox.vgrow="ALWAYS" GridPane.columnIndex="1" styleClass="vBox" onMouseClicked="#onBoxClicked">
             <Label text="Aufgaben Fortschritt" styleClass="header"/>
             <!--<BarChart fx:id="FortschrittBarChart" VBox.vgrow="ALWAYS" HBox.hgrow="ALWAYS"/>-->
+            <ListView fx:id="shuttleProgressListView" VBox.vgrow="ALWAYS" styleClass="progress-list-view"/>
         </VBox>
     </GridPane>
 

@@ -1,6 +1,7 @@
 package com.rocketshipcheckingtool.ui.technician;
 
 import com.rocketshipcheckingtool.domain.Shuttle;
+import com.rocketshipcheckingtool.ui.Util;
 import com.rocketshipcheckingtool.ui.auth.UserSession;
 import javafx.scene.control.Button;
 import javafx.scene.control.ComboBox;
@@ -11,7 +12,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
-import java.util.Collection;
 
 public class BestellenPopupController {
     private static final Logger log = LoggerFactory.getLogger(BestellenPopupController.class);

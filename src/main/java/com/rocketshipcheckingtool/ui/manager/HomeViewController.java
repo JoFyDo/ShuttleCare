@@ -25,12 +25,8 @@ public class HomeViewController extends HomeViewControllerMaster {
         System.out.println(user);
     }
 
-    public void setClientRequests(ClientRequests clientRequests) {
-        this.clientRequests = clientRequests;
-        super.loadShuttleTableContent();
-    }
+    @Override
+    public void load() {
 
-    public void setViewManagerController(ViewManagerController viewManagerController) {
-        this.viewManagerController = viewManagerController;
     }
 }

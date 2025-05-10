@@ -1,11 +1,10 @@
-package com.rocketshipcheckingtool.ui.technician;
+package com.rocketshipcheckingtool.ui;
 
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
-import com.rocketshipcheckingtool.domain.Notification;
-import com.rocketshipcheckingtool.domain.Part;
-import com.rocketshipcheckingtool.domain.Shuttle;
-import com.rocketshipcheckingtool.domain.Task;
+import com.rocketshipcheckingtool.domain.*;
+import com.rocketshipcheckingtool.ui.technician.ClientRequests;
+import com.rocketshipcheckingtool.ui.technician.NeueAufgabePopupController;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
@@ -238,6 +237,91 @@ public class Util {
             throw new ConnectException(e.getMessage());
         }
     }
+
+    public static ArrayList<QuestionnaireRating> getQuestionnaireForShuttle(ClientRequests clientRequests, String user, int shuttleID) throws IOException {
+        try {
+            HashMap<String, String> params = new HashMap<>();
+            params.put("ShuttleID", String.valueOf(shuttleID));
+            String tasks = clientRequests.getRequest("/requestQuestionnaireForShuttle", user, params);
+            Gson gson = new Gson();
+            Type shuttleListType = new TypeToken<ArrayList<QuestionnaireRating>>() {}.getType();
+            return gson.fromJson(tasks, shuttleListType);
+        } catch (Exception e) {
+            logger.error(e.getMessage());
+            throw new ConnectException(e.getMessage());
+        }
+    }
+
+    public static ArrayList<Comment> getCommentsForShuttle(ClientRequests clientRequests, String user, int shuttleID) throws IOException {
+        try {
+            HashMap<String, String> params = new HashMap<>();
+            params.put("ShuttleID", String.valueOf(shuttleID));
+            String tasks = clientRequests.getRequest("/requestCommentsForShuttle", user, params);
+            Gson gson = new Gson();
+            Type shuttleListType = new TypeToken<ArrayList<Comment>>() {}.getType();
+            return gson.fromJson(tasks, shuttleListType);
+        } catch (Exception e) {
+            logger.error(e.getMessage());
+            throw new ConnectException(e.getMessage());
+        }
+    }
+
+    public static boolean updateComment(ClientRequests clientRequests, String user, int commentID, String status) throws IOException {
+        try {
+            HashMap<String, String> params = new HashMap<>();
+            params.put("CommentID", String.valueOf(commentID));
+            params.put("Status", status);
+            clientRequests.postRequest("/updateComment", user, params);
+            return true;
+        } catch (Exception e) {
+            logger.error(e.getMessage());
+            throw new ConnectException(e.getMessage());
+        }
+    }
+
+    public static boolean updateQuestionnaireStatus(ClientRequests clientRequests, String user, int questionnaireRatingID, String status) throws IOException {
+        try {
+            HashMap<String, String> params = new HashMap<>();
+            params.put("QuestionnaireRatingID", String.valueOf(questionnaireRatingID));
+            params.put("Status", status);
+            clientRequests.postRequest("/updateQuestionnaire", user, params);
+            return true;
+        } catch (Exception e) {
+            logger.error(e.getMessage());
+            throw new ConnectException(e.getMessage());
+        }
+    }
+
+    public static boolean createNotification(ClientRequests clientRequests, String user, int shuttleID, String message, String sender, String comment) throws IOException {
+        try {
+            HashMap<String, String> params = new HashMap<>();
+            params.put("ShuttleID", String.valueOf(shuttleID));
+            params.put("Message", message);
+            params.put("Sender", sender);
+            params.put("Comment", comment);
+            clientRequests.postRequest("/createNotification", user, params);
+            return true;
+        } catch (Exception e) {
+            logger.error(e.getMessage());
+            throw new ConnectException(e.getMessage());
+        }
+    }
+
+    public static boolean allCommandsDone(ClientRequests clientRequests, String user, int shuttleID) throws IOException {
+        try {
+            HashMap<String, String> params = new HashMap<>();
+            params.put("ShuttleID", String.valueOf(shuttleID));
+            String done = clientRequests.postRequest("/allCommandsDone", user, params);
+            return Boolean.parseBoolean(done);
+        } catch (Exception e) {
+            logger.error(e.getMessage());
+            throw new ConnectException(e.getMessage());
+        }
+    }
+
+
+
+
 
     public static void newTaskForShuttle(ClientRequests clientRequests, String user, Shuttle shuttle, String preset) throws IOException {
         FXMLLoader loader = new FXMLLoader(Util.class.getResource("/com/rocketshipcheckingtool/ui/technician/NeueAufgabePopupView.fxml"));

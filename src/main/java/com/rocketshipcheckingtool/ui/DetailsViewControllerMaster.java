@@ -3,7 +3,6 @@ package com.rocketshipcheckingtool.ui;
 import com.rocketshipcheckingtool.domain.Shuttle;
 import com.rocketshipcheckingtool.ui.auth.UserSession;
 import com.rocketshipcheckingtool.ui.technician.ClientRequests;
-import com.rocketshipcheckingtool.ui.technician.Util;
 import javafx.fxml.FXML;
 import javafx.scene.control.Alert;
 import javafx.scene.control.ComboBox;
@@ -19,6 +18,8 @@ public abstract class DetailsViewControllerMaster {
     protected List<String> shuttleList;
     protected ClientRequests clientRequests;
     protected final String user = UserSession.getRole().name().toLowerCase();
+    protected ViewManagerController viewManagerController;
+
 
     public void initialize() {
         shuttleComboBox.valueProperty().addListener((obs, oldVal, newVal) -> {
@@ -73,4 +74,14 @@ public abstract class DetailsViewControllerMaster {
     }
 
     protected abstract void reload();
+
+    public void setViewManagerController(ViewManagerController viewManagerController) {
+        this.viewManagerController = viewManagerController;
+    }
+
+    public void setClientRequests(ClientRequests clientRequests) {
+        this.clientRequests = clientRequests;
+        loadShuttleContent();
+        reload();
+    }
 }

@@ -1,9 +1,6 @@
 package com.rocketshipcheckingtool.server;
 
-import com.rocketshipcheckingtool.domain.Notification;
-import com.rocketshipcheckingtool.domain.Part;
-import com.rocketshipcheckingtool.domain.Shuttle;
-import com.rocketshipcheckingtool.domain.Task;
+import com.rocketshipcheckingtool.domain.*;
 import com.rocketshipcheckingtool.ui.auth.UserRole;
 import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpServer;
@@ -209,6 +206,58 @@ public class Server {
                         int shuttleId = Integer.parseInt(parameters.get("ShuttleID"));
                         String predictedReleaseTime = parameters.get("PredictedReleaseTime");
                         sendResponse(exchange, 200, String.valueOf(databaseConnection.setPredictedReleaseTime(shuttleId, predictedReleaseTime)));
+                    }
+                    break;
+                case "/requestQuestionnaires":
+                    if ("GET".equals(requestMethod)) {
+                        sendResponse(exchange, 200, Util.combineJSONString(databaseConnection.getQuestionnaires()));
+                    }
+                    break;
+                case "/requestQuestionnaireForShuttle":
+                    if ("GET".equals(requestMethod)) {
+                        int shuttleId = Integer.parseInt(parameters.get("ShuttleID"));
+                        sendResponse(exchange, 200, Util.combineJSONString(databaseConnection.getQuestionnaireForShuttle(shuttleId)));
+                    }
+                    break;
+                case "/updateQuestionnaire":
+                    if ("POST".equals(requestMethod)) {
+                        int questionnaireId = Integer.parseInt(parameters.get("QuestionnaireID"));
+                        String status = parameters.get("Status");
+                        sendResponse(exchange, 200, String.valueOf(databaseConnection.updateQuestionnaireRating(questionnaireId, status)));
+                    }
+                    break;
+                case "/requestCommentsForShuttle":
+                    if ("GET".equals(requestMethod)) {
+                        int shuttleId = Integer.parseInt(parameters.get("ShuttleID"));
+                        ArrayList<Comment> comments = databaseConnection.getCommentsByShuttle(shuttleId);
+                        sendResponse(exchange, 200, Util.combineJSONString(comments));
+                    }
+                    break;
+                case "/updateComment":
+                    if ("POST".equals(requestMethod)) {
+                        int commentId = Integer.parseInt(parameters.get("CommentID"));
+                        String status = parameters.get("Status");
+                        sendResponse(exchange, 200, String.valueOf(databaseConnection.updateComment(commentId, status)));
+                    }
+                    break;
+                case "/createNotification":
+                    if ("POST".equals(requestMethod)) {
+                        String message = parameters.get("Message");
+                        String shuttleId = parameters.get("ShuttleID");
+                        String sender = parameters.get("Sender");
+                        String comment = parameters.get("Comment");
+                        sendResponse(exchange, 200, String.valueOf(databaseConnection.createNotification(message, shuttleId, sender, comment)));
+                    }
+                    break;
+                case "/allCommandsDone":
+                    if ("POST".equals(requestMethod)) {
+                        int shuttleId = Integer.parseInt(parameters.get("ShuttleID"));
+                        ArrayList<Comment> comments = databaseConnection.getCommentsByShuttle(shuttleId);
+                        if (comments.isEmpty()) {
+                            sendResponse(exchange, 200, "true");
+                        }else {
+                            sendResponse(exchange, 200, "false");
+                        }
                     }
                     break;
 

@@ -3,19 +3,13 @@ package com.rocketshipcheckingtool.ui.technician;
 import com.rocketshipcheckingtool.domain.Shuttle;
 import com.rocketshipcheckingtool.domain.Task;
 import com.rocketshipcheckingtool.ui.DetailsViewControllerMaster;
-import com.rocketshipcheckingtool.ui.auth.UserSession;
-import com.rocketshipcheckingtool.ui.ViewManagerController;
+import com.rocketshipcheckingtool.ui.Util;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
-import javafx.fxml.FXMLLoader;
-import javafx.scene.Parent;
-import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
-import javafx.stage.Modality;
-import javafx.stage.Stage;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -34,7 +28,6 @@ public class DetailsViewController extends DetailsViewControllerMaster {
     public VBox aufgabenBox;
     public VBox zusaetzlichAufgabenBox;
     public Button freigebenButton;
-    private ViewManagerController viewManagerController;
 
     private final static Logger logger = LoggerFactory.getLogger(DetailsViewController.class);
 
@@ -144,6 +137,7 @@ public class DetailsViewController extends DetailsViewControllerMaster {
     }
 
     private void loadLoadingBar() {
+        if (shuttleSelected == null) return;
         List<Button> steps = List.of(
                 gelandetButton,
                 inspektion1Button,
@@ -187,16 +181,8 @@ public class DetailsViewController extends DetailsViewControllerMaster {
 
     }
 
-
-
-
-    public void setClientRequests(ClientRequests clientRequests) {
-        this.clientRequests = clientRequests;
-        loadShuttleContent();
-    }
-
     public void selectShuttle(Shuttle shuttle) {
-        if (shuttleSelected != null) {
+        if (shuttle != null) {
             loadShuttleContent(shuttle.getShuttleName());
         } else {
             loadShuttleContent();
@@ -362,7 +348,15 @@ public class DetailsViewController extends DetailsViewControllerMaster {
                         Util.updateShuttleStatus(clientRequests, user, shuttleSelected.getId(), "Gelandet");
                         break;
                     case "Gelandet":
-                        Util.updateShuttleStatus(clientRequests, user, shuttleSelected.getId(), "Inspektion 1");
+                        if (Util.allCommandsDone(clientRequests, user, shuttleSelected.getId())) {
+                            Util.updateShuttleStatus(clientRequests, user, shuttleSelected.getId(), "Inspektion 1");
+                        }else{
+                            Alert alert = new Alert(Alert.AlertType.INFORMATION);
+                            alert.setTitle("Aufgaben ausstehend");
+                            alert.setHeaderText(null);
+                            alert.setContentText("Der Manager muss erst alle Kommentare bearbeiten");
+                            alert.showAndWait();
+                        }
                         break;
                     case "Inspektion 1":
                         boolean hasOpenTasks = false;
@@ -409,7 +403,4 @@ public class DetailsViewController extends DetailsViewControllerMaster {
         }
     }
 
-    public void setViewManagerController(ViewManagerController viewManagerController) {
-        this.viewManagerController = viewManagerController;
-    }
 }

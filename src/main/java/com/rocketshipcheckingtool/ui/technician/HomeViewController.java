@@ -1,16 +1,10 @@
 package com.rocketshipcheckingtool.ui.technician;
 
-import com.rocketshipcheckingtool.domain.Shuttle;
 import com.rocketshipcheckingtool.domain.Task;
 import com.rocketshipcheckingtool.ui.HomeViewControllerMaster;
-import com.rocketshipcheckingtool.ui.auth.UserSession;
-import com.rocketshipcheckingtool.ui.ViewManagerController;
-import javafx.beans.property.SimpleStringProperty;
+import com.rocketshipcheckingtool.ui.Util;
 import javafx.collections.FXCollections;
-import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
-import javafx.geometry.Insets;
-import javafx.scene.chart.BarChart;
 import javafx.scene.chart.PieChart;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
@@ -22,8 +16,8 @@ import java.io.IOException;
 import java.util.ArrayList;
 
 public class HomeViewController extends HomeViewControllerMaster {
-
-    public PieChart pieChart;
+    @FXML
+    public ListView shuttleProgressListView;
     @FXML
     private TableView<Task> aufgabenTableView;
     @FXML
@@ -65,15 +59,29 @@ public class HomeViewController extends HomeViewControllerMaster {
         }
     }
 
-    public void onAufgabenBoxClicked(MouseEvent mouseEvent) {}
+    public void loadProgressBar(){
+        try {
+            ArrayList<Task> tasks = Util.getActiveTasks(super.clientRequests, super.user);
+            int totalTasks = tasks.size();
+            int completedTasks = (int) tasks.stream().filter(Task::getShuttle).count();
+            double progress = (double) completedTasks / totalTasks;
 
-    public void setClientRequests(ClientRequests clientRequests) {
-        this.clientRequests = clientRequests;
-        loadShuttleTableContent();
-        loadTaskTableContent();
+            PieChart pieChart = new PieChart();
+            pieChart.getData().add(new PieChart.Data("Completed", completedTasks));
+            pieChart.getData().add(new PieChart.Data("Remaining", totalTasks - completedTasks));
+
+            shuttleProgressListView.getItems().clear();
+            shuttleProgressListView.getItems().add(pieChart);
+        }catch (Exception e) {
+            logger.error("Error loading progress bar: ", e);
+        }
     }
 
     public void onBoxClicked(MouseEvent mouseEvent) throws IOException {
         super.viewManagerController.handleDetailButton(null);
+    }
+
+    public void load(){
+        loadTaskTableContent();
     }
 }

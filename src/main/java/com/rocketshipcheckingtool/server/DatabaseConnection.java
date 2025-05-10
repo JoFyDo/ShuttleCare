@@ -8,6 +8,7 @@ import java.io.IOException;
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.List;
 
 public class DatabaseConnection {
     private final static Logger logger = LoggerFactory.getLogger(DatabaseConnection.class);
@@ -413,6 +414,116 @@ public class DatabaseConnection {
             PreparedStatement stmt = connection.prepareStatement(query);
             stmt.setString(1, predictedReleaseTime);
             stmt.setString(2, String.valueOf(shuttleID));
+            stmt.executeUpdate();
+            return true;
+        } catch (SQLException e){
+            logger.error(e.getMessage());
+            throw new RuntimeException(e);
+        }
+    }
+
+    public ArrayList<QuestionnaireRating> getQuestionnaires() {
+        try {
+            String query = "SELECT * FROM QuestionnaireRatings WHERE Active = 'true'";
+            PreparedStatement stmt = connection.prepareStatement(query);
+            ResultSet rs = stmt.executeQuery();
+            ArrayList<QuestionnaireRating> questionnaires = new ArrayList<>();
+            while (rs.next()) {
+                questionnaires.add(new QuestionnaireRating(rs.getInt("ID"), rs.getInt("Rating"), rs.getString("Topic"), rs.getInt("ShuttleID")));
+            }
+            return questionnaires;
+        } catch (SQLException e) {
+            logger.error(e.getMessage());
+            throw new RuntimeException(e);
+        }
+    }
+
+    public ArrayList<QuestionnaireRating> getQuestionnaireForShuttle(int shuttleID) {
+        try {
+            String query = "SELECT * FROM QuestionnaireRatings WHERE ShuttleID = ? AND Active = 'true'";
+            PreparedStatement stmt = connection.prepareStatement(query);
+            stmt.setString(1, String.valueOf(shuttleID));
+            ResultSet rs = stmt.executeQuery();
+            ArrayList<QuestionnaireRating> questionnaires = new ArrayList<>();
+            while (rs.next()) {
+                questionnaires.add(new QuestionnaireRating(rs.getInt("ID"), rs.getInt("Rating"), rs.getString("Topic"), rs.getInt("ShuttleID")));
+            }
+            return questionnaires;
+        } catch (SQLException e) {
+            logger.error(e.getMessage());
+            throw new RuntimeException(e);
+        }
+    }
+
+    public boolean updateQuestionnaireRating(int questionnaireID, String status) {
+        try {
+            String query = "UPDATE QuestionnaireRatings SET Active = ? WHERE ID = ?";
+            PreparedStatement stmt = connection.prepareStatement(query);
+            stmt.setString(1, status);
+            stmt.setString(2, String.valueOf(questionnaireID));
+            stmt.executeUpdate();
+            return true;
+        } catch (SQLException e){
+            logger.error(e.getMessage());
+            throw new RuntimeException(e);
+        }
+    }
+
+    public ArrayList<Comment> getComments() {
+        try {
+            String query = "SELECT * FROM Comments WHERE Active = 'true'";
+            PreparedStatement stmt = connection.prepareStatement(query);
+            ResultSet rs = stmt.executeQuery();
+            ArrayList<Comment> comments = new ArrayList<>();
+            while (rs.next()) {
+                comments.add(new Comment(rs.getInt("ID"), rs.getString("Comment"), rs.getInt("ShuttleID")));
+            }
+            return comments;
+        } catch (SQLException e) {
+            logger.error(e.getMessage());
+            throw new RuntimeException(e);
+        }
+    }
+
+    public ArrayList<Comment> getCommentsByShuttle(int shuttleID) {
+        try {
+            String query = "SELECT * FROM Comments WHERE ShuttleID = ? AND Active = 'true'";
+            PreparedStatement stmt = connection.prepareStatement(query);
+            stmt.setString(1, String.valueOf(shuttleID));
+            ResultSet rs = stmt.executeQuery();
+            ArrayList<Comment> comments = new ArrayList<>();
+            while (rs.next()) {
+                comments.add(new Comment(rs.getInt("ID"), rs.getString("Comment"), rs.getInt("ShuttleID")));
+            }
+            return comments;
+        } catch (SQLException e) {
+            logger.error(e.getMessage());
+            throw new RuntimeException(e);
+        }
+    }
+
+    public boolean updateComment(int commentID, String status) {
+        try {
+            String query = "UPDATE Comments SET Active = ? WHERE ID = ?";
+            PreparedStatement stmt = connection.prepareStatement(query);
+            stmt.setString(1, status);
+            stmt.setString(2, String.valueOf(commentID));
+            stmt.executeUpdate();
+            return true;
+        } catch (SQLException e){
+            logger.error(e.getMessage());
+            throw new RuntimeException(e);
+        }
+    }
+
+    public boolean createNotification(String message, String shuttleId, String sender, String comment) {
+        try {
+            String query = "INSERT INTO Notifications (Nachricht, ShuttleID, Absender, Kommentar, Aktiv) VALUES (?, ?, ?, ?, 'true')";
+            PreparedStatement stmt = connection.prepareStatement(query);
+            stmt.setString(1, message);
+            stmt.setString(2, shuttleId);
+            stmt.setString(3, sender);
+            stmt.setString(4, comment);
             stmt.executeUpdate();
             return true;
         } catch (SQLException e){

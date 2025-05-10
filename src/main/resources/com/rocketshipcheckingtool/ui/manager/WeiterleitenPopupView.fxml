@@ -16,9 +16,9 @@
     </padding>
     <VBox styleClass="vBox" VBox.vgrow="ALWAYS" spacing="40" alignment="TOP_CENTER">
         <Label fx:id="shuttleName" text="Shuttle" styleClass="header" alignment="TOP_CENTER"/>
-        <TextField fx:id="kommentarField" editable="false"/>
-        <TextField fx:id="eigenerKommentarField"/>
-        <ComboBox fx:id="abteilungComboBox" promptText="Abteilung">
+        <TextArea fx:id="commentArea" editable="false" wrapText="true" prefHeight="100.0"/>
+        <TextField fx:id="ownCommandField"/>
+        <ComboBox fx:id="departmentComboBox" promptText="Abteilung">
             <items>
                 <FXCollections fx:factory="observableArrayList">
                     <String fx:value="Technik"/>
