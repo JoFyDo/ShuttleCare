@@ -6,21 +6,22 @@ import com.rocketshipcheckingtool.ui.HomeViewControllerMaster;
 import com.rocketshipcheckingtool.ui.Util;
 import javafx.collections.FXCollections;
 import javafx.fxml.FXML;
-import javafx.scene.chart.BarChart;
-import javafx.scene.chart.PieChart;
-import javafx.scene.chart.XYChart;
-import javafx.scene.control.*;
+import javafx.geometry.Insets;
+import javafx.geometry.Pos;
+import javafx.scene.control.Label;
+import javafx.scene.control.ProgressBar;
+import javafx.scene.control.TableColumn;
+import javafx.scene.control.TableView;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.input.MouseEvent;
+import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 
 public class HomeViewController extends HomeViewControllerMaster {
     @FXML
@@ -46,7 +47,7 @@ public class HomeViewController extends HomeViewControllerMaster {
 
     }
 
-    public void setupTableColumns(){
+    public void setupTableColumns() {
         super.setupTableColumns();
 
         aufgabeTaskColumn.setCellValueFactory(new PropertyValueFactory<>("task"));
@@ -63,7 +64,7 @@ public class HomeViewController extends HomeViewControllerMaster {
         try {
             ArrayList<Task> tasks = Util.getActiveTasks(clientRequests, user);
             aufgabenTableView.setItems(FXCollections.observableArrayList(tasks));
-        }catch (Exception e) {
+        } catch (Exception e) {
             logger.error("Error loading tasks: ", e);
         }
     }
@@ -98,15 +99,29 @@ public class HomeViewController extends HomeViewControllerMaster {
                     ProgressBar progressBar = new ProgressBar(progress);
                     progressBar.setPrefWidth(Double.MAX_VALUE);
                     progressBar.setMinHeight(20); // Ensure visible height
-                    progressBar.setStyle("-fx-accent: #4CAF50;"); // Green progress color
+                    progressBar.getStyleClass().add("progressBar");
 
                     // More visible percentage label
-//                    Label percentLabel = new Label(String.format("%.0f%%  complete", progress * 100));
-//                    percentLabel.setStyle("-fx-font-weight: bold;");
+                    Label percentLabel = new Label(String.format("%.0f%%  complete", progress * 100));
+                    percentLabel.setStyle("-fx-text-fill: white; -fx-font-size: 12px");
+
+                    if (progress == 0.0) {
+                        percentLabel.setText("Noch nicht gestartet");
+                        percentLabel.setStyle("-fx-text-fill: gray;");
+                    }
+
+//                    VBox shuttleBox = new VBox(5);
+//                    shuttleBox.getChildren().addAll(shuttleLabel, progressBar);
+//                    shuttleBox.setStyle("-fx-border-color: #e0e0e0; -fx-border-width: 0 0 1 0;");
+
+                    StackPane progressStack = new StackPane();
+                    progressStack.getChildren().addAll(progressBar, percentLabel);
+                    progressStack.setPrefWidth(Double.MAX_VALUE);
+                    StackPane.setAlignment(percentLabel, Pos.CENTER_LEFT);
+                    StackPane.setMargin(percentLabel, new Insets(0, 0, 0, 5));
 
                     VBox shuttleBox = new VBox(5);
-                    shuttleBox.getChildren().addAll(shuttleLabel, progressBar);
-                    shuttleBox.setStyle("-fx-border-color: #e0e0e0; -fx-border-width: 0 0 1 0;");
+                    shuttleBox.getChildren().addAll(shuttleLabel, progressStack);
 
                     shuttleProgressContainer.getChildren().add(shuttleBox);
                 }
@@ -165,7 +180,7 @@ public class HomeViewController extends HomeViewControllerMaster {
 //        loadProgressBar();
 //    }
 
-    public void load(){
+    public void load() {
         loadTaskTableContent();
         loadProgressBar();
     }

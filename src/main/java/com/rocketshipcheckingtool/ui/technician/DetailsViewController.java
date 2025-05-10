@@ -351,24 +351,27 @@ public class DetailsViewController extends DetailsViewControllerMaster {
                         if (Util.allCommandsDone(clientRequests, user, shuttleSelected.getId())) {
                             Util.updateShuttleStatus(clientRequests, user, shuttleSelected.getId(), "Inspektion 1");
                         }else{
-                            Alert alert = new Alert(Alert.AlertType.INFORMATION);
+                            Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
                             alert.setTitle("Aufgaben ausstehend");
-                            alert.setHeaderText(null);
-                            alert.setContentText("Der Manager muss erst alle Kommentare bearbeiten");
+                            alert.setHeaderText("Der Manager hat noch offene Kommentare");
+                            alert.setContentText("Willst du fortfahren?");
                             alert.showAndWait();
+                            if (alert.getResult() == ButtonType.OK) {
+                                Util.updateShuttleStatus(clientRequests, user, shuttleSelected.getId(), "Inspektion 1");
+                            }
                         }
                         break;
                     case "Inspektion 1":
                         boolean hasOpenTasks = false;
                         for (Task task : activeTasks) {
-                            if (task.getStatus().equals("false")) {
+                            if (!task.getStatus()) {
                                 hasOpenTasks = true;
                                 break;
                             }
                         }
                         if (!hasOpenTasks) {
                             for (Task task : generalTasks) {
-                                if (task.getStatus().equals("false")) {
+                                if (!task.getStatus()) {
                                     hasOpenTasks = true;
                                     break;
                                 }
