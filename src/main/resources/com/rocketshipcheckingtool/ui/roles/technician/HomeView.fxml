@@ -17,8 +17,8 @@
             <columns>
                 <TableColumn fx:id="shuttleOverviewColumn" text="Shuttle"/>
                 <TableColumn fx:id="statusOverviewColumn" text="Status"/>
-                <TableColumn fx:id="landungOverviewColumn" text="Landung"/>
-                <TableColumn fx:id="mechanikerOverviewColumn" text="Lead-Mechaniker"/>
+                <TableColumn fx:id="landingOverviewColumn" text="Landung"/>
+                <TableColumn fx:id="mechanicOverviewColumn" text="Lead-Mechaniker"/>
                 <TableColumn fx:id="detailsOverviewColumn"/>
             </columns>
         </TableView>
@@ -32,11 +32,11 @@
 
         <VBox VBox.vgrow="ALWAYS" GridPane.columnIndex="0" styleClass="vBox" onMouseClicked="#onBoxClicked">
             <Label text="Zusätzliche Aufgaben" styleClass="header"/>
-            <TableView fx:id="aufgabenTableView" VBox.vgrow="ALWAYS" styleClass="table-view">
+            <TableView fx:id="taskTableView" VBox.vgrow="ALWAYS" styleClass="table-view">
                 <columns>
-                    <TableColumn fx:id="aufgabeTaskColumn" text="Aufgabe"/>
+                    <TableColumn fx:id="taskTaskColumn" text="Aufgabe"/>
                     <TableColumn fx:id="shuttleTaskColumn" text="Shuttle"/>
-                    <TableColumn fx:id="mechanikerTaskColumn" text="Mechaniker"/>
+                    <TableColumn fx:id="mechanicTaskColumn" text="Mechaniker"/>
                     <TableColumn fx:id="statusTaskColumn" text="Status"/>
                 </columns>
             </TableView>

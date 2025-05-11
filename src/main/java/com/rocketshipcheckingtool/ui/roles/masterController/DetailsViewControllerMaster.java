@@ -8,6 +8,8 @@ import com.rocketshipcheckingtool.ui.roles.technician.ClientRequests;
 import javafx.fxml.FXML;
 import javafx.scene.control.Alert;
 import javafx.scene.control.ComboBox;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.List;
 
@@ -21,7 +23,7 @@ public abstract class DetailsViewControllerMaster {
     protected ClientRequests clientRequests;
     protected final String user = UserSession.getRole().name().toLowerCase();
     protected ViewManagerController viewManagerController;
-
+    private static final Logger logger = LoggerFactory.getLogger(DetailsViewControllerMaster.class);
 
     public void initialize() {
         shuttleComboBox.valueProperty().addListener((obs, oldVal, newVal) -> {
@@ -31,11 +33,12 @@ public abstract class DetailsViewControllerMaster {
                         .findFirst()
                         .orElseThrow(() -> new IllegalArgumentException("Shuttle not found"));
                 reload();
-                System.out.println("[Details] selected Shuttle: " + newVal);
+                logger.info("Shuttle selected: '{}'", newVal);
             }
         });
 
         shuttleComboBox.getStyleClass().add("comboBox");
+        logger.debug("DetailsViewControllerMaster initialized and ComboBox listener set");
     }
 
     //no preselected shuttle
@@ -63,9 +66,13 @@ public abstract class DetailsViewControllerMaster {
 
             if (preSelectedShuttle != null && shuttleList.contains(preSelectedShuttle)) {
                 shuttleComboBox.setValue(preSelectedShuttle);
+                logger.info("Preselected shuttle set: '{}'", preSelectedShuttle);
+            } else {
+                logger.debug("No preselected shuttle or shuttle not found in list");
             }
 
         } catch (Exception e) {
+            logger.error("Error loading shuttles: {}", e.getMessage(), e);
             Alert alert = new Alert(Alert.AlertType.ERROR);
             alert.setTitle("Loading Error");
             alert.setHeaderText(null);
@@ -79,11 +86,13 @@ public abstract class DetailsViewControllerMaster {
 
     public void setViewManagerController(ViewManagerController viewManagerController) {
         this.viewManagerController = viewManagerController;
+        logger.debug("ViewManagerController set in DetailsViewControllerMaster");
     }
 
     public void setClientRequests(ClientRequests clientRequests) {
         this.clientRequests = clientRequests;
         loadShuttleContent();
         reload();
+        logger.debug("ClientRequests set and content loaded in DetailsViewControllerMaster");
     }
 }

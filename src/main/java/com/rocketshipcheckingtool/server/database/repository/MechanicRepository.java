@@ -16,20 +16,23 @@ public class MechanicRepository {
 
     public MechanicRepository(Connection connection) {
         this.connection = connection;
+        logger.debug("MechanicRepository initialized with connection: {}", connection != null ? "OK" : "NULL");
     }
 
     public ArrayList<Mechanic> getMechanics() {
         try {
             String query = "SELECT * FROM Mechanics";
+            logger.debug("Executing query to get all mechanics: {}", query);
             PreparedStatement stmt = connection.prepareStatement(query);
             ResultSet rs = stmt.executeQuery();
             ArrayList<Mechanic> mechanics = new ArrayList<>();
             while (rs.next()) {
                 mechanics.add(new Mechanic(rs.getInt("ID"), rs.getString("Name"), rs.getString("Role")));
             }
+            logger.info("Fetched {} mechanics from database.", mechanics.size());
             return mechanics;
         } catch (SQLException e) {
-            logger.error(e.getMessage());
+            logger.error("Error fetching mechanics: {}", e.getMessage(), e);
             throw new RuntimeException(e);
         }
     }

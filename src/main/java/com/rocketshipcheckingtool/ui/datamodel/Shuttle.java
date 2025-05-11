@@ -2,6 +2,8 @@ package com.rocketshipcheckingtool.ui.datamodel;
 
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class Shuttle {
     private int id;
@@ -9,6 +11,7 @@ public class Shuttle {
     private String status;
     private Calendar landingTime;
     private String mechanic;
+    private static final Logger logger = LoggerFactory.getLogger(Shuttle.class);
 
     public Shuttle(int id, String shuttleName, String status, String landingTime, String mechanic) {
         this.id = id;
@@ -21,13 +24,12 @@ public class Shuttle {
             try {
                 java.sql.Timestamp timestamp = java.sql.Timestamp.valueOf(landingTime);
                 this.landingTime.setTimeInMillis(timestamp.getTime());
+                logger.debug("Parsed landing time '{}' for shuttle '{}'", landingTime, shuttleName);
             } catch (IllegalArgumentException e) {
                 // Fallback to current time if parsing fails
-                System.err.println("Failed to parse landing time: " + landingTime);
+                logger.error("Failed to parse landing time '{}', using current time for shuttle '{}'", landingTime, shuttleName, e);
             }
         }
-
-
     }
 
     public int getId() {

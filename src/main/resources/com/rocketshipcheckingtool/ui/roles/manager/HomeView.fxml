@@ -15,8 +15,8 @@
             <columns>
                 <TableColumn fx:id="shuttleOverviewColumn" text="Shuttle"/>
                 <TableColumn fx:id="statusOverviewColumn" text="Status"/>
-                <TableColumn fx:id="landungOverviewColumn" text="Landung"/>
-                <TableColumn fx:id="mechanikerOverviewColumn" text="Lead-Mechaniker"/>
+                <TableColumn fx:id="landingOverviewColumn" text="Landung"/>
+                <TableColumn fx:id="mechanicOverviewColumn" text="Lead-Mechaniker"/>
                 <TableColumn fx:id="detailsOverviewColumn"/>
             </columns>
         </TableView>

@@ -13,10 +13,10 @@
     <VBox VBox.vgrow="ALWAYS" spacing="40">
         <VBox styleClass="vBox" VBox.vgrow="ALWAYS">
             <Label text="Umfrage" styleClass="header"/>
-            <TableView fx:id="umfrageTableView" VBox.vgrow="ALWAYS" styleClass="table-view">
+            <TableView fx:id="questionnaireTableView" VBox.vgrow="ALWAYS" styleClass="table-view">
                 <columns>
-                    <TableColumn fx:id="befragtePunkteColumn" text="Befragte Punkte"/>
-                    <TableColumn fx:id="bewertungColumn" text="Bewertung"/>
+                    <TableColumn fx:id="questionedPointsColumn" text="Befragte Punkte"/>
+                    <TableColumn fx:id="ratingColumn" text="Bewertung"/>
                 </columns>
             </TableView>
         </VBox>

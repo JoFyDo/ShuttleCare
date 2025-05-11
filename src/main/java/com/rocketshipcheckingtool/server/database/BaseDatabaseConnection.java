@@ -14,27 +14,36 @@ public class BaseDatabaseConnection implements DatabaseConnector {
 
     public BaseDatabaseConnection() {
         try {
+            logger.info("Attempting to connect to SQLite database: {}", database);
             this.connection = connect();
+            logger.info("Database connection established successfully.");
         } catch (SQLException e) {
-            logger.error(e.getMessage());
+            logger.error("Failed to connect to SQLite database: {}", e.getMessage(), e);
         }
     }
 
     @Override
     public Connection connect() throws SQLException {
         Connection c = DriverManager.getConnection(database);
-        logger.info("Connected to SQLite!");
+        logger.info("Connected to SQLite database at '{}'", database);
         return c;
     }
 
     @Override
     public void disconnect() throws SQLException {
-        connection.close();
-        logger.info("Disconnected from SQLite!");
+        if (connection != null && !connection.isClosed()) {
+            connection.close();
+            logger.info("Disconnected from SQLite database.");
+        } else {
+            logger.warn("Attempted to disconnect, but connection was already closed or null.");
+        }
     }
 
     @Override
     public Connection getConnection() {
+        if (connection == null) {
+            logger.warn("getConnection called but connection is null.");
+        }
         return connection;
     }
 }

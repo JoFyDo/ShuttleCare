@@ -14,19 +14,23 @@ public class ShuttleRepository {
 
     public ShuttleRepository(Connection connection) {
         this.connection = connection;
+        logger.debug("ShuttleRepository initialized with connection: {}", connection != null ? "OK" : "NULL");
     }
 
     public ArrayList<Shuttle> getShuttles() {
         try {
             ArrayList<Shuttle> shuttles = new ArrayList<>();
             Statement stmt = connection.createStatement();
-            ResultSet rs = stmt.executeQuery("SELECT * FROM Shuttles WHERE Status != 'Verschrottet'");
+            String query = "SELECT * FROM Shuttles WHERE Status != 'Verschrottet'";
+            logger.debug("Executing query to get all shuttles: {}", query);
+            ResultSet rs = stmt.executeQuery(query);
             while (rs.next()) {
                 shuttles.add(new Shuttle(rs.getInt("ID"), rs.getString("Name"), rs.getString("Status"), rs.getString("Landung"), rs.getString("Mechaniker")));
             }
+            logger.info("Fetched {} shuttles from database.", shuttles.size());
             return shuttles;
         } catch (SQLException e) {
-            logger.error(e.getMessage());
+            logger.error("Error fetching shuttles: {}", e.getMessage(), e);
             throw new RuntimeException(e);
         }
     }
@@ -34,16 +38,19 @@ public class ShuttleRepository {
     public Shuttle getShuttle(String name) {
         try {
             String query = "SELECT * FROM Shuttles WHERE Name = ? AND Status != 'Verschrottet'";
+            logger.debug("Executing query to get shuttle by name '{}': {}", name, query);
             PreparedStatement stmt = connection.prepareStatement(query);
             stmt.setString(1, name);
             ResultSet rs = stmt.executeQuery();
             if (rs.next()) {
+                logger.info("Fetched shuttle '{}' from database.", name);
                 return new Shuttle(rs.getInt("ID"), rs.getString("Name"), rs.getString("Status"), rs.getString("Landung"), rs.getString("Mechaniker"));
             } else {
+                logger.warn("No shuttle found with name '{}'", name);
                 return null;
             }
         }catch (SQLException e) {
-            logger.error(e.getMessage());
+            logger.error("Error fetching shuttle by name '{}': {}", name, e.getMessage(), e);
             throw new RuntimeException(e);
         }
     }
@@ -51,26 +58,34 @@ public class ShuttleRepository {
     public Shuttle getShuttle(int id) {
         try {
             String query = "SELECT * FROM Shuttles WHERE ID = ?";
+            logger.debug("Executing query to get shuttle by ID {}: {}", id, query);
             PreparedStatement stmt = connection.prepareStatement(query);
             stmt.setString(1, Integer.toString(id));
             ResultSet rs = stmt.executeQuery();
             if (rs.next()) {
+                logger.info("Fetched shuttle with ID {} from database.", id);
                 return new Shuttle(rs.getInt("ID"), rs.getString("Name"), rs.getString("Status"), rs.getString("Landung"), rs.getString("Mechaniker"));
             } else {
+                logger.warn("No shuttle found with ID {}", id);
                 return null;
             }
         }catch (SQLException e) {
-            logger.error(e.getMessage());
+            logger.error("Error fetching shuttle by ID {}: {}", id, e.getMessage(), e);
             throw new RuntimeException(e);
         }
     }
 
     public void changeShuttleStatus(int shuttleID, String status) {
         try{
-            Statement stmt = connection.createStatement();
-            stmt.executeUpdate("UPDATE Shuttles SET Status = '" + status + "' WHERE ID = " + shuttleID);
+            String query = "UPDATE Shuttles SET Status = ? WHERE ID = ?";
+            logger.debug("Changing status of shuttle ID {} to '{}'", shuttleID, status);
+            PreparedStatement stmt = connection.prepareStatement(query);
+            stmt.setString(1, status);
+            stmt.setInt(2, shuttleID);
+            int updatedRows = stmt.executeUpdate();
+            logger.info("Changed status of shuttle ID {} to '{}'. Rows affected: {}", shuttleID, status, updatedRows);
         } catch (SQLException e) {
-            logger.error(e.getMessage());
+            logger.error("Error changing shuttle status for ID {}: {}", shuttleID, e.getMessage(), e);
             throw new RuntimeException(e);
         }
     }
@@ -78,13 +93,15 @@ public class ShuttleRepository {
     public boolean updateShuttleStatus(int shuttleID, String status) {
         try {
             String query = "UPDATE Shuttles SET Status = ? WHERE ID = ?";
+            logger.debug("Updating status of shuttle ID {} to '{}'", shuttleID, status);
             PreparedStatement stmt = connection.prepareStatement(query);
             stmt.setString(1, status);
             stmt.setString(2, String.valueOf(shuttleID));
-            stmt.executeUpdate();
+            int updatedRows = stmt.executeUpdate();
+            logger.info("Updated status of shuttle ID {} to '{}'. Rows affected: {}", shuttleID, status, updatedRows);
             return true;
         } catch (SQLException e){
-            logger.error(e.getMessage());
+            logger.error("Error updating shuttle status for ID {}: {}", shuttleID, e.getMessage(), e);
             throw new RuntimeException(e);
         }
     }
@@ -93,6 +110,7 @@ public class ShuttleRepository {
         try {
             Shuttle shuttle = getShuttle(shuttleID);
             if (shuttle == null) {
+                logger.warn("Cannot update predicted release time: shuttle with ID {} not found", shuttleID);
                 return false;
             }
             // Get landing date and time from shuttle object
@@ -105,17 +123,17 @@ public class ShuttleRepository {
             java.sql.Timestamp predictedReleaseTime = new java.sql.Timestamp(calendar.getTimeInMillis());
             String predictedTimeStr = predictedReleaseTime.toString();
 
-            System.out.println("Predicted Release Time: " + predictedTimeStr);
-            System.out.println("Time Needed: " + time);
+            logger.info("Updating predicted release time for shuttle ID {}: {} (Time Needed: {})", shuttleID, predictedTimeStr, time);
 
             String query = "UPDATE Shuttles SET VorFreigabeDatum = ? WHERE ID = ?";
             PreparedStatement stmt = connection.prepareStatement(query);
             stmt.setString(1, String.valueOf(predictedTimeStr));
             stmt.setString(2, String.valueOf(shuttleID));
-            stmt.executeUpdate();
+            int updatedRows = stmt.executeUpdate();
+            logger.info("Predicted release time updated for shuttle ID {}. Rows affected: {}", shuttleID, updatedRows);
             return true;
         } catch (SQLException e){
-            logger.error(e.getMessage());
+            logger.error("Error updating predicted release time for shuttle ID {}: {}", shuttleID, e.getMessage(), e);
             throw new RuntimeException(e);
         }
     }
@@ -123,6 +141,7 @@ public class ShuttleRepository {
     public Calendar getPredictedReleaseTime(int shuttleID) {
         try {
             String query = "SELECT VorFreigabeDatum FROM Shuttles WHERE ID = ?";
+            logger.debug("Getting predicted release time for shuttle ID {}: {}", shuttleID, query);
             PreparedStatement stmt = connection.prepareStatement(query);
             stmt.setString(1, String.valueOf(shuttleID));
             ResultSet rs = stmt.executeQuery();
@@ -131,16 +150,18 @@ public class ShuttleRepository {
                     java.sql.Timestamp predictedReleaseTime = rs.getTimestamp("VorFreigabeDatum");
                     Calendar calendar = Calendar.getInstance();
                     calendar.setTime(predictedReleaseTime);
+                    logger.info("Fetched predicted release time for shuttle ID {}: {}", shuttleID, predictedReleaseTime);
                     return calendar;
                 } catch (Exception e) {
-                    System.err.println("Failed to parse predicted release time: " + rs.getString("VorFreigabeDatum"));
+                    logger.error("Failed to parse predicted release time for shuttle ID {}: {}", shuttleID, rs.getString("VorFreigabeDatum"), e);
                     return null;
                 }
             } else {
+                logger.warn("No predicted release time found for shuttle ID {}", shuttleID);
                 return null;
             }
         } catch (SQLException e){
-            logger.error(e.getMessage());
+            logger.error("Error getting predicted release time for shuttle ID {}: {}", shuttleID, e.getMessage(), e);
             throw new RuntimeException(e);
         }
     }
@@ -148,16 +169,16 @@ public class ShuttleRepository {
     public boolean setPredictedReleaseTime(int shuttleID, String predictedReleaseTime) {
         try {
             String query = "UPDATE Shuttles SET VorFreigabeDatum = ? WHERE ID = ?";
+            logger.debug("Setting predicted release time for shuttle ID {}: {}", shuttleID, predictedReleaseTime);
             PreparedStatement stmt = connection.prepareStatement(query);
             stmt.setString(1, predictedReleaseTime);
             stmt.setString(2, String.valueOf(shuttleID));
-            stmt.executeUpdate();
+            int updatedRows = stmt.executeUpdate();
+            logger.info("Set predicted release time for shuttle ID {}. Rows affected: {}", shuttleID, updatedRows);
             return true;
         } catch (SQLException e){
-            logger.error(e.getMessage());
+            logger.error("Error setting predicted release time for shuttle ID {}: {}", shuttleID, e.getMessage(), e);
             throw new RuntimeException(e);
         }
     }
-
-
 }

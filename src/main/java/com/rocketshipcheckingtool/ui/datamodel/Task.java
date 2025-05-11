@@ -1,5 +1,8 @@
 package com.rocketshipcheckingtool.ui.datamodel;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 public class Task{
     private String task;
     private Boolean status;
@@ -8,6 +11,8 @@ public class Task{
     private String shuttleName;
     private int id;
     private int timeNeeded;
+
+    private static final Logger logger = LoggerFactory.getLogger(Task.class);
 
     public Task(String task, Boolean status, String mechanic, Shuttle shuttle, int id) {
         this.task = task;
@@ -35,7 +40,7 @@ public class Task{
     }
 
     public String getByI(int index) {
-        return switch (index) {
+        String result = switch (index) {
             case 0 -> task;
             case 2 -> mechanic;
             case 3 -> {
@@ -48,6 +53,8 @@ public class Task{
             case 1 -> shuttleName;
             default -> null;
         };
+        logger.debug("getByI called with index {}: result='{}'", index, result);
+        return result;
     }
 
     public String getTask() {

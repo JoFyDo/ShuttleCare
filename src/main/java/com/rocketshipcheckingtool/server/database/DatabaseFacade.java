@@ -8,8 +8,12 @@ import java.util.ArrayList;
 import java.io.IOException;
 import java.util.Calendar;
 import java.sql.SQLException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class DatabaseFacade {
+    private static final Logger logger = LoggerFactory.getLogger(DatabaseFacade.class);
+
     private final ShuttleRepository shuttleRepository;
     private final TaskRepository taskRepository;
     private final GeneralTaskRepository generalTaskRepository;
@@ -21,9 +25,10 @@ public class DatabaseFacade {
     private final DatabaseConnector connector;
 
     public DatabaseFacade() {
+        logger.info("Initializing DatabaseFacade...");
         this.connector = new BaseDatabaseConnection();
         Connection connection = connector.getConnection();
-        
+
         this.shuttleRepository = new ShuttleRepository(connection);
         this.taskRepository = new TaskRepository(connection);
         this.generalTaskRepository = new GeneralTaskRepository(connection);
@@ -32,6 +37,7 @@ public class DatabaseFacade {
         this.mechanicRepository = new MechanicRepository(connection);
         this.questionnaireRepository = new QuestionnaireRepository(connection);
         this.commentRepository = new CommentRepository(connection);
+        logger.info("All repositories initialized in DatabaseFacade.");
     }
 
     // Shuttle Repository methods
@@ -167,6 +173,8 @@ public class DatabaseFacade {
     }
     
     public void disconnect() throws SQLException {
+        logger.info("Disconnecting DatabaseFacade...");
         connector.disconnect();
+        logger.info("DatabaseFacade disconnected.");
     }
 }

@@ -7,21 +7,20 @@
 <?import javafx.scene.control.TableView?>
 <?import javafx.scene.control.TableColumn?>
 <VBox xmlns="http://javafx.com/javafx" xmlns:fx="http://javafx.com/fxml"
-      fx:controller="com.rocketshipcheckingtool.ui.roles.technician.NotificationViewController" spacing="40">
+      fx:controller="com.rocketshipcheckingtool.ui.roles.manager.NotificationViewController" spacing="40">
     <padding>
         <Insets topRightBottomLeft="40"/>
     </padding>
     <ComboBox fx:id="shuttleComboBox" promptText="Alle Shuttles" styleClass="shuttleName"/>
     <VBox VBox.vgrow="ALWAYS" styleClass="vBox">
         <Label text="Nachrichten" styleClass="header"/>
-        <TableView fx:id="nachrichtenTableView" VBox.vgrow="ALWAYS" styleClass="table-view">
+        <TableView fx:id="noticationTableView" VBox.vgrow="ALWAYS" styleClass="table-view">
             <columns>
-                <TableColumn fx:id="nachrichtColumn" text="Nachricht"/>
-                <TableColumn fx:id="kommentarColumn" text="Kommentar"/>
+                <TableColumn fx:id="notificationColumn" text="Nachricht"/>
+                <TableColumn fx:id="commentColumn" text="Kommentar"/>
                 <TableColumn fx:id="shuttleColumn" text="Shuttle"/>
-                <TableColumn fx:id="vonColumn" text="Von"/>
-                <TableColumn fx:id="loeschenColumn"/>
-                <TableColumn fx:id="erstellenColumn"/>
+                <TableColumn fx:id="senderColumn" text="Von"/>
+                <TableColumn fx:id="deleteColumn"/>
             </columns>
         </TableView>
     </VBox>

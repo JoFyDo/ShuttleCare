@@ -31,13 +31,13 @@ public class HomeViewController extends HomeViewControllerMaster {
     @FXML
     private Label noTasksLabel;
     @FXML
-    private TableView<Task> aufgabenTableView;
+    private TableView<Task> taskTableView;
     @FXML
-    private TableColumn<Task, String> aufgabeTaskColumn;
+    private TableColumn<Task, String> taskTaskColumn;
     @FXML
     private TableColumn<Task, String> shuttleTaskColumn;
     @FXML
-    private TableColumn<Task, String> mechanikerTaskColumn;
+    private TableColumn<Task, String> mechanicTaskColumn;
     @FXML
     private TableColumn<Task, String> statusTaskColumn;
 
@@ -45,51 +45,52 @@ public class HomeViewController extends HomeViewControllerMaster {
 
     @FXML
     public void initialize() {
+        logger.info("Initializing HomeViewController");
         setupTableColumns();
-
+        logger.debug("Table columns set up");
     }
 
     public void setupTableColumns() {
         super.setupTableColumns();
 
-        aufgabeTaskColumn.setCellValueFactory(new PropertyValueFactory<>("task"));
+        taskTaskColumn.setCellValueFactory(new PropertyValueFactory<>("task"));
         shuttleTaskColumn.setCellValueFactory(new PropertyValueFactory<>("shuttleName"));
-        mechanikerTaskColumn.setCellValueFactory(new PropertyValueFactory<>("mechanic"));
+        mechanicTaskColumn.setCellValueFactory(new PropertyValueFactory<>("mechanic"));
         statusTaskColumn.setCellValueFactory(cellData -> new javafx.beans.property.SimpleStringProperty(
-                cellData.getValue().getStatus() ? "Erledigt" : "in Bearbeitung"));
-        aufgabenTableView.setSelectionModel(null);
-        aufgabenTableView.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY_ALL_COLUMNS);
+                cellData.getValue().getStatus() ? "Completed" : "In Progress"));
+        taskTableView.setSelectionModel(null);
+        taskTableView.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY_ALL_COLUMNS);
 
+        logger.debug("Task table columns configured");
     }
 
     public void loadTaskTableContent() {
         try {
+            logger.info("Loading active tasks for user '{}'", user);
             ArrayList<Task> tasks = TaskUtil.getActiveTasks(clientRequests, user);
-            aufgabenTableView.setItems(FXCollections.observableArrayList(tasks));
+            taskTableView.setItems(FXCollections.observableArrayList(tasks));
+            logger.info("Loaded {} active tasks", tasks.size());
         } catch (Exception e) {
             logger.error("Error loading tasks: ", e);
         }
     }
 
     public void loadProgressBar() {
-        // Ensure UI operations run on JavaFX application thread
         javafx.application.Platform.runLater(() -> {
             try {
-                // Clear existing content
+                logger.info("Loading shuttle progress bars");
                 shuttleProgressContainer.getChildren().clear();
 
-                // Sample shuttle data with progress percentages (0.0 to 1.0)
-                // In production, this should come from your data source
                 Map<String, Double> shuttleProgress = getShuttleProgressData();
 
                 if (shuttleProgress.isEmpty()) {
+                    logger.info("No shuttle progress data available");
                     noTasksLabel.setVisible(true);
                     return;
                 }
 
                 noTasksLabel.setVisible(false);
 
-                // Create a progress bar for each shuttle
                 for (Map.Entry<String, Double> entry : shuttleProgress.entrySet()) {
                     String shuttleName = entry.getKey();
                     Double progress = entry.getValue();
@@ -100,21 +101,16 @@ public class HomeViewController extends HomeViewControllerMaster {
 
                     ProgressBar progressBar = new ProgressBar(progress);
                     progressBar.setPrefWidth(Double.MAX_VALUE);
-                    progressBar.setMinHeight(20); // Ensure visible height
+                    progressBar.setMinHeight(20);
                     progressBar.getStyleClass().add("progressBar");
 
-                    // More visible percentage label
                     Label percentLabel = new Label(String.format("%.0f%%  complete", progress * 100));
                     percentLabel.setStyle("-fx-text-fill: white; -fx-font-size: 12px");
 
                     if (progress == 0.0) {
-                        percentLabel.setText("Noch nicht gestartet");
+                        percentLabel.setText("Not started yet");
                         percentLabel.setStyle("-fx-text-fill: gray;");
                     }
-
-//                    VBox shuttleBox = new VBox(5);
-//                    shuttleBox.getChildren().addAll(shuttleLabel, progressBar);
-//                    shuttleBox.setStyle("-fx-border-color: #e0e0e0; -fx-border-width: 0 0 1 0;");
 
                     StackPane progressStack = new StackPane();
                     progressStack.getChildren().addAll(progressBar, percentLabel);
@@ -126,10 +122,11 @@ public class HomeViewController extends HomeViewControllerMaster {
                     shuttleBox.getChildren().addAll(shuttleLabel, progressStack);
 
                     shuttleProgressContainer.getChildren().add(shuttleBox);
+
+                    logger.debug("Progress bar for shuttle '{}' set to {:.2f}%%", shuttleName, progress * 100);
                 }
             } catch (Exception e) {
                 logger.error("Error loading progress bars: ", e);
-                // Display error in UI for better debugging
                 Label errorLabel = new Label("Error loading progress data: " + e.getMessage());
                 errorLabel.setStyle("-fx-text-fill: red;");
                 shuttleProgressContainer.getChildren().add(errorLabel);
@@ -138,6 +135,7 @@ public class HomeViewController extends HomeViewControllerMaster {
     }
 
     private Map<String, Double> getShuttleProgressData() throws IOException {
+        logger.debug("Fetching shuttle progress data");
         ArrayList<Shuttle> shuttles = ShuttleUtil.getShuttles(clientRequests, user);
         Map<String, Double> progressMap = new java.util.HashMap<>();
 
@@ -148,7 +146,6 @@ public class HomeViewController extends HomeViewControllerMaster {
             int completedTasks = 0;
             int totalTasks = tasks.size() + generalTasks.size();
 
-            // Count completed tasks
             for (Task task : tasks) {
                 if (task.getStatus()) {
                     completedTasks++;
@@ -160,29 +157,23 @@ public class HomeViewController extends HomeViewControllerMaster {
                 }
             }
 
-            // Avoid division by zero
             double progress = (totalTasks > 0) ? (double) completedTasks / totalTasks : 0.0;
             progressMap.put(shuttle.getShuttleName(), progress);
 
-            logger.info("Shuttle: {} - Completed: {}/{} tasks, Progress: {:.2f}%",
+            logger.info("Shuttle '{}' - Completed: {}/{} tasks, Progress: {:.2f}%%",
                     shuttle.getShuttleName(), completedTasks, totalTasks, progress * 100);
-
         }
 
         return progressMap;
     }
 
-
     public void onBoxClicked(MouseEvent mouseEvent) throws IOException {
+        logger.info("Shuttle box clicked, navigating to details view");
         super.viewManagerController.handleDetailButton(null);
     }
 
-//    public void load(){
-//        loadTaskTableContent();
-//        loadProgressBar();
-//    }
-
     public void load() {
+        logger.info("Loading HomeViewController content");
         loadTaskTableContent();
         loadProgressBar();
     }

@@ -7,10 +7,14 @@ import com.rocketshipcheckingtool.ui.roles.masterController.NotificationViewCont
 import com.rocketshipcheckingtool.ui.helper.Util;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class NotificationViewController extends NotificationViewControllerMaster {
 
-    public TableColumn<Notification, Void> erstellenColumn;
+    private static final Logger logger = LoggerFactory.getLogger(NotificationViewController.class);
+
+    public TableColumn<Notification, Void> createColumn;
 
     @FXML
     public void initialize() {
@@ -22,22 +26,24 @@ public class NotificationViewController extends NotificationViewControllerMaster
     }
 
     protected void setupTableErstellenContent() {
-        erstellenColumn.setResizable(false);
-        erstellenColumn.setPrefWidth(50);
+        createColumn.setResizable(false);
+        createColumn.setPrefWidth(50);
     }
 
     private void setupErstellenButtonColumn() {
-        erstellenColumn.setCellFactory(col -> new TableCell<>() {
+        createColumn.setCellFactory(col -> new TableCell<>() {
             private final Button button = createIconButton("add.fxml");
                 {
                     button.setOnAction(event -> {
                     Notification item = getTableView().getItems().get(getIndex());
                     try {
+                        logger.info("Creating new task for shuttleID={}, message='{}'", item.getShuttleID(), item.getMessage());
                         Util.newTaskForShuttle(clientRequests, user, ShuttleUtil.getShuttle(clientRequests, user, item.getShuttleID()), item.getMessage() + ": " + item.getComment());
                         NotificationUtil.updateNotification(clientRequests, user, item.getId(), "false");
                         loadTableContent();
+                        logger.debug("Task created and notification updated for notificationID={}", item.getId());
                     }catch (Exception e) {
-                        System.out.println("[Nachrichten] Error creating task: " + e.getMessage());
+                        logger.error("Error creating task for notificationID={}: {}", item.getId(), e.getMessage(), e);
                     }
                 });
             }

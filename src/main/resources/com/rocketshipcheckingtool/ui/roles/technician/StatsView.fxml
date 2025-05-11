@@ -6,7 +6,7 @@
 <?import javafx.scene.Group?>
 <?import javafx.scene.layout.*?>
 <GridPane hgap="40.0" xmlns:fx="http://javafx.com/fxml/1" xmlns="http://javafx.com/javafx/23.0.1"
-          fx:controller="com.rocketshipcheckingtool.ui.roles.technician.StatistikenViewController">
+          fx:controller="com.rocketshipcheckingtool.ui.roles.technician.StatsViewController">
     <columnConstraints>
         <ColumnConstraints hgrow="ALWAYS" percentWidth="70"/>
         <ColumnConstraints hgrow="ALWAYS" percentWidth="30"/>

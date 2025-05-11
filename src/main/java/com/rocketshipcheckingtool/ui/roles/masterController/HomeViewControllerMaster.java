@@ -11,6 +11,8 @@ import javafx.fxml.FXML;
 import javafx.geometry.Insets;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -22,9 +24,9 @@ public abstract class HomeViewControllerMaster {
     @FXML
     private TableColumn<Shuttle, String> statusOverviewColumn;
     @FXML
-    private TableColumn<Shuttle, String> landungOverviewColumn;
+    private TableColumn<Shuttle, String> landingOverviewColumn;
     @FXML
-    private TableColumn<Shuttle, String> mechanikerOverviewColumn;
+    private TableColumn<Shuttle, String> mechanicOverviewColumn;
     @FXML
     private TableColumn<Shuttle, Void> detailsOverviewColumn;
     @FXML
@@ -35,17 +37,21 @@ public abstract class HomeViewControllerMaster {
 
     protected ViewManagerController viewManagerController;
 
+    private static final Logger logger = LoggerFactory.getLogger(HomeViewControllerMaster.class);
+
     protected void setupTableColumns() {
         shuttleOverviewColumn.setCellValueFactory(new PropertyValueFactory<>("shuttleName"));
         statusOverviewColumn.setCellValueFactory(new PropertyValueFactory<>("status"));
-        landungOverviewColumn.setCellValueFactory(cellData -> new SimpleStringProperty(cellData.getValue().getLandingTimeString()));
-        mechanikerOverviewColumn.setCellValueFactory(new PropertyValueFactory<>("mechanic"));
+        landingOverviewColumn.setCellValueFactory(cellData -> new SimpleStringProperty(cellData.getValue().getLandingTimeString()));
+        mechanicOverviewColumn.setCellValueFactory(new PropertyValueFactory<>("mechanic"));
 
         // resize column width
         detailsOverviewColumn.setResizable(false);
         detailsOverviewColumn.setPrefWidth(140);
         shuttleTableView.setSelectionModel(null);
         shuttleTableView.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY_ALL_COLUMNS);
+
+        logger.debug("Shuttle overview table columns set up");
     }
 
     private void setupDetailsButtonColumn() {
@@ -57,6 +63,7 @@ public abstract class HomeViewControllerMaster {
                 detailsButton.getStyleClass().add("details-button");
                 detailsButton.setOnAction(event -> {
                     Shuttle shuttle = getTableView().getItems().get(getIndex());
+                    logger.info("Details button clicked for shuttle '{}'", shuttle.getShuttleName());
                     showShuttleDetails(shuttle);
                 });
                 setPadding(new Insets(0, 20, 0, 20));
@@ -79,13 +86,13 @@ public abstract class HomeViewControllerMaster {
             //Shuttle
             ArrayList<Shuttle> shuttles = ShuttleUtil.getShuttles(clientRequests, user);
             shuttleTableView.setItems(FXCollections.observableArrayList(shuttles));
+            logger.info("Loaded {} shuttles into overview table", shuttles.size());
 
             //Details button
             setupDetailsButtonColumn();
 
-
-
         } catch (Exception e) {
+            logger.error("Error loading shuttles: {}", e.getMessage(), e);
             Alert alert = new Alert(Alert.AlertType.ERROR);
             alert.setTitle("Loading Error");
             alert.setHeaderText(null);
@@ -99,16 +106,19 @@ public abstract class HomeViewControllerMaster {
         try {
             viewManagerController.handleDetailButton(shuttle);
         } catch (IOException e) {
+            logger.error("Error opening shuttle details: {}", e.getMessage(), e);
             throw new RuntimeException(e);
         }
     }
 
     public void setViewManagerController(ViewManagerController viewManagerController) {
         this.viewManagerController = viewManagerController;
+        logger.debug("ViewManagerController set in HomeViewControllerMaster");
     }
 
     public void setClientRequests(ClientRequests clientRequests) {
         this.clientRequests = clientRequests;
+        logger.debug("ClientRequests set in HomeViewControllerMaster");
         loadShuttleTableContent();
         load();
     }

@@ -18,40 +18,48 @@ public class CommentUtil {
     private final static Logger logger = LoggerFactory.getLogger(CommentUtil.class);
 
     public static ArrayList<Comment> getCommentsForShuttle(ClientRequests clientRequests, String user, int shuttleID) throws IOException {
+        logger.info("Requesting comments for shuttle ID {} and user '{}'", shuttleID, user);
         try {
             HashMap<String, String> params = new HashMap<>();
             params.put("ShuttleID", String.valueOf(shuttleID));
             String tasks = clientRequests.getRequest("/requestCommentsForShuttle", user, params);
             Gson gson = new Gson();
             Type shuttleListType = new TypeToken<ArrayList<Comment>>() {}.getType();
-            return gson.fromJson(tasks, shuttleListType);
+            ArrayList<Comment> comments = gson.fromJson(tasks, shuttleListType);
+            logger.info("Received {} comments for shuttle ID {}", comments != null ? comments.size() : 0, shuttleID);
+            return comments;
         } catch (Exception e) {
-            logger.error(e.getMessage());
+            logger.error("Failed to get comments for shuttle ID {}: {}", shuttleID, e.getMessage(), e);
             throw new ConnectException(e.getMessage());
         }
     }
 
     public static boolean updateComment(ClientRequests clientRequests, String user, int commentID, String status) throws IOException {
+        logger.info("Updating comment ID {} to status '{}' for user '{}'", commentID, status, user);
         try {
             HashMap<String, String> params = new HashMap<>();
             params.put("CommentID", String.valueOf(commentID));
             params.put("Status", status);
             clientRequests.postRequest("/updateComment", user, params);
+            logger.debug("Comment ID {} updated to status '{}'", commentID, status);
             return true;
         } catch (Exception e) {
-            logger.error(e.getMessage());
+            logger.error("Failed to update comment ID {}: {}", commentID, e.getMessage(), e);
             throw new ConnectException(e.getMessage());
         }
     }
 
     public static boolean allCommandsDone(ClientRequests clientRequests, String user, int shuttleID) throws IOException {
+        logger.info("Checking if all commands are done for shuttle ID {} and user '{}'", shuttleID, user);
         try {
             HashMap<String, String> params = new HashMap<>();
             params.put("ShuttleID", String.valueOf(shuttleID));
             String done = clientRequests.postRequest("/allCommandsDone", user, params);
-            return Boolean.parseBoolean(done);
+            boolean result = Boolean.parseBoolean(done);
+            logger.info("All commands done for shuttle ID {}: {}", shuttleID, result);
+            return result;
         } catch (Exception e) {
-            logger.error(e.getMessage());
+            logger.error("Failed to check all commands done for shuttle ID {}: {}", shuttleID, e.getMessage(), e);
             throw new ConnectException(e.getMessage());
         }
     }

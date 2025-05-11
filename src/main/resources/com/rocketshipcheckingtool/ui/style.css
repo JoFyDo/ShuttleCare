@@ -239,7 +239,7 @@
     -fx-text-fill: white;
 }
 
-#gelandetButton {
+#landedButton {
     -fx-background-radius: 20px 0 0 20px;
     -fx-border-radius: 20px 0 0 20px;
 }

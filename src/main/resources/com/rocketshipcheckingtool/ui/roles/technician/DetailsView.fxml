@@ -13,13 +13,13 @@
     <HBox spacing="40.0" HBox.hgrow="ALWAYS">
         <ComboBox fx:id="shuttleComboBox" promptText="choose Shuttle" styleClass="shuttleName"/>
         <HBox HBox.hgrow="ALWAYS" fx:id="progressBar" styleClass="progressBar" alignment="CENTER_LEFT">
-            <Button fx:id="gelandetButton" text="Gelandet" styleClass="progressLabel" HBox.hgrow="ALWAYS"
+            <Button fx:id="landedButton" text="Gelandet" styleClass="progressLabel" HBox.hgrow="ALWAYS"
                     maxWidth="Infinity" alignment="CENTER"/>
-            <Button fx:id="inspektion1Button" text="Inspektion" styleClass="progressLabel" HBox.hgrow="ALWAYS"
+            <Button fx:id="inspection1Button" text="Inspektion" styleClass="progressLabel" HBox.hgrow="ALWAYS"
                     maxWidth="Infinity" alignment="CENTER"/>
-            <Button fx:id="inWartungButton" text="In Wartung" styleClass="progressLabel" HBox.hgrow="ALWAYS"
+            <Button fx:id="inMaintenanceButton" text="In Wartung" styleClass="progressLabel" HBox.hgrow="ALWAYS"
                     maxWidth="Infinity" alignment="CENTER"/>
-            <Button fx:id="inspektion2Button" text="Reinspektion" styleClass="progressLabel" HBox.hgrow="ALWAYS"
+            <Button fx:id="inspection2Button" text="Reinspektion" styleClass="progressLabel" HBox.hgrow="ALWAYS"
                     maxWidth="Infinity" alignment="CENTER"/>
             <Button fx:id="freigegebenButton" text="Freigegeben" styleClass="progressLabel" HBox.hgrow="ALWAYS"
                     maxWidth="Infinity" alignment="CENTER"/>
@@ -39,7 +39,7 @@
         <VBox GridPane.columnIndex="0" GridPane.rowIndex="0" VBox.vgrow="ALWAYS" styleClass="vBox">
             <Label text="Standard-Wartungsprotokoll" styleClass="header"/>
             <ScrollPane fitToWidth="true" VBox.vgrow="ALWAYS" styleClass="scrollPane">
-                <VBox fx:id="aufgabenBox">
+                <VBox fx:id="taskBox">
                 </VBox>
             </ScrollPane>
         </VBox>
@@ -48,7 +48,7 @@
             <VBox VBox.vgrow="ALWAYS">
                 <Label text="Zusätzliche Aufgaben" styleClass="header"/>
                 <ScrollPane fitToWidth="true" VBox.vgrow="ALWAYS" styleClass="scrollPane">
-                    <VBox fx:id="zusaetzlichAufgabenBox">
+                    <VBox fx:id="additionalTaskBox">
                     </VBox>
                 </ScrollPane>
             </VBox>
@@ -68,7 +68,7 @@
                     style="-fx-background-color: rgb(26, 41, 82)" onAction="#onBestellenButtonClick"/>
         </StackPane>
         <StackPane alignment="TOP_CENTER" HBox.hgrow="ALWAYS">
-            <Button fx:id="freigebenButton" mnemonicParsing="false" text="Freigeben" styleClass="buttonBig"
+            <Button fx:id="releaseButton" mnemonicParsing="false" text="Freigeben" styleClass="buttonBig"
                     style="-fx-background-color: rgb(129, 38, 39)" onAction="#onFreigebenButtonClick"/>
         </StackPane>
         <StackPane alignment="TOP_CENTER" HBox.hgrow="ALWAYS">

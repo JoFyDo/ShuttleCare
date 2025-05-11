@@ -13,19 +13,19 @@ import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
 
-public class BestellenPopupController {
-    private static final Logger log = LoggerFactory.getLogger(BestellenPopupController.class);
-    public Button minusButton;
+public class OrderPopupController {
+    private static final Logger log = LoggerFactory.getLogger(OrderPopupController.class);
+    public Button subtractButton;
     public TextField quantityField;
-    public Button plusButton;
-    public Button bestellenButton;
-    public Label preis;
-    public Label gesamtPreis;
-    public Label teil;
+    public Button addButton;
+    public Button orderButton;
+    public Label price;
+    public Label totalPrice;
+    public Label part;
     public ComboBox<String> shuttleComboBox;
 
     private int quantity = 1;
-    private boolean isBestellenButton = false;
+    private boolean isOrderButton = false;
     private ClientRequests clientRequests;
     private final String user = UserSession.getRole().name().toLowerCase();
     private ArrayList<Shuttle> shuttles;
@@ -34,61 +34,72 @@ public class BestellenPopupController {
         quantityField.setText(String.valueOf(quantity));
         shuttleComboBox.getStyleClass().add("comboBox");
         setupButtons();
+        log.debug("OrderPopupController initialized with quantity={}", quantity);
     }
 
     private void setupButtons() {
-        minusButton.setOnAction(event -> {
+        subtractButton.setOnAction(event -> {
             if (quantity > 1) {
                 quantity--;
                 quantityField.setText(String.valueOf(quantity));
                 updateGesamtPreis();
+                log.debug("Decreased quantity to {}", quantity);
             }
         });
 
-        plusButton.setOnAction(event -> {
+        addButton.setOnAction(event -> {
             quantity++;
             quantityField.setText(String.valueOf(quantity));
             updateGesamtPreis();
+            log.debug("Increased quantity to {}", quantity);
         });
 
         quantityField.setOnAction(event -> {
             try {
+                int oldQuantity = quantity;
                 quantity = Integer.parseInt(quantityField.getText());
                 if (quantity < 1) {
+                    log.warn("Entered quantity < 1, resetting to 1");
                     quantity = 1;
                 }
                 if (quantity > 999) {
-                    quantity = 999; // Prevent increasing quantity beyond 100
+                    log.warn("Entered quantity > 999, resetting to 999");
+                    quantity = 999;
                 }
                 quantityField.setText(String.valueOf(quantity));
                 updateGesamtPreis();
+                log.debug("Quantity field updated from {} to {}", oldQuantity, quantity);
             } catch (NumberFormatException e) {
+                log.error("Invalid quantity input '{}', resetting to 1", quantityField.getText());
                 quantityField.setText("1");
                 quantity = 1;
             }
         });
 
-        bestellenButton.setOnAction(event -> {
-            System.out.println("[Bestellen Popup] quantity: " + quantity);
-            Stage stage = (Stage) bestellenButton.getScene().getWindow();
-            isBestellenButton = true;
+        orderButton.setOnAction(event -> {
+            log.info("Order button clicked with quantity={}", quantity);
+            Stage stage = (Stage) orderButton.getScene().getWindow();
+            isOrderButton = true;
             stage.close();
         });
     }
 
     private void updateGesamtPreis() {
-        String preisText = preis.getText().replace(",", ".").trim();
+        String preisText = price.getText().replace(",", ".").trim();
         if (preisText.isEmpty()) {
-            gesamtPreis.setText("0.00 €");
+            totalPrice.setText("0.00 €");
+            log.warn("Price label is empty, setting total price to 0.00 €");
             return;
         }
 
         try {
             double preisValue = Double.parseDouble(preisText);
             double total = preisValue * quantity;
-            gesamtPreis.setText(String.format("%.2f €", total));
+            totalPrice.setText(String.format("%.2f €", total));
+            log.debug("Updated total price to {} € for quantity {}", total, quantity);
         } catch (NumberFormatException e) {
-            gesamtPreis.setText("Ungültiger Preis");
+            totalPrice.setText("Invalid price");
+            log.error("Invalid price format: '{}'", preisText);
         }
     }
 
@@ -96,17 +107,19 @@ public class BestellenPopupController {
         return quantity;
     }
 
-    public void setPreis(String preis) {
-        this.preis.setText(preis);
+    public void setPrice(String price) {
+        this.price.setText(price);
         updateGesamtPreis(); // Ensure total price is set after price is injected
+        log.debug("Set price label to '{}'", price);
     }
 
-    public void setTeil(String teil) {
-        this.teil.setText(teil);
+    public void setPart(String part) {
+        this.part.setText(part);
+        log.debug("Set part label to '{}'", part);
     }
 
     public boolean getIsBestellenButton() {
-        return isBestellenButton;
+        return isOrderButton;
     }
 
     public void loadCombobox(){
@@ -120,25 +133,29 @@ public class BestellenPopupController {
                 }
             }
             shuttleComboBox.setValue("Kein Shuttle");
+            log.info("Loaded {} shuttles into combobox", shuttles != null ? shuttles.size() : 0);
         } catch (Exception e){
-            System.out.println("[Bestellen Popup] Error loading shuttles: " + e.getMessage());
-            e.printStackTrace();
+            log.error("Error loading shuttles: {}", e.getMessage(), e);
         }
     }
 
     public void setClientRequests(ClientRequests clientRequests) {
         this.clientRequests = clientRequests;
         loadCombobox();
+        log.debug("ClientRequests set and combobox loaded");
     }
 
     public Shuttle getSelectedShuttle() {
         String selectedShuttleName = shuttleComboBox.getValue();
         if (selectedShuttleName != null && !selectedShuttleName.equals("Kein Shuttle")) {
-            return shuttles.stream()
+            Shuttle selected = shuttles.stream()
                     .filter(shuttle -> shuttle.getShuttleName().equals(selectedShuttleName))
                     .findFirst()
                     .orElse(null);
+            log.debug("Selected shuttle: '{}'", selectedShuttleName);
+            return selected;
         }
+        log.debug("No shuttle selected or 'Kein Shuttle' chosen");
         return null;
     }
 }

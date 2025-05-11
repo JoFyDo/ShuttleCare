@@ -1,5 +1,8 @@
 package com.rocketshipcheckingtool.server.datamodel;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 public class Task{
     private String task;
     private Boolean status;
@@ -8,6 +11,8 @@ public class Task{
     private String shuttleName;
     private int id;
     private int timeNeeded;
+
+    private static final Logger logger = LoggerFactory.getLogger(Task.class);
 
     public Task(String task, Boolean status, String mechanic, Shuttle shuttle, int id) {
         this.task = task;
@@ -35,7 +40,9 @@ public class Task{
     }
 
     public String toJson() {
-        return new com.google.gson.Gson().toJson(this);
+        String json = new com.google.gson.Gson().toJson(this);
+        logger.debug("Serialized Task with id {} to JSON: {}", id, json);
+        return json;
     }
 
     public String getTask() {

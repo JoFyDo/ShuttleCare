@@ -2,7 +2,7 @@ package com.rocketshipcheckingtool.ui.helper;
 
 import com.rocketshipcheckingtool.ui.datamodel.*;
 import com.rocketshipcheckingtool.ui.roles.technician.ClientRequests;
-import com.rocketshipcheckingtool.ui.roles.technician.NeueAufgabePopupController;
+import com.rocketshipcheckingtool.ui.roles.technician.NewTaskPopupController;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
@@ -27,7 +27,7 @@ public class Util {
         popupStage.setScene(new Scene(popupRoot));
         popupStage.initModality(Modality.APPLICATION_MODAL);
 
-        NeueAufgabePopupController popupController = loader.getController();
+        NewTaskPopupController popupController = loader.getController();
         if (preset != null) {
             popupController.setDescription(preset);
         }

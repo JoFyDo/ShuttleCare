@@ -8,8 +8,10 @@ import javafx.geometry.Bounds;
 import javafx.scene.Group;
 import javafx.scene.chart.*;
 import javafx.scene.layout.StackPane;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
-public class StatistikenViewController {
+public class StatsViewController {
     public StackPane rocketContainer;
     public Group rocketSVG;
     public PieChart pieChart;
@@ -24,6 +26,7 @@ public class StatistikenViewController {
     public NumberAxis yAxisBC;
     private ClientRequests clientRequests;
     private ViewManagerController viewManagerController;
+    private static final Logger logger = LoggerFactory.getLogger(StatsViewController.class);
 
     public void setClientRequests(ClientRequests clientRequests) {
         this.clientRequests = clientRequests;
@@ -31,6 +34,7 @@ public class StatistikenViewController {
 
     @FXML
     public void initialize() {
+        logger.info("Initializing StatsViewController");
         rocketSVG.layoutBoundsProperty().addListener((obs, oldBounds, newBounds) -> {
             rocketContainer.widthProperty().addListener((wObs, oldW, newW) -> scaleSvg(newBounds));
             rocketContainer.heightProperty().addListener((hObs, oldH, newH) -> scaleSvg(newBounds));
@@ -106,6 +110,8 @@ public class StatistikenViewController {
 
         barChart.setLegendVisible(false);
         barChart.getData().add(series2);
+
+        logger.debug("Charts initialized with sample data");
     }
 
 
@@ -119,6 +125,8 @@ public class StatistikenViewController {
 
         rocketSVG.setLayoutX((rocketContainer.getWidth() - newBounds.getWidth() * scale) / 2);
         rocketSVG.setLayoutY((rocketContainer.getHeight() - newBounds.getHeight() * scale) / 2);
+
+        logger.debug("Scaled SVG to scale={}, layoutX={}, layoutY={}", scale, rocketSVG.getLayoutX(), rocketSVG.getLayoutY());
     }
 
     public void setViewManagerController(ViewManagerController viewManagerController) {

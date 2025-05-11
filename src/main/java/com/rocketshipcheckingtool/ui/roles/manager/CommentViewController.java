@@ -17,44 +17,49 @@ import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.input.MouseEvent;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.util.ArrayList;
 
-public class KommentarViewController {
+public class CommentViewController {
     public TextField searchField;
-    public Button weiterleitenButton;
-    public TableView<Comment> kommentarTableView;
+    public Button forwardButton;
+    public TableView<Comment> commentTableView;
     public TableColumn<Comment, Boolean> checkBoxColumn;
-    public TableColumn<Comment, String> kommentarColumn;
+    public TableColumn<Comment, String> commentColumn;
 
     private ClientRequests clientRequests;
     private Shuttle shuttleSelected;
     private final String user = UserSession.getRole().name().toLowerCase();
     private TableSearchHelper<Comment> searchHelper;
 
-    
+    private static final Logger logger = LoggerFactory.getLogger(CommentViewController.class);
+
     public void initialize() throws IOException {
         setupTableColumns();
         searchHelper = new TableSearchHelper<>(
-                kommentarTableView,
+                commentTableView,
                 searchField,
                 Comment::getComment
         );
+        logger.info("CommentViewController initialized");
     }
 
     private void setupTableColumns() {
         checkBoxColumn.setCellFactory(col -> {
             CheckBoxTableCell<Comment, Boolean> cell =
                     new CheckBoxTableCell<>(index ->
-                            kommentarTableView.getItems().get(index).selectedProperty()
+                            commentTableView.getItems().get(index).selectedProperty()
                     );
 
             cell.addEventFilter(MouseEvent.MOUSE_PRESSED, evt -> {
                 int row = cell.getIndex();
-                if (row >= 0 && row < kommentarTableView.getItems().size()) {
-                    Comment item = kommentarTableView.getItems().get(row);
+                if (row >= 0 && row < commentTableView.getItems().size()) {
+                    Comment item = commentTableView.getItems().get(row);
                     item.selectedProperty().set(!item.selectedProperty().get());
+                    logger.debug("Comment row {} selection toggled to {}", row, item.selectedProperty().get());
                 }
                 evt.consume();
             });
@@ -62,19 +67,20 @@ public class KommentarViewController {
             return cell;
         });
 
-        kommentarColumn.setCellValueFactory(new PropertyValueFactory<>("comment"));
+        commentColumn.setCellValueFactory(new PropertyValueFactory<>("comment"));
         checkBoxColumn.setCellValueFactory(cellData -> cellData.getValue().selectedProperty());
 
         checkBoxColumn.setResizable(false);
         checkBoxColumn.setPrefWidth(50);
 
-        kommentarTableView.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY_ALL_COLUMNS);
+        commentTableView.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY_ALL_COLUMNS);
+        logger.debug("Table columns set up in KommentarViewController");
     }
 
     public void onWeiterleitenButtonClick(ActionEvent actionEvent) throws IOException {
-        System.out.println("[Kommentar] Weiterleiten Button Clicked");
+        logger.info("Forward button clicked in KommentarViewController");
         boolean hasSelectedComment = false;
-        for (Comment comment : kommentarTableView.getItems()) {
+        for (Comment comment : commentTableView.getItems()) {
             if (comment.selectedProperty().get()) {
                 hasSelectedComment = true;
                 break;
@@ -82,13 +88,13 @@ public class KommentarViewController {
         }
 
         if (hasSelectedComment) {
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/rocketshipcheckingtool/ui/manager/WeiterleitenPopupView.fxml"));
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/rocketshipcheckingtool/ui/manager/ForwardPopupView.fxml"));
             Parent popupRoot = loader.load();
 
-            WeiterleitenPopupViewController popupController = loader.getController();
+            ForwardPopupViewController popupController = loader.getController();
 
             ArrayList<Comment> selectedComments = new ArrayList<>();
-            for (Comment comment : kommentarTableView.getItems()) {
+            for (Comment comment : commentTableView.getItems()) {
                 if (comment.selectedProperty().get()) {
                     selectedComments.add(comment);
                 }
@@ -109,17 +115,20 @@ public class KommentarViewController {
             popupStage.showAndWait();
 
             if (popupController.isSuccessfull()) {
+                logger.info("Comments successfully forwarded: {} comment(s)", selectedComments.size());
                 Alert alert = new Alert(Alert.AlertType.INFORMATION);
                 alert.setTitle("Erfolg");
                 alert.setHeaderText(null);
                 alert.setContentText("Kommentare wurden erfolgreich weitergeleitet.");
                 for (Comment comment : selectedComments ) {
                     CommentUtil.updateComment(clientRequests, user, comment.getId(), "false");
+                    logger.debug("Comment with ID {} marked as processed", comment.getId());
                 }
                 popupStage.close();
                 alert.showAndWait();
                 loadData();
             } else {
+                logger.warn("Error occurred while forwarding comments");
                 Alert alert = new Alert(Alert.AlertType.ERROR);
                 alert.setTitle("Fehler");
                 alert.setHeaderText(null);
@@ -127,6 +136,7 @@ public class KommentarViewController {
                 alert.showAndWait();
             }
         } else {
+            logger.info("No comment selected for forwarding");
             Alert alert = new Alert(Alert.AlertType.WARNING);
             alert.setTitle("Kein Kommentar ausgewählt");
             alert.setHeaderText(null);
@@ -138,27 +148,28 @@ public class KommentarViewController {
 
     public void loadData() {
         if (shuttleSelected == null) {
+            logger.warn("No shuttle selected when loading comments");
             return;
         }
         try {
-            kommentarTableView.setItems(FXCollections.observableArrayList(CommentUtil.getCommentsForShuttle(clientRequests, user, shuttleSelected.getId())));
+            commentTableView.setItems(FXCollections.observableArrayList(CommentUtil.getCommentsForShuttle(clientRequests, user, shuttleSelected.getId())));
             if (searchHelper != null) {
-                searchHelper.setItems(kommentarTableView.getItems());
+                searchHelper.setItems(commentTableView.getItems());
             }
+            logger.info("Loaded comments for shuttle '{}'", shuttleSelected.getShuttleName());
         } catch (Exception e) {
-
+            logger.error("Error loading comments: {}", e.getMessage(), e);
         }
     }
 
     public void setClientRequests(ClientRequests clientRequests) {
         this.clientRequests = clientRequests;
         loadData();
+        logger.debug("ClientRequests set in KommentarViewController");
     }
 
     public void setShuttle(Shuttle shuttleSelected) {
         this.shuttleSelected = shuttleSelected;
+        logger.debug("Shuttle set in KommentarViewController: '{}'", shuttleSelected != null ? shuttleSelected.getShuttleName() : "null");
     }
-
-
-
 }

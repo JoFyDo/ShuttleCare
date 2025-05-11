@@ -17,25 +17,28 @@ import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.input.MouseEvent;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.util.List;
 
-public class LagerViewController {
+public class StorageViewController {
     public TextField searchField;
-    public Button verwendenButton;
-    public Button bestellenButton;
+    public Button useButton;
+    public Button orderButton;
 
 
     public TableColumn<Part, Boolean> checkBoxColumn;
     public TableColumn<Part, Boolean> nameColumn;
     public TableColumn<Part, Boolean> nrColumn;
-    public TableColumn<Part, Boolean> preisColumn;
-    public TableColumn<Part, Boolean> bestandColumn;
-    public TableView<Part> lagerTableView;
+    public TableColumn<Part, Boolean> priceColumn;
+    public TableColumn<Part, Boolean> quantityColumn;
+    public TableView<Part> storageTableView;
     private ClientRequests clientRequests;
     private final String user = UserSession.getRole().name().toLowerCase();
     private TableSearchHelper<Part> searchHelper;
+    private static final Logger logger = LoggerFactory.getLogger(StorageViewController.class);
 
 
     public void setClientRequests(ClientRequests clientRequests) {
@@ -47,7 +50,7 @@ public class LagerViewController {
     public void initialize() {
         setupTableColumns();
         searchHelper = new TableSearchHelper<>(
-                lagerTableView,
+                storageTableView,
                 searchField,
                 Part::getName
         );
@@ -58,21 +61,20 @@ public class LagerViewController {
         checkBoxColumn.setCellFactory(col -> {
             CheckBoxTableCell<Part, Boolean> cell =
                     new CheckBoxTableCell<Part, Boolean>(index ->
-                            lagerTableView.getItems().get(index).selectedProperty()
+                            storageTableView.getItems().get(index).selectedProperty()
                     );
 
             cell.addEventFilter(MouseEvent.MOUSE_PRESSED, evt -> {
                 int row = cell.getIndex();
-                if (row >= 0 && row < lagerTableView.getItems().size()) {
-                    Part item = lagerTableView.getItems().get(row);
-                    for (Part part : lagerTableView.getItems()) {
+                if (row >= 0 && row < storageTableView.getItems().size()) {
+                    Part item = storageTableView.getItems().get(row);
+                    for (Part part : storageTableView.getItems()) {
                         if (part != item) {
                             part.selectedProperty().set(false);
                         }
                     }
                     item.selectedProperty().set(!item.selectedProperty().get());
-                    System.out.println("[Lager] Clicked row: " + item.getName() + ", " + item.getId()
-                            + ", " + item.getPrice() + ", " + item.getQuantity());
+                    logger.info("Row selected: name='{}', id={}, price={}, quantity={}", item.getName(), item.getId(), item.getPrice(), item.getQuantity());
                 }
                 evt.consume();
             });
@@ -82,36 +84,39 @@ public class LagerViewController {
 
         nameColumn.setCellValueFactory(new PropertyValueFactory<>("name"));
         nrColumn.setCellValueFactory(new PropertyValueFactory<>("id"));
-        preisColumn.setCellValueFactory(new PropertyValueFactory<>("price"));
-        bestandColumn.setCellValueFactory(new PropertyValueFactory<>("quantity"));
+        priceColumn.setCellValueFactory(new PropertyValueFactory<>("price"));
+        quantityColumn.setCellValueFactory(new PropertyValueFactory<>("quantity"));
 
         checkBoxColumn.setResizable(false);
         checkBoxColumn.setPrefWidth(50);
 
-        lagerTableView.getSelectionModel().setCellSelectionEnabled(false);
-        lagerTableView.setRowFactory(tv -> {
+        storageTableView.getSelectionModel().setCellSelectionEnabled(false);
+        storageTableView.setRowFactory(tv -> {
             TableRow<Part> row = new TableRow<>();
             row.setOnMousePressed(event -> {
                 if (!event.getTarget().toString().contains("CheckBox")) {
-                    lagerTableView.getSelectionModel().clearSelection();
+                    storageTableView.getSelectionModel().clearSelection();
                 }
             });
             return row;
         });
-        lagerTableView.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY_ALL_COLUMNS);
+        storageTableView.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY_ALL_COLUMNS);
 
     }
 
 
     private void loadTableContent() {
         try {
-            lagerTableView.setItems(FXCollections.observableArrayList(PartUtil.getParts(clientRequests, user)));
+            logger.debug("Loading parts for user '{}'", user);
+            storageTableView.setItems(FXCollections.observableArrayList(PartUtil.getParts(clientRequests, user)));
             List<Part> parts = PartUtil.getParts(clientRequests, user);
-            lagerTableView.setItems(FXCollections.observableArrayList(parts));
+            storageTableView.setItems(FXCollections.observableArrayList(parts));
             if (searchHelper != null) {
                 searchHelper.setItems(parts);
             }
+            logger.info("Loaded {} parts into table", parts.size());
         } catch (Exception e) {
+            logger.error("Failed to load parts: {}", e.getMessage(), e);
             Alert alert = new Alert(Alert.AlertType.ERROR);
             alert.setTitle("Loading Error");
             alert.setHeaderText(null);
@@ -123,83 +128,100 @@ public class LagerViewController {
 
     public void onVerwendenButtonClick(ActionEvent actionEvent) {
         try {
-            System.out.println("[Lager] Verwenden Button Clicked");
+            logger.info("Use button clicked in StorageViewController");
 
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/rocketshipcheckingtool/ui/technician/VerwendenPopupView.fxml"));
             Parent popupRoot = loader.load();
-            VerwendenPopupController verwendenPopupController = loader.getController();
-
+            UsePartPopupController usePartPopupController = loader.getController();
 
             Stage popupStage = new Stage();
             try {
-                Part part = lagerTableView.getItems().stream()
+                Part part = storageTableView.getItems().stream()
                         .filter(Part::isSelected)
                         .findFirst()
                         .orElse(null);
-                popupStage.setTitle(part.getName() + " aus dem Lager entnehmen");
-                verwendenPopupController.setTeil(part.getName());
-                verwendenPopupController.setPreis(part.getPrice());
-                verwendenPopupController.setMaxQuantity(part.getQuantity());
+                if (part == null) {
+                    logger.warn("No part selected for use");
+                    alertDidntSelect();
+                    return;
+                }
+                popupStage.setTitle(part.getName() + " - Use from inventory");
+                usePartPopupController.setPart(part.getName());
+                usePartPopupController.setPrice(part.getPrice());
+                usePartPopupController.setMaxQuantity(part.getQuantity());
                 popupStage.setScene(new Scene(popupRoot));
                 popupStage.initModality(Modality.APPLICATION_MODAL);
                 popupStage.showAndWait();
-                if (verwendenPopupController.getIsVerwendenButton()) {
-                    PartUtil.usePart(clientRequests, user, part.getId(), verwendenPopupController.getQuantity());
+                if (usePartPopupController.getIsVerwendenButton()) {
+                    logger.info("Confirmed use of part '{}', quantity={}", part.getName(), usePartPopupController.getQuantity());
+                    PartUtil.usePart(clientRequests, user, part.getId(), usePartPopupController.getQuantity());
                     loadTableContent();
+                } else {
+                    logger.debug("Use dialog closed without confirmation");
                 }
             } catch (NullPointerException e) {
+                logger.error("NullPointerException in use dialog: {}", e.getMessage(), e);
                 alertDidntSelect();
             }
         } catch (IOException e) {
-            e.printStackTrace();
+            logger.error("IOException in onVerwendenButtonClick: {}", e.getMessage(), e);
         }
-
     }
 
     public void onBestellenButtonClick(ActionEvent actionEvent) {
         try {
-            System.out.println("[Lager] Bestellen Button Clicked");
+            logger.info("Order button clicked in StorageViewController");
 
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/rocketshipcheckingtool/ui/technician/BestellenPopupView.fxml"));
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/rocketshipcheckingtool/ui/technician/OrderPopupView.fxml"));
             Parent popupRoot = loader.load();
-            BestellenPopupController bestellenPopupController = loader.getController();
-            bestellenPopupController.setClientRequests(clientRequests);
-            Part part = lagerTableView.getItems().stream()
+            OrderPopupController orderPopupController = loader.getController();
+            orderPopupController.setClientRequests(clientRequests);
+            Part part = storageTableView.getItems().stream()
                     .filter(Part::isSelected)
                     .findFirst()
                     .orElse(null);
 
             Stage popupStage = new Stage();
             try {
-                popupStage.setTitle(part.getName() + " nachbestellen");
-                bestellenPopupController.setTeil(part.getName());
-                bestellenPopupController.setPreis(part.getPrice());
+                if (part == null) {
+                    logger.warn("No part selected for order");
+                    alertDidntSelect();
+                    return;
+                }
+                popupStage.setTitle(part.getName() + " - Order more");
+                orderPopupController.setPart(part.getName());
+                orderPopupController.setPrice(part.getPrice());
                 popupStage.setScene(new Scene(popupRoot));
                 popupStage.initModality(Modality.APPLICATION_MODAL);
                 popupStage.setResizable(false);
                 popupStage.showAndWait();
-                if (bestellenPopupController.getIsBestellenButton()) {
-                    Shuttle shuttle = bestellenPopupController.getSelectedShuttle();
+                if (orderPopupController.getIsBestellenButton()) {
+                    Shuttle shuttle = orderPopupController.getSelectedShuttle();
+                    logger.info("Confirmed order of part '{}', quantity={}, shuttle={}", part.getName(), orderPopupController.getQuantity(), shuttle != null ? shuttle.getShuttleName() : "None");
                     if (shuttle != null) {
-                        PartUtil.orderPart(clientRequests, user, part.getId(), bestellenPopupController.getQuantity(), bestellenPopupController.getSelectedShuttle().getId());
+                        PartUtil.orderPart(clientRequests, user, part.getId(), orderPopupController.getQuantity(), shuttle.getId());
                     } else {
-                        PartUtil.orderPart(clientRequests, user, part.getId(), bestellenPopupController.getQuantity(), null);
+                        PartUtil.orderPart(clientRequests, user, part.getId(), orderPopupController.getQuantity(), null);
                     }
                     loadTableContent();
+                } else {
+                    logger.debug("Order dialog closed without confirmation");
                 }
             } catch (NullPointerException e) {
+                logger.error("NullPointerException in order dialog: {}", e.getMessage(), e);
                 alertDidntSelect();
             }
         } catch (IOException e) {
-            e.printStackTrace();
+            logger.error("IOException in onBestellenButtonClick: {}", e.getMessage(), e);
         }
     }
 
     public void alertDidntSelect() {
+        logger.info("No row selected in inventory table when attempting action");
         Alert alert = new Alert(Alert.AlertType.INFORMATION);
-        alert.setTitle("Wähle bitte eine Zeile aus");
+        alert.setTitle("Please select a row");
         alert.setHeaderText(null);
-        alert.setContentText("Bitte wähle eine Zeile aus, um mit dem Artikel zu interagieren.");
+        alert.setContentText("Please select a row to interact with the item.");
         alert.showAndWait();
     }
 }

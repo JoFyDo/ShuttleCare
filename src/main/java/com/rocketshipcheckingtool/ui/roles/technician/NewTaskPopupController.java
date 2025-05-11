@@ -4,10 +4,14 @@ import javafx.collections.FXCollections;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import javafx.stage.Stage;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
-public class NeueAufgabePopupController {
+public class NewTaskPopupController {
 
-    public ComboBox<String> mechanikerComboBox;
+    private static final Logger logger = LoggerFactory.getLogger(NewTaskPopupController.class);
+
+    public ComboBox<String> mechanicComboBox;
     private Stage stage;
 
     @FXML
@@ -18,18 +22,20 @@ public class NeueAufgabePopupController {
     private Button createButton;
 
     public void initialize() {
-        mechanikerComboBox.setItems(FXCollections.observableArrayList(
+        mechanicComboBox.setItems(FXCollections.observableArrayList(
                 "Alois", "Boris", "Christian", "Deniz"
         ));
 
         createButton.setOnAction(event -> {
             if (stage.isShowing()) {
                 if (getMechanic() == null || getDescription() == null || getDescription().isEmpty() || getMechanic().isEmpty()) {
+                    logger.warn("Attempted to create task with missing fields: mechanic='{}', description='{}'", getMechanic(), getDescription());
                     Alert alert = new Alert(Alert.AlertType.ERROR);
                     alert.setTitle("Error");
                     alert.setContentText("Alle Felder müssen ausgefüllt sein!");
                     alert.showAndWait();
-                }else {
+                } else {
+                    logger.info("Creating new task for mechanic='{}' with description='{}'", getMechanic(), getDescription());
                     stage.close();
                 }
             }
@@ -45,7 +51,7 @@ public class NeueAufgabePopupController {
     }
 
     public String getMechanic() {
-        return mechanikerComboBox.getValue();
+        return mechanicComboBox.getValue();
     }
 
     public void setDescription(String description) {

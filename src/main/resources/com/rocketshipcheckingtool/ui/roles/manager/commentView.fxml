@@ -11,7 +11,7 @@
 <?import javafx.scene.control.TableView?>
 <?import javafx.scene.control.TableColumn?>
 <VBox xmlns="http://javafx.com/javafx" xmlns:fx="http://javafx.com/fxml"
-      fx:controller="com.rocketshipcheckingtool.ui.roles.manager.KommentarViewController" spacing="40">
+      fx:controller="com.rocketshipcheckingtool.ui.roles.manager.CommentViewController" spacing="40">
     <GridPane>
         <VBox.margin>
             <Insets top="40"/>
@@ -27,7 +27,7 @@
             </GridPane.margin>
 
         </TextField>
-        <Button fx:id="weiterleitenButton" mnemonicParsing="false" style="-fx-background-color: rgb(26, 41, 82)"
+        <Button fx:id="forwardButton" mnemonicParsing="false" style="-fx-background-color: rgb(26, 41, 82)"
                 styleClass="buttonBig" text="Weiterleiten" GridPane.columnIndex="1" GridPane.halignment="RIGHT"
                 GridPane.rowIndex="0" onAction="#onWeiterleitenButtonClick" alignment="CENTER">
             <GridPane.margin>
@@ -36,10 +36,10 @@
         </Button>
     </GridPane>
     <VBox VBox.vgrow="ALWAYS" styleClass="vBox" style="-fx-background-radius: 0;">
-        <TableView fx:id="kommentarTableView" VBox.vgrow="ALWAYS">
+        <TableView fx:id="commentTableView" VBox.vgrow="ALWAYS">
             <columns>
                 <TableColumn fx:id="checkBoxColumn"/>
-                <TableColumn fx:id="kommentarColumn" text="Kommentar"/>
+                <TableColumn fx:id="commentColumn" text="Kommentar"/>
             </columns>
         </TableView>
     </VBox>

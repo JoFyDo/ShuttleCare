@@ -2,6 +2,8 @@ package com.rocketshipcheckingtool.ui.datamodel;
 
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class Part {
     private int id;
@@ -9,6 +11,7 @@ public class Part {
     private String price;
     private int quantity;
     private BooleanProperty selected;
+    private static final Logger logger = LoggerFactory.getLogger(Part.class);
 
     public Part(int id, String name, String price, int quantity) {
         this.id = id;
@@ -36,12 +39,15 @@ public class Part {
     public BooleanProperty selectedProperty() {
         if (selected == null) {
             selected = new SimpleBooleanProperty(false);
+            logger.debug("Initialized selected property for part '{}'", name);
         }
         return selected;
     }
 
     public boolean isSelected() {
-        return selected != null && selected.get();
+        boolean sel = selected != null && selected.get();
+        logger.trace("Checked isSelected for part '{}': {}", name, sel);
+        return sel;
     }
 
 }

@@ -17,29 +17,33 @@ public class GeneralTaskUtil {
 
     private final static Logger logger = LoggerFactory.getLogger(GeneralTaskUtil.class);
 
-
     public static ArrayList<Task> getGeneralTasksByShuttleID(ClientRequests clientRequests, String user, int shuttleID) throws IOException {
+        logger.info("Requesting general tasks for shuttle ID {} and user '{}'", shuttleID, user);
         try {
             HashMap<String, String> params = new HashMap<>();
             params.put("ShuttleID", String.valueOf(shuttleID));
             String tasks = clientRequests.getRequest("/requestGeneralTasksForShuttle", user, params);
             Gson gson = new Gson();
             Type shuttleListType = new TypeToken<ArrayList<Task>>() {}.getType();
-            return gson.fromJson(tasks, shuttleListType);
+            ArrayList<Task> generalTasks = gson.fromJson(tasks, shuttleListType);
+            logger.info("Received {} general tasks for shuttle ID {}", generalTasks != null ? generalTasks.size() : 0, shuttleID);
+            return generalTasks;
         } catch (Exception e) {
-            logger.error(e.getMessage());
+            logger.error("Failed to get general tasks for shuttle ID {}: {}", shuttleID, e.getMessage(), e);
             throw new ConnectException(e.getMessage());
         }
     }
 
     public static void updateGeneralTask(ClientRequests clientRequests, String user, int taskID, String status) throws IOException {
+        logger.info("Updating general task ID {} to status '{}' for user '{}'", taskID, status, user);
         try {
             HashMap<String, String> params = new HashMap<>();
             params.put("TaskID", String.valueOf(taskID));
             params.put("Status", status);
             clientRequests.postRequest("/updateGeneralTasksForShuttle", user, params);
+            logger.debug("General task ID {} updated to status '{}'", taskID, status);
         } catch (Exception e) {
-            logger.error(e.getMessage());
+            logger.error("Failed to update general task ID {}: {}", taskID, e.getMessage(), e);
             throw new ConnectException(e.getMessage());
         }
     }

@@ -4,8 +4,8 @@ import com.rocketshipcheckingtool.ui.datamodel.Shuttle;
 import com.rocketshipcheckingtool.ui.auth.UserRole;
 import com.rocketshipcheckingtool.ui.auth.UserSession;
 import com.rocketshipcheckingtool.ui.roles.technician.ClientRequests;
-import com.rocketshipcheckingtool.ui.roles.technician.LagerViewController;
-import com.rocketshipcheckingtool.ui.roles.technician.StatistikenViewController;
+import com.rocketshipcheckingtool.ui.roles.technician.StorageViewController;
+import com.rocketshipcheckingtool.ui.roles.technician.StatsViewController;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Node;
@@ -65,16 +65,16 @@ public class ViewManagerController {
             case TECHNICIAN -> {
                 technicianHomePage = loadPage("/com/rocketshipcheckingtool/ui/roles/technician/HomeView.fxml");
                 technicianDetailsPage = loadPage("/com/rocketshipcheckingtool/ui/roles/technician/DetailsView.fxml");
-                statistikenPage = loadPage("/com/rocketshipcheckingtool/ui/roles/technician/StatistikenView.fxml");
-                lagerPage = loadPage("/com/rocketshipcheckingtool/ui/roles/technician/LagerView.fxml");
-                technicianNotificationPage = loadPage("/com/rocketshipcheckingtool/ui/roles/technician/NachrichtenView.fxml");
+                statistikenPage = loadPage("/com/rocketshipcheckingtool/ui/roles/technician/StatsView.fxml");
+                lagerPage = loadPage("/com/rocketshipcheckingtool/ui/roles/technician/StorageView.fxml");
+                technicianNotificationPage = loadPage("/com/rocketshipcheckingtool/ui/roles/technician/NotifictionView.fxml");
 
                 contentArea.getChildren().addAll(technicianHomePage, technicianDetailsPage, statistikenPage, lagerPage, technicianNotificationPage);
             }
             case MANAGER -> {
                 managerHomePage = loadPage("/com/rocketshipcheckingtool/ui/roles/manager/HomeView.fxml");
                 managerDetailsPage = loadPage("/com/rocketshipcheckingtool/ui/roles/manager/DetailsView.fxml");
-                managerNotificationPage = loadPage("/com/rocketshipcheckingtool/ui/roles/manager/NachrichtenView.fxml");
+                managerNotificationPage = loadPage("/com/rocketshipcheckingtool/ui/roles/manager/NotificationView.fxml");
                 contentArea.getChildren().addAll(managerHomePage, managerDetailsPage, managerNotificationPage);
             }
         }
@@ -105,10 +105,10 @@ public class ViewManagerController {
             managerDetailsController = mdvc;
             mdvc.setClientRequests(clientRequests);
             mdvc.setViewManagerController(this);
-        } else if (controller instanceof StatistikenViewController svc) {
+        } else if (controller instanceof StatsViewController svc) {
             svc.setClientRequests(clientRequests);
             svc.setViewManagerController(this);
-        } else if (controller instanceof LagerViewController lvc) {
+        } else if (controller instanceof StorageViewController lvc) {
             lvc.setClientRequests(clientRequests);
         } else if (controller instanceof com.rocketshipcheckingtool.ui.roles.technician.NotificationViewController nvc) {
             nvc.setClientRequests(clientRequests);
