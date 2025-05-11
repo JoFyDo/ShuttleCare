@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.control.ComboBox?>
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.TableView?>
+<?import javafx.scene.control.TableColumn?>
+<VBox xmlns="http://javafx.com/javafx" xmlns:fx="http://javafx.com/fxml"
+      fx:controller="com.rocketshipcheckingtool.ui.roles.manager.NotificationViewController" spacing="40">
+    <padding>
+        <Insets topRightBottomLeft="40"/>
+    </padding>
+    <ComboBox fx:id="shuttleComboBox" promptText="Alle Shuttles" styleClass="shuttleName"/>
+    <VBox VBox.vgrow="ALWAYS" styleClass="vBox">
+        <Label text="Nachrichten" styleClass="header"/>
+        <TableView fx:id="noticationTableView" VBox.vgrow="ALWAYS" styleClass="table-view">
+            <columns>
+                <TableColumn fx:id="notificationColumn" text="Nachricht"/>
+                <TableColumn fx:id="commentColumn" text="Kommentar"/>
+                <TableColumn fx:id="shuttleColumn" text="Shuttle"/>
+                <TableColumn fx:id="senderColumn" text="Von"/>
+                <TableColumn fx:id="deleteColumn"/>
+            </columns>
+        </TableView>
+    </VBox>
+</VBox>

@@ -4,7 +4,7 @@
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 <VBox xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" alignment="TOP_CENTER"
-      prefWidth="100.0" spacing="20.0" styleClass="sidebar" stylesheets="@../style.css" fx:id="technicianSidebar" fx:controller="com.rocketshipcheckingtool.ui.technician.TechnicianSidebarController">
+      prefWidth="100.0" spacing="20.0" styleClass="sidebar" stylesheets="@../style.css" fx:id="technicianSidebar" fx:controller="com.rocketshipcheckingtool.ui.roles.technician.TechnicianSidebarController">
     <VBox alignment="TOP_CENTER">
         <ToggleButton fx:id="btnHome" onAction="#handleSidebarClick" styleClass="buttonSidebar">
             <graphic>
@@ -36,7 +36,7 @@
     </VBox>
 
     <VBox alignment="TOP_CENTER">
-        <ToggleButton fx:id="btnStatistiken" styleClass="buttonSidebar" onAction="#handleSidebarClick"
+        <ToggleButton fx:id="btnStats" styleClass="buttonSidebar" onAction="#handleSidebarClick"
                       toggleGroup="$toggleGroup">
             <graphic>
                 <fx:include source="/com/rocketshipcheckingtool/ui/graphics/statistiken.fxml"/>
@@ -50,7 +50,7 @@
     </VBox>
 
     <VBox alignment="TOP_CENTER">
-        <ToggleButton fx:id="btnLager" onAction="#handleSidebarClick" toggleGroup="$toggleGroup"
+        <ToggleButton fx:id="btnStorage" onAction="#handleSidebarClick" toggleGroup="$toggleGroup"
                       styleClass="buttonSidebar">
             <graphic>
                 <fx:include source="/com/rocketshipcheckingtool/ui/graphics/lager.fxml"/>
@@ -64,7 +64,7 @@
     </VBox>
 
     <VBox alignment="TOP_CENTER">
-        <ToggleButton fx:id="btnNachrichten" onAction="#handleSidebarClick" styleClass="buttonSidebar"
+        <ToggleButton fx:id="btnNotification" onAction="#handleSidebarClick" styleClass="buttonSidebar"
                       toggleGroup="$toggleGroup">
             <graphic>
                 <fx:include source="/com/rocketshipcheckingtool/ui/graphics/nachrichten.fxml"/>

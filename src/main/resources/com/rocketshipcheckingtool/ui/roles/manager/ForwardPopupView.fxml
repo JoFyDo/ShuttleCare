@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import java.lang.*?>
+<?import java.util.*?>
+<?import javafx.scene.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.collections.FXCollections?>
+<VBox xmlns="http://javafx.com/javafx" xmlns:fx="http://javafx.com/fxml"
+      fx:controller="com.rocketshipcheckingtool.ui.roles.manager.ForwardPopupViewController"
+      prefHeight="400.0" prefWidth="600.0" stylesheets="@../../style.css" style="-fx-background-color: rgb(206, 221, 255)">
+    <padding>
+        <Insets topRightBottomLeft="40"/>
+    </padding>
+    <VBox styleClass="vBox" VBox.vgrow="ALWAYS" spacing="40" alignment="TOP_CENTER">
+        <Label fx:id="shuttleName" text="Shuttle" styleClass="header" alignment="TOP_CENTER"/>
+        <TextArea fx:id="commentArea" editable="false" wrapText="true" prefHeight="100.0"/>
+        <TextField fx:id="ownCommandField"/>
+        <ComboBox fx:id="departmentComboBox" promptText="Abteilung">
+            <items>
+                <FXCollections fx:factory="observableArrayList">
+                    <String fx:value="Technik"/>
+                    <String fx:value="Management"/>
+                    <String fx:value="HR"/>
+                </FXCollections>
+            </items>
+        </ComboBox>
+        <Button fx:id="weiterleitenButton" text="Weiterleiten" styleClass="buttonBig" style="-fx-background-color: rgb(26, 41, 82)" onAction="#onWeiterleitenButtonClick"/>
+    </VBox>
+</VBox>

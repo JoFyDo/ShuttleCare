@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.chart.*?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.Group?>
+<?import javafx.scene.layout.*?>
+<GridPane hgap="40.0" xmlns:fx="http://javafx.com/fxml/1" xmlns="http://javafx.com/javafx/23.0.1"
+          fx:controller="com.rocketshipcheckingtool.ui.roles.technician.StatsViewController">
+    <columnConstraints>
+        <ColumnConstraints hgrow="ALWAYS" percentWidth="70"/>
+        <ColumnConstraints hgrow="ALWAYS" percentWidth="30"/>
+    </columnConstraints>
+    <rowConstraints>
+        <RowConstraints vgrow="ALWAYS"/>
+    </rowConstraints>
+    <padding>
+        <Insets bottom="40.0" left="40.0" right="40.0" top="40.0"/>
+    </padding>
+    <GridPane hgap="40.0" vgap="40.0">
+        <columnConstraints>
+            <ColumnConstraints hgrow="ALWAYS" percentWidth="50.0"/>
+            <ColumnConstraints hgrow="ALWAYS" percentWidth="50.0"/>
+        </columnConstraints>
+        <rowConstraints>
+            <RowConstraints percentHeight="50.0" vgrow="ALWAYS"/>
+            <RowConstraints vgrow="ALWAYS"/>
+        </rowConstraints>
+        <VBox styleClass="vBox" GridPane.columnIndex="0" GridPane.rowIndex="0">
+            <Label text="Belastungsverteilung" styleClass="header"/>
+            <StackedBarChart fx:id="stackedBarChart">
+                <xAxis>
+                    <NumberAxis fx:id="xAxisSBC"/>
+                </xAxis>
+                <yAxis>
+                    <CategoryAxis fx:id="yAxisSBC"/>
+                </yAxis>
+            </StackedBarChart>
+        </VBox>
+        <VBox styleClass="vBox" GridPane.columnIndex="1" GridPane.rowIndex="0">
+            <Label text="Sauerstoffdruck" styleClass="header"/>
+            <LineChart fx:id="lineChart">
+                <xAxis>
+                    <NumberAxis fx:id="xAxisLC"/>
+                </xAxis>
+                <yAxis>
+                    <NumberAxis fx:id="yAxisLC"/>
+                </yAxis>
+            </LineChart>
+        </VBox>
+        <VBox styleClass="vBox" GridPane.columnIndex="0" GridPane.rowIndex="1">
+            <Label text="Abnutzung" styleClass="header"/>
+            <PieChart fx:id="pieChart" styleClass="pieChart"/>
+        </VBox>
+        <VBox styleClass="vBox" GridPane.columnIndex="1" GridPane.rowIndex="1">
+            <Label text="Systemfehler" styleClass="header"/>
+            <BarChart fx:id="barChart" styleClass="barChart">
+                <xAxis>
+                    <CategoryAxis fx:id="xAxisBC"/>
+                </xAxis>
+                <yAxis>
+                    <NumberAxis fx:id="yAxisBC"/>
+                </yAxis>
+            </BarChart>
+        </VBox>
+    </GridPane>
+
+    <StackPane GridPane.columnIndex="1" fx:id="rocketContainer">
+        <Group fx:id="rocketSVG">
+            <fx:include source="/com/rocketshipcheckingtool/ui/graphics/rocket.fxml"/>
+        </Group>
+    </StackPane>
+</GridPane>
