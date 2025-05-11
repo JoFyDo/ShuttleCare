@@ -55,7 +55,7 @@ public class ViewManager extends Application {
 
             // Set up the container and scene
             StackPane root = new StackPane(mediaView);
-            Scene scene = new Scene(root, 800, 600);
+            Scene scene = new Scene(root, 1066, 600);
 
             // Configure the media view to resize with the stage
             mediaView.fitWidthProperty().bind(root.widthProperty());
@@ -95,7 +95,7 @@ public class ViewManager extends Application {
         LoginViewController controller = loader.getController();
         controller.setClientRequests(clientRequests);
 
-        Scene scene = new Scene(root);
+        Scene scene = new Scene(root, 1066, 600);
         scene.getStylesheets().add(Objects.requireNonNull(ViewManager.class.getResource("/com/rocketshipcheckingtool/ui/style.css")).toExternalForm());
         stage.setTitle("ShuttleCare");
         Image i = new Image(Objects.requireNonNull(ViewManager.class.getResourceAsStream("/com/rocketshipcheckingtool/ui/graphics/icon.png")));
