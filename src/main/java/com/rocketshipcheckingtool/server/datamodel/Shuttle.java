@@ -48,11 +48,6 @@ public class Shuttle {
         return status;
     }
 
-    public String getLandingTimeString() {
-        SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy HH:mm");
-        return sdf.format(landingTime.getTime());
-    }
-
     public Calendar getLandingTime() {
         return landingTime;
     }

@@ -2,6 +2,7 @@ package com.rocketshipcheckingtool.ui.helper;
 
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
+import com.rocketshipcheckingtool.ui.datamodel.Mechanic;
 import com.rocketshipcheckingtool.ui.datamodel.Task;
 import com.rocketshipcheckingtool.ui.roles.technician.ClientRequests;
 import org.slf4j.Logger;
@@ -63,11 +64,11 @@ public class TaskUtil {
         }
     }
 
-    public static void createTask(ClientRequests clientRequests, String user, String mechanic, String description, int shuttleID) throws IOException {
+    public static void createTask(ClientRequests clientRequests, String user, Mechanic mechanic, String description, int shuttleID) throws IOException {
         logger.info("Creating task for shuttle ID {} by user '{}', mechanic '{}', description '{}'", shuttleID, user, mechanic, description);
         try {
             HashMap<String, String> params = new HashMap<>();
-            params.put("Mechanic", mechanic);
+            params.put("MechanicID", String.valueOf(mechanic.getId()));
             params.put("Description", description);
             params.put("ShuttleID", String.valueOf(shuttleID));
             clientRequests.postRequest("/createTask", user, params);

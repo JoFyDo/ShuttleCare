@@ -20,12 +20,23 @@ public class TaskRepository {
     public ArrayList<Task> getActiveTasks() {
         try{
             ArrayList<Task> tasks = new ArrayList<>();
-            String query = "SELECT Tasks.*, Shuttles.Name AS ShuttleName FROM Tasks INNER JOIN Shuttles ON Tasks.ShuttleID = Shuttles.ID WHERE Active = 'true'";
+            String query = "SELECT Tasks.*, Shuttles.Name AS ShuttleName, Mechanics.Name AS MechanicName " +
+                           "FROM Tasks " +
+                           "INNER JOIN Shuttles ON Tasks.ShuttleID = Shuttles.ID " +
+                           "LEFT JOIN Mechanics ON Tasks.Mechanic = Mechanics.ID " +
+                           "WHERE Tasks.Active = 'true'";
             logger.debug("Executing query to get all active tasks: {}", query);
             Statement stmt = connection.createStatement();
             ResultSet rs = stmt.executeQuery(query);
             while (rs.next()) {
-                tasks.add(new Task(rs.getString("Task"), Boolean.valueOf(rs.getString("Status")), rs.getString("Mechanic"), rs.getString("ShuttleName"), rs.getInt("ID"), rs.getInt("TimeNeeded")));
+                tasks.add(new Task(
+                    rs.getString("Task"),
+                    Boolean.valueOf(rs.getString("Status")),
+                    rs.getString("MechanicName"),
+                    rs.getString("ShuttleName"),
+                    rs.getInt("ID"),
+                    rs.getInt("TimeNeeded")
+                ));
             }
             logger.info("Fetched {} active tasks from database.", tasks.size());
             return tasks;
@@ -37,14 +48,25 @@ public class TaskRepository {
 
     public ArrayList<Task> getActiveTaskByShuttleID(int shuttleID) {
         try {
-            String query = "SELECT Tasks.*, Shuttles.Name AS ShuttleName FROM Tasks INNER JOIN Shuttles ON Tasks.ShuttleID = Shuttles.ID WHERE Tasks.ShuttleID = ? AND Tasks.Active = 'true'";
+            String query = "SELECT Tasks.*, Shuttles.Name AS ShuttleName, Mechanics.Name AS MechanicName " +
+                           "FROM Tasks " +
+                           "INNER JOIN Shuttles ON Tasks.ShuttleID = Shuttles.ID " +
+                           "LEFT JOIN Mechanics ON Tasks.Mechanic = Mechanics.ID " +
+                           "WHERE Tasks.ShuttleID = ? AND Tasks.Active = 'true'";
             logger.debug("Executing query to get active tasks for shuttleID {}: {}", shuttleID, query);
             PreparedStatement stmt = connection.prepareStatement(query);
             stmt.setString(1, Integer.toString(shuttleID));
             ResultSet rs = stmt.executeQuery();
             ArrayList<Task> tasks = new ArrayList<>();
             while (rs.next()) {
-                tasks.add(new Task(rs.getString("Task"), Boolean.valueOf(rs.getString("Status")), rs.getString("Mechanic"), rs.getString("ShuttleName"), rs.getInt("ID"), rs.getInt("TimeNeeded")));
+                tasks.add(new Task(
+                    rs.getString("Task"),
+                    Boolean.valueOf(rs.getString("Status")),
+                    rs.getString("MechanicName"),
+                    rs.getString("ShuttleName"),
+                    rs.getInt("ID"),
+                    rs.getInt("TimeNeeded")
+                ));
             }
             logger.info("Fetched {} active tasks for shuttleID {}.", tasks.size(), shuttleID);
             return tasks;
@@ -77,7 +99,7 @@ public class TaskRepository {
             PreparedStatement stmt = connection.prepareStatement(query);
             stmt.setString(1, description);
             stmt.setString(2, shuttleID);
-            stmt.setString(3, mechanic);
+            stmt.setString(3, String.valueOf(mechanic));
             stmt.setString(4, String.valueOf(((int)((Math.random() * 6) + 1))));
             int updatedRows = stmt.executeUpdate();
             logger.info("Created new task for shuttleID {}. Rows affected: {}", shuttleID, updatedRows);

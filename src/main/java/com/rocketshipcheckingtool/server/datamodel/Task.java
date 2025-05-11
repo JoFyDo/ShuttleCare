@@ -39,12 +39,6 @@ public class Task{
         this.timeNeeded = timeNeeded;
     }
 
-    public String toJson() {
-        String json = new com.google.gson.Gson().toJson(this);
-        logger.debug("Serialized Task with id {} to JSON: {}", id, json);
-        return json;
-    }
-
     public String getTask() {
         return task;
     }

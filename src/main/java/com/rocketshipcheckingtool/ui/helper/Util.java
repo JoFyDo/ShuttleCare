@@ -28,6 +28,7 @@ public class Util {
         popupStage.initModality(Modality.APPLICATION_MODAL);
 
         NewTaskPopupController popupController = loader.getController();
+        popupController.setClientRequests(clientRequests);
         if (preset != null) {
             popupController.setDescription(preset);
         }
@@ -37,10 +38,9 @@ public class Util {
 
         // Retrieve data from the popup
         String description = popupController.getDescription();
-        String mechanic = popupController.getMechanic();
+        Mechanic mechanic = popupController.getMechanic();
         if (!description.equals("") || !mechanic.equals("")) {
             description = description.strip();
-            mechanic = mechanic.strip();
             TaskUtil.createTask(clientRequests, user, mechanic, description, shuttle.getId());
             if (shuttle.getStatus().equals("In Wartung")) {
                 ShuttleUtil.updateShuttleStatus(clientRequests, user, shuttle.getId(), "Inspektion 1");

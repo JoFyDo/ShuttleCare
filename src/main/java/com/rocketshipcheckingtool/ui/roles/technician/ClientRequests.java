@@ -56,7 +56,7 @@ public class ClientRequests {
         return response.body();
     }
 
-    public String getRequest(String path, String user, Map<String, String> parameters)
+public String getRequest(String path, String user, Map<String, String> parameters)
             throws URISyntaxException, IOException, InterruptedException {
         StringBuilder queryString = new StringBuilder();
         boolean first = true;

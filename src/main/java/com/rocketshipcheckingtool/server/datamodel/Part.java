@@ -36,14 +36,6 @@ public class Part {
         return quantity;
     }
 
-    public BooleanProperty selectedProperty() {
-        if (selected == null) {
-            selected = new SimpleBooleanProperty(false);
-            logger.debug("Initialized selected property for part '{}'", name);
-        }
-        return selected;
-    }
-
     public boolean isSelected() {
         boolean sel = selected != null && selected.get();
         logger.trace("Checked isSelected for part '{}': {}", name, sel);

@@ -21,11 +21,20 @@ public class ShuttleRepository {
         try {
             ArrayList<Shuttle> shuttles = new ArrayList<>();
             Statement stmt = connection.createStatement();
-            String query = "SELECT * FROM Shuttles WHERE Status != 'Verschrottet'";
+            String query = "SELECT s.ID, s.Name, s.Status, s.Landing, m.Name AS MechanicName " +
+                           "FROM Shuttles s " +
+                           "LEFT JOIN Mechanics m ON s.Mechanic = m.ID " +
+                           "WHERE s.Status != 'Verschrottet'";
             logger.debug("Executing query to get all shuttles: {}", query);
             ResultSet rs = stmt.executeQuery(query);
             while (rs.next()) {
-                shuttles.add(new Shuttle(rs.getInt("ID"), rs.getString("Name"), rs.getString("Status"), rs.getString("Landing"), rs.getString("Mechanic")));
+                shuttles.add(new Shuttle(
+                    rs.getInt("ID"),
+                    rs.getString("Name"),
+                    rs.getString("Status"),
+                    rs.getString("Landing"),
+                    rs.getString("MechanicName")
+                ));
             }
             logger.info("Fetched {} shuttles from database.", shuttles.size());
             return shuttles;
@@ -37,14 +46,23 @@ public class ShuttleRepository {
 
     public Shuttle getShuttle(String name) {
         try {
-            String query = "SELECT * FROM Shuttles WHERE Name = ? AND Status != 'Verschrottet'";
+            String query = "SELECT s.ID, s.Name, s.Status, s.Landing, m.Name AS MechanicName " +
+                           "FROM Shuttles s " +
+                           "LEFT JOIN Mechanics m ON s.Mechanic = m.ID " +
+                           "WHERE s.Name = ? AND s.Status != 'Verschrottet'";
             logger.debug("Executing query to get shuttle by name '{}': {}", name, query);
             PreparedStatement stmt = connection.prepareStatement(query);
             stmt.setString(1, name);
             ResultSet rs = stmt.executeQuery();
             if (rs.next()) {
                 logger.info("Fetched shuttle '{}' from database.", name);
-                return new Shuttle(rs.getInt("ID"), rs.getString("Name"), rs.getString("Status"), rs.getString("Landing"), rs.getString("Mechanic"));
+                return new Shuttle(
+                    rs.getInt("ID"),
+                    rs.getString("Name"),
+                    rs.getString("Status"),
+                    rs.getString("Landing"),
+                    rs.getString("MechanicName")
+                );
             } else {
                 logger.warn("No shuttle found with name '{}'", name);
                 return null;
@@ -57,14 +75,23 @@ public class ShuttleRepository {
 
     public Shuttle getShuttle(int id) {
         try {
-            String query = "SELECT * FROM Shuttles WHERE ID = ?";
+            String query = "SELECT s.ID, s.Name, s.Status, s.Landing, m.Name AS MechanicName " +
+                           "FROM Shuttles s " +
+                           "LEFT JOIN Mechanics m ON s.Mechanic = m.ID " +
+                           "WHERE s.ID = ?";
             logger.debug("Executing query to get shuttle by ID {}: {}", id, query);
             PreparedStatement stmt = connection.prepareStatement(query);
-            stmt.setString(1, Integer.toString(id));
+            stmt.setInt(1, id);
             ResultSet rs = stmt.executeQuery();
             if (rs.next()) {
                 logger.info("Fetched shuttle with ID {} from database.", id);
-                return new Shuttle(rs.getInt("ID"), rs.getString("Name"), rs.getString("Status"), rs.getString("Landing"), rs.getString("Mechanic"));
+                return new Shuttle(
+                    rs.getInt("ID"),
+                    rs.getString("Name"),
+                    rs.getString("Status"),
+                    rs.getString("Landing"),
+                    rs.getString("MechanicName")
+                );
             } else {
                 logger.warn("No shuttle found with ID {}", id);
                 return null;

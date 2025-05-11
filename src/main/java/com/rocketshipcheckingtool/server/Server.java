@@ -152,12 +152,12 @@ public class Server {
                     break;
                 case "/createTask":
                     if ("POST".equals(requestMethod)) {
-                        String mechanic = parameters.get("Mechanic");
+                        String mechanicId = parameters.get("MechanicID");
                         String description = parameters.get("Description");
                         String shuttleId = parameters.get("ShuttleID");
-                        logger.debug("Creating new task for shuttle {}, assigned to {}", shuttleId, mechanic);
-                        boolean success = databaseConnection.createTask(mechanic, description, shuttleId);
-                        logger.info("Task creation for shuttle {} {}. Mechanic: {}", shuttleId, success ? "successful" : "failed", mechanic);
+                        logger.debug("Creating new task for shuttle {}, assigned to {}", shuttleId, mechanicId);
+                        boolean success = databaseConnection.createTask(mechanicId, description, shuttleId);
+                        logger.info("Task creation for shuttle {} {}. Mechanic: {}", shuttleId, success ? "successful" : "failed", mechanicId);
                         sendResponse(exchange, 200, String.valueOf(success));
                     } else {
                         sendResponse(exchange, 405, "Method not allowed");
@@ -308,6 +308,17 @@ public class Server {
                         sendResponse(exchange, 405, "Method not allowed");
                     }
                     break;
+                case "/requestMechanic":
+                    if ("GET".equals(requestMethod)) {
+                        int mechanicId = Integer.parseInt(parameters.get("MechanicID"));
+                        logger.debug("Retrieving mechanic with ID: {}", mechanicId);
+                        Mechanic mechanic = databaseConnection.getMechanic(mechanicId);
+                        logger.debug("Retrieved mechanic: {}", mechanic.getName());
+                        sendResponse(exchange, 200, mechanic.toJson());
+                    } else {
+                        sendResponse(exchange, 405, "Method not allowed");
+                    }
+                    break;
                 case "/updatePredictedReleaseTime":
                     if ("POST".equals(requestMethod)) {
                         int shuttleId = Integer.parseInt(parameters.get("ShuttleID"));
@@ -402,6 +413,7 @@ public class Server {
                     } else {
                         sendResponse(exchange, 405, "Method not allowed");
                     }
+
                     break;
                 default:
                     logger.warn("Endpoint not found: {}", path);

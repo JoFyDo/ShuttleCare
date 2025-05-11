@@ -132,6 +132,10 @@ public class DatabaseFacade {
     public ArrayList<Mechanic> getMechanics() {
         return mechanicRepository.getMechanics();
     }
+
+    public Mechanic getMechanic(int mechanicId) {
+        return mechanicRepository.getMechanic(mechanicId);
+    }
     
     // Questionnaire Repository methods
     public ArrayList<QuestionnaireRating> getQuestionnaires() {
@@ -177,4 +181,6 @@ public class DatabaseFacade {
         connector.disconnect();
         logger.info("DatabaseFacade disconnected.");
     }
+
+
 }
