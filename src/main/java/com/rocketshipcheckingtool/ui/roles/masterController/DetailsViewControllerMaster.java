@@ -11,6 +11,8 @@ import javafx.scene.control.ComboBox;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 
 public abstract class DetailsViewControllerMaster {
@@ -46,11 +48,13 @@ public abstract class DetailsViewControllerMaster {
         loadShuttleContent(null);
     }
 
+    protected abstract ArrayList<Shuttle> getShuttleList() throws IOException;
+
     //preselected shuttle
     protected void loadShuttleContent(String preSelectedShuttle) {
         try {
             //Shuttle
-            shuttles = ShuttleUtil.getShuttles(clientRequests, user);
+            shuttles = getShuttleList();
 
             shuttleList = shuttles.stream()
                     .map(Shuttle::getShuttleName)

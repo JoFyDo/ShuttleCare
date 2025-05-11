@@ -3,6 +3,7 @@ package com.rocketshipcheckingtool.ui.roles.manager;
 import com.rocketshipcheckingtool.ui.datamodel.QuestionnaireRating;
 import com.rocketshipcheckingtool.ui.datamodel.Shuttle;
 import com.rocketshipcheckingtool.ui.helper.QuestionnaireUtil;
+import com.rocketshipcheckingtool.ui.helper.ShuttleUtil;
 import com.rocketshipcheckingtool.ui.roles.masterController.DetailsViewControllerMaster;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -18,6 +19,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 
 public class DetailsViewController extends DetailsViewControllerMaster {
@@ -31,6 +33,18 @@ public class DetailsViewController extends DetailsViewControllerMaster {
     public void initialize() {
         super.initialize();
         logger.info("Manager DetailsViewController initialized");
+    }
+
+    @Override
+    protected ArrayList<Shuttle> getShuttleList() throws IOException {
+        ArrayList<Shuttle> shuttles = ShuttleUtil.getShuttles(clientRequests, user);
+        ArrayList<Shuttle> filteredShuttles = new ArrayList<>();
+        for (Shuttle shuttle : shuttles) {
+            if (shuttle.getStatus().equals("Gelandet") || shuttle.getStatus().equals("Inspektion 1") || shuttle.getStatus().equals("Inspektion 2") || shuttle.getStatus().equals("In Wartung")) {
+                filteredShuttles.add(shuttle);
+            }
+        }
+        return filteredShuttles;
     }
 
     public void onKommentarButtonClicked(ActionEvent actionEvent) throws IOException {

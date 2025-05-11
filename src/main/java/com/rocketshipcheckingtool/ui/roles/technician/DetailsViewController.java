@@ -39,6 +39,11 @@ public class DetailsViewController extends DetailsViewControllerMaster {
         logger.info("DetailsViewController initialized");
     }
 
+    @Override
+    protected ArrayList<Shuttle> getShuttleList() throws IOException {
+        return ShuttleUtil.getShuttles(clientRequests, user);
+    }
+
     public void reload(){
         logger.debug("Reloading details view for shuttle '{}'", shuttleSelected != null ? shuttleSelected.getShuttleName() : "none");
         loadMaintenanceProtocol();

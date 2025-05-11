@@ -18,7 +18,7 @@ public class AddShuttle {
             String mechaniker = scanner.nextLine();
             System.out.print("Enter Landung (YYYY-MM-DD HH:MM:SS): ");
             String landung = scanner.nextLine();
-            String query = "INSERT INTO Shuttles (Name, Status, Landung, Mechaniker) VALUES (?, 'Gelandet', ?, ?)";
+            String query = "INSERT INTO Shuttles (Name, Status, Landing, Mechanic) VALUES (?, 'Gelandet', ?, ?)";
             try (var stmt = c.prepareStatement(query)) {
                 stmt.setString(1, name);
                 stmt.setString(2, landung);
