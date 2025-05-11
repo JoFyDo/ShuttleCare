@@ -28,7 +28,7 @@ public class GeneralTaskRepository {
             ResultSet rs = stmt.executeQuery();
             ArrayList<Task> tasks = new ArrayList<>();
             while (rs.next()) {
-                tasks.add(new Task(rs.getString("Aufgabe"), Boolean.valueOf(rs.getString("Status")), rs.getInt("ID"), rs.getString("ShuttleName"), rs.getInt("TimeNeeded")));
+                tasks.add(new Task(rs.getString("Task"), Boolean.valueOf(rs.getString("Status")), rs.getInt("ID"), rs.getString("ShuttleName"), rs.getInt("TimeNeeded")));
             }
             logger.info("Fetched {} general tasks for shuttleID {}.", tasks.size(), shuttleID);
             return tasks;

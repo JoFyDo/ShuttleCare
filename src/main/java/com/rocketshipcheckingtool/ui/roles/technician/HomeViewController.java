@@ -145,12 +145,12 @@ public class HomeViewController extends HomeViewControllerMaster {
 
             int completedTasks = 0;
             int totalTasks = tasks.size() + generalTasks.size();
-
             for (Task task : tasks) {
                 if (task.getStatus()) {
                     completedTasks++;
                 }
             }
+
             for (Task task : generalTasks) {
                 if (task.getStatus()) {
                     completedTasks++;

@@ -21,14 +21,14 @@ public class NotificationRepository {
 
     public ArrayList<Notification> getNotifications(String user) {
         try {
-            String query = "SELECT * FROM Notifications WHERE Aktiv = 'true' AND Absender != ?";
+            String query = "SELECT * FROM Notifications WHERE Active = 'true' AND Sender != ?";
             logger.debug("Executing query to get notifications for user '{}': {}", user, query);
             PreparedStatement stmt = connection.prepareStatement(query);
             stmt.setString(1, user);
             ResultSet rs = stmt.executeQuery();
             ArrayList<Notification> notifications = new ArrayList<>();
             while (rs.next()) {
-                notifications.add(new Notification(rs.getInt("ID"), rs.getString("Nachricht"), rs.getInt("ShuttleID"), rs.getString("Absender"), rs.getString("Kommentar")));
+                notifications.add(new Notification(rs.getInt("ID"), rs.getString("Notification"), rs.getInt("ShuttleID"), rs.getString("Sender"), rs.getString("Comment")));
             }
             logger.info("Fetched {} notifications for user '{}'.", notifications.size(), user);
             return notifications;
@@ -40,8 +40,8 @@ public class NotificationRepository {
 
     public boolean updateNotification(int notificationID, String status) {
         try {
-            String query = "UPDATE Notifications SET Aktiv = ? WHERE ID = ?";
-            logger.debug("Executing update for notificationID {}: set Aktiv = {}", notificationID, status);
+            String query = "UPDATE Notifications SET Active = ? WHERE ID = ?";
+            logger.debug("Executing update for notificationID {}: set Active = {}", notificationID, status);
             PreparedStatement stmt = connection.prepareStatement(query);
             stmt.setString(1, status);
             stmt.setString(2, String.valueOf(notificationID));
@@ -56,7 +56,7 @@ public class NotificationRepository {
 
     public ArrayList<Notification> getNotificationsByShuttle(String shuttleID, String user) {
         try {
-            String query = "SELECT * FROM Notifications WHERE ShuttleID = ? AND Aktiv = 'true' AND Absender != ?";
+            String query = "SELECT * FROM Notifications WHERE ShuttleID = ? AND Active = 'true' AND Sender != ?";
             logger.debug("Executing query to get notifications for shuttleID {} and user '{}': {}", shuttleID, user, query);
             PreparedStatement stmt = connection.prepareStatement(query);
             stmt.setString(1, shuttleID);
@@ -64,7 +64,7 @@ public class NotificationRepository {
             ResultSet rs = stmt.executeQuery();
             ArrayList<Notification> notifications = new ArrayList<>();
             while (rs.next()) {
-                notifications.add(new Notification(rs.getInt("ID"), rs.getString("Nachricht"), rs.getInt("ShuttleID"), rs.getString("Absender"), rs.getString("Kommentar")));
+                notifications.add(new Notification(rs.getInt("ID"), rs.getString("Notification"), rs.getInt("ShuttleID"), rs.getString("Sender"), rs.getString("Comment")));
             }
             logger.info("Fetched {} notifications for shuttleID {} and user '{}'.", notifications.size(), shuttleID, user);
             return notifications;
@@ -76,7 +76,7 @@ public class NotificationRepository {
 
     public boolean createNotification(String message, String shuttleId, String sender, String comment) {
         try {
-            String query = "INSERT INTO Notifications (Nachricht, ShuttleID, Absender, Kommentar, Aktiv) VALUES (?, ?, ?, ?, 'true')";
+            String query = "INSERT INTO Notifications (Notification, ShuttleID, Sender, Comment, Active) VALUES (?, ?, ?, ?, 'true')";
             logger.debug("Executing insert for new notification: message='{}', shuttleId={}, sender='{}', comment='{}'", message, shuttleId, sender, comment);
             PreparedStatement stmt = connection.prepareStatement(query);
             stmt.setString(1, message);

@@ -25,7 +25,7 @@ public class ShuttleRepository {
             logger.debug("Executing query to get all shuttles: {}", query);
             ResultSet rs = stmt.executeQuery(query);
             while (rs.next()) {
-                shuttles.add(new Shuttle(rs.getInt("ID"), rs.getString("Name"), rs.getString("Status"), rs.getString("Landung"), rs.getString("Mechaniker")));
+                shuttles.add(new Shuttle(rs.getInt("ID"), rs.getString("Name"), rs.getString("Status"), rs.getString("Landing"), rs.getString("Mechanic")));
             }
             logger.info("Fetched {} shuttles from database.", shuttles.size());
             return shuttles;
@@ -44,7 +44,7 @@ public class ShuttleRepository {
             ResultSet rs = stmt.executeQuery();
             if (rs.next()) {
                 logger.info("Fetched shuttle '{}' from database.", name);
-                return new Shuttle(rs.getInt("ID"), rs.getString("Name"), rs.getString("Status"), rs.getString("Landung"), rs.getString("Mechaniker"));
+                return new Shuttle(rs.getInt("ID"), rs.getString("Name"), rs.getString("Status"), rs.getString("Landing"), rs.getString("Mechanic"));
             } else {
                 logger.warn("No shuttle found with name '{}'", name);
                 return null;
@@ -64,7 +64,7 @@ public class ShuttleRepository {
             ResultSet rs = stmt.executeQuery();
             if (rs.next()) {
                 logger.info("Fetched shuttle with ID {} from database.", id);
-                return new Shuttle(rs.getInt("ID"), rs.getString("Name"), rs.getString("Status"), rs.getString("Landung"), rs.getString("Mechaniker"));
+                return new Shuttle(rs.getInt("ID"), rs.getString("Name"), rs.getString("Status"), rs.getString("Landing"), rs.getString("Mechanic"));
             } else {
                 logger.warn("No shuttle found with ID {}", id);
                 return null;
@@ -125,7 +125,7 @@ public class ShuttleRepository {
 
             logger.info("Updating predicted release time for shuttle ID {}: {} (Time Needed: {})", shuttleID, predictedTimeStr, time);
 
-            String query = "UPDATE Shuttles SET VorFreigabeDatum = ? WHERE ID = ?";
+            String query = "UPDATE Shuttles SET PredictedReleaseTime = ? WHERE ID = ?";
             PreparedStatement stmt = connection.prepareStatement(query);
             stmt.setString(1, String.valueOf(predictedTimeStr));
             stmt.setString(2, String.valueOf(shuttleID));
@@ -140,20 +140,20 @@ public class ShuttleRepository {
 
     public Calendar getPredictedReleaseTime(int shuttleID) {
         try {
-            String query = "SELECT VorFreigabeDatum FROM Shuttles WHERE ID = ?";
+            String query = "SELECT PredictedReleaseTime FROM Shuttles WHERE ID = ?";
             logger.debug("Getting predicted release time for shuttle ID {}: {}", shuttleID, query);
             PreparedStatement stmt = connection.prepareStatement(query);
             stmt.setString(1, String.valueOf(shuttleID));
             ResultSet rs = stmt.executeQuery();
             if (rs.next()) {
                 try{
-                    java.sql.Timestamp predictedReleaseTime = rs.getTimestamp("VorFreigabeDatum");
+                    java.sql.Timestamp predictedReleaseTime = rs.getTimestamp("PredictedReleaseTime");
                     Calendar calendar = Calendar.getInstance();
                     calendar.setTime(predictedReleaseTime);
                     logger.info("Fetched predicted release time for shuttle ID {}: {}", shuttleID, predictedReleaseTime);
                     return calendar;
                 } catch (Exception e) {
-                    logger.error("Failed to parse predicted release time for shuttle ID {}: {}", shuttleID, rs.getString("VorFreigabeDatum"), e);
+                    logger.error("Failed to parse predicted release time for shuttle ID {}: {}", shuttleID, rs.getString("PredictedReleaseTime"), e);
                     return null;
                 }
             } else {
@@ -168,7 +168,7 @@ public class ShuttleRepository {
 
     public boolean setPredictedReleaseTime(int shuttleID, String predictedReleaseTime) {
         try {
-            String query = "UPDATE Shuttles SET VorFreigabeDatum = ? WHERE ID = ?";
+            String query = "UPDATE Shuttles SET PredictedReleaseTime = ? WHERE ID = ?";
             logger.debug("Setting predicted release time for shuttle ID {}: {}", shuttleID, predictedReleaseTime);
             PreparedStatement stmt = connection.prepareStatement(query);
             stmt.setString(1, predictedReleaseTime);
