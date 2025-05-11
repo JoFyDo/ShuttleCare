@@ -37,7 +37,7 @@
         </Label>
     </VBox>
     <VBox alignment="TOP_CENTER">
-        <ToggleButton fx:id="btnNachrichten" onAction="#handleSidebarClick" styleClass="buttonSidebar"
+        <ToggleButton fx:id="btnNotification" onAction="#handleSidebarClick" styleClass="buttonSidebar"
                       toggleGroup="$toggleGroup">
             <graphic>
                 <fx:include source="/com/rocketshipcheckingtool/ui/graphics/nachrichten.fxml"/>

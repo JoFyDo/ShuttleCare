@@ -17,7 +17,7 @@ public class NotificationViewController extends NotificationViewControllerMaster
 
     @Override
     protected void load() {
-
+        shuttleColumn.setVisible(false);
     }
 
     @Override

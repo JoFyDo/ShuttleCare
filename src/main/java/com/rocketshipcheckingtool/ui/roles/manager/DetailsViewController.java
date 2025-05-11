@@ -38,13 +38,13 @@ public class DetailsViewController extends DetailsViewControllerMaster {
         if (shuttleSelected == null) {
             logger.warn("No shuttle selected when trying to open comment dialog");
             Alert alert = new Alert(Alert.AlertType.ERROR);
-            alert.setTitle("Error");
+            alert.setTitle("Fehler");
             alert.setHeaderText(null);
             alert.setContentText("Bitte wählen Sie ein Shuttle aus.");
             alert.showAndWait();
             return;
         }
-        FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/rocketshipcheckingtool/ui/manager/commentView.fxml"));
+        FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/rocketshipcheckingtool/ui/roles/manager/CommentView.fxml"));
         Parent kommentarPage = loader.load();
 
         CommentViewController commentViewController = loader.getController();

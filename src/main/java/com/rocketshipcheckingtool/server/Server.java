@@ -64,7 +64,7 @@ public class Server {
             }
             logger.debug("User {} authenticated successfully", user);
 
-            // Parse parameters based on request method
+            // Parse parameters based on the request method
             Map<String, String> parameters;
             try {
                 if ("POST".equals(requestMethod)) {
@@ -182,6 +182,18 @@ public class Server {
                         boolean success = databaseConnection.updateGeneralTask(taskId, status);
                         logger.info("General task {} update {} to status {}", taskId, success ? "successful" : "failed", status);
                         sendResponse(exchange, 200, String.valueOf(success));
+                    } else {
+                        sendResponse(exchange, 405, "Method not allowed");
+                    }
+                    break;
+                case "/updateAllGeneralTasksBelongToShuttle":
+                    if ("POST".equals(requestMethod)) {
+                        int shuttleId = Integer.parseInt(parameters.get("ShuttleID"));
+                        String status = parameters.get("Status");
+                        logger.debug("Updating all general tasks for shuttle {} to status: {}", shuttleId, status);
+                        boolean result = databaseConnection.updateAllGeneralTasksStatusBelongToShuttle(shuttleId, status);
+                        logger.info("Update of all general tasks for shuttle {} to status {} {}", shuttleId, status, result ? "successful" : "failed");
+                        sendResponse(exchange, 200, String.valueOf(result));
                     } else {
                         sendResponse(exchange, 405, "Method not allowed");
                     }
@@ -445,13 +457,6 @@ public class Server {
         if (!parameters.containsKey(paramName) || parameters.get(paramName) == null) {
             logger.warn("Missing required parameter: {}", paramName);
             throw new IOException("Missing required parameter: " + paramName);
-        }
-    }
-
-    // Helper method to check multiple parameters
-    private void validateParameters(Map<String, String> parameters, String... paramNames) throws IOException {
-        for (String paramName : paramNames) {
-            validateParameter(parameters, paramName);
         }
     }
 }

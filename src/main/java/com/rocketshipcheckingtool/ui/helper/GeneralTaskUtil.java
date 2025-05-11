@@ -34,16 +34,30 @@ public class GeneralTaskUtil {
         }
     }
 
-    public static void updateGeneralTask(ClientRequests clientRequests, String user, int taskID, String status) throws IOException {
+    public static void updateGeneralTask(ClientRequests clientRequests, String user, int taskID, boolean status) throws IOException {
         logger.info("Updating general task ID {} to status '{}' for user '{}'", taskID, status, user);
         try {
             HashMap<String, String> params = new HashMap<>();
             params.put("TaskID", String.valueOf(taskID));
-            params.put("Status", status);
+            params.put("Status", String.valueOf(status));
             clientRequests.postRequest("/updateGeneralTasksForShuttle", user, params);
             logger.debug("General task ID {} updated to status '{}'", taskID, status);
         } catch (Exception e) {
             logger.error("Failed to update general task ID {}: {}", taskID, e.getMessage(), e);
+            throw new ConnectException(e.getMessage());
+        }
+    }
+
+    public static void updateAllGeneralTasksStatusBelongToShuttle(ClientRequests clientRequests, String user, int shuttleID, boolean status) throws IOException {
+        logger.info("Updating all general tasks for shuttle ID {} to status '{}' for user '{}'", shuttleID, status, user);
+        try {
+            HashMap<String, String> params = new HashMap<>();
+            params.put("ShuttleID", String.valueOf(shuttleID));
+            params.put("Status", String.valueOf(status));
+            clientRequests.postRequest("/updateAllGeneralTasksBelongToShuttle", user, params);
+            logger.debug("All general tasks for shuttle ID {} updated to status '{}'", shuttleID, status);
+        } catch (Exception e) {
+            logger.error("Failed to update all general tasks for shuttle ID {}: {}", shuttleID, e.getMessage(), e);
             throw new ConnectException(e.getMessage());
         }
     }

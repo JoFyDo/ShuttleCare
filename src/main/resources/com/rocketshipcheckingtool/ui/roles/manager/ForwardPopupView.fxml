@@ -10,7 +10,7 @@
 <?import javafx.collections.FXCollections?>
 <VBox xmlns="http://javafx.com/javafx" xmlns:fx="http://javafx.com/fxml"
       fx:controller="com.rocketshipcheckingtool.ui.roles.manager.ForwardPopupViewController"
-      prefHeight="400.0" prefWidth="600.0" stylesheets="@../style.css" style="-fx-background-color: rgb(206, 221, 255)">
+      prefHeight="400.0" prefWidth="600.0" stylesheets="@../../style.css" style="-fx-background-color: rgb(206, 221, 255)">
     <padding>
         <Insets topRightBottomLeft="40"/>
     </padding>

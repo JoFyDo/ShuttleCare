@@ -184,25 +184,25 @@ public class ViewManagerController {
                 }
                 sidebarController.selectButton("btnDetails");
             }
-            case "btnStatistiken" -> {
+            case "btnStats" -> {
                 if (UserSession.getRole() == UserRole.TECHNICIAN) {
                     showPage(statistikenPage);
-                    sidebarController.selectButton("btnStatistiken");
+                    sidebarController.selectButton("btnStats");
                 }
             }
-            case "btnLager" -> {
+            case "btnStorage" -> {
                 if (UserSession.getRole() == UserRole.TECHNICIAN) {
                     showPage(lagerPage);
-                    sidebarController.selectButton("btnLager");
+                    sidebarController.selectButton("btnStorage");
                 }
             }
-            case "btnNachrichten" -> {
+            case "btnNotification" -> {
                 if (UserSession.getRole() == UserRole.TECHNICIAN) {
                     showPage(technicianNotificationPage);
                 } else if (UserSession.getRole() == UserRole.MANAGER) {
                     showPage(managerNotificationPage);
                 }
-                sidebarController.selectButton("btnNachrichten");
+                sidebarController.selectButton("btnNotification");
             }
             default -> System.err.println("Unknown buttonId: " + buttonId);
         }

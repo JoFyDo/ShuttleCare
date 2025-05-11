@@ -3,7 +3,7 @@ package com.rocketshipcheckingtool.ui.datamodel;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class Notification{
+public class Notification {
     private int Id;
     private String message;
     private int shuttleID;
@@ -35,5 +35,13 @@ public class Notification{
         return shuttleID;
     }
 
+    public String getComment() {
+        logger.trace("getComment called: {}", comment);
+        return comment;
+    }
+
     public String getSender() {
-        logger.trace("getSender
+        logger.trace("getSender");
+        return sender;
+    }
+}

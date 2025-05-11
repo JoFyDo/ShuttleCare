@@ -88,7 +88,7 @@ public class CommentViewController {
         }
 
         if (hasSelectedComment) {
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/rocketshipcheckingtool/ui/manager/ForwardPopupView.fxml"));
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/rocketshipcheckingtool/ui/roles/manager/ForwardPopupView.fxml"));
             Parent popupRoot = loader.load();
 
             ForwardPopupViewController popupController = loader.getController();

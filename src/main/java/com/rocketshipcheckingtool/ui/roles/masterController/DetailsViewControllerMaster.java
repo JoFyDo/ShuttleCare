@@ -74,7 +74,7 @@ public abstract class DetailsViewControllerMaster {
         } catch (Exception e) {
             logger.error("Error loading shuttles: {}", e.getMessage(), e);
             Alert alert = new Alert(Alert.AlertType.ERROR);
-            alert.setTitle("Loading Error");
+            alert.setTitle("Ladefehler");
             alert.setHeaderText(null);
             alert.setContentText(e.getMessage());
             alert.showAndWait();

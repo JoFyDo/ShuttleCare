@@ -18,7 +18,7 @@ public class Util {
     private final static Logger logger = LoggerFactory.getLogger(Util.class);
 
     public static void newTaskForShuttle(ClientRequests clientRequests, String user, Shuttle shuttle, String preset) throws IOException {
-        FXMLLoader loader = new FXMLLoader(Util.class.getResource("/com/rocketshipcheckingtool/ui/technician/NeueAufgabePopupView.fxml"));
+        FXMLLoader loader = new FXMLLoader(Util.class.getResource("/com/rocketshipcheckingtool/ui/roles/technician/NewTaskPopupView.fxml"));
         Parent popupRoot = loader.load();
 
         // New Stage for the popup

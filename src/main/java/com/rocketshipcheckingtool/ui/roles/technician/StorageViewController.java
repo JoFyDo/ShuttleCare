@@ -118,7 +118,7 @@ public class StorageViewController {
         } catch (Exception e) {
             logger.error("Failed to load parts: {}", e.getMessage(), e);
             Alert alert = new Alert(Alert.AlertType.ERROR);
-            alert.setTitle("Loading Error");
+            alert.setTitle("Ladefehler");
             alert.setHeaderText(null);
             alert.setContentText(e.getMessage());
             alert.showAndWait();
@@ -130,7 +130,7 @@ public class StorageViewController {
         try {
             logger.info("Use button clicked in StorageViewController");
 
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/rocketshipcheckingtool/ui/technician/VerwendenPopupView.fxml"));
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/rocketshipcheckingtool/ui/roles/technician/VerwendenPopupView.fxml"));
             Parent popupRoot = loader.load();
             UsePartPopupController usePartPopupController = loader.getController();
 
@@ -172,7 +172,7 @@ public class StorageViewController {
         try {
             logger.info("Order button clicked in StorageViewController");
 
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/rocketshipcheckingtool/ui/technician/OrderPopupView.fxml"));
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/rocketshipcheckingtool/ui/roles/technician/OrderPopupView.fxml"));
             Parent popupRoot = loader.load();
             OrderPopupController orderPopupController = loader.getController();
             orderPopupController.setClientRequests(clientRequests);
@@ -219,9 +219,9 @@ public class StorageViewController {
     public void alertDidntSelect() {
         logger.info("No row selected in inventory table when attempting action");
         Alert alert = new Alert(Alert.AlertType.INFORMATION);
-        alert.setTitle("Please select a row");
+        alert.setTitle("Wähle bitte eine Zeile aus");
         alert.setHeaderText(null);
-        alert.setContentText("Please select a row to interact with the item.");
+        alert.setContentText("Bitte wähle eine Zeile aus, um mit dem Artikel zu interagieren.");
         alert.showAndWait();
     }
 }

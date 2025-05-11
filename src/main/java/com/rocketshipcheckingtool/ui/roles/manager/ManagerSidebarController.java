@@ -15,6 +15,7 @@ public class ManagerSidebarController implements SidebarControllerInterface {
     public ToggleButton btnHome;
     public ToggleGroup toggleGroup;
     public ToggleButton btnDetails;
+    public ToggleButton btnNotification;
     public Pane spacer;
     public ToggleButton btnLogout;
     public VBox managerSidebar;
@@ -54,6 +55,7 @@ public class ManagerSidebarController implements SidebarControllerInterface {
         switch (buttonId) {
             case "btnHome" -> btnHome.setSelected(true);
             case "btnDetails" -> btnDetails.setSelected(true);
+            case "btnNotification" -> btnNotification.setSelected(true);
         }
     }
 }
