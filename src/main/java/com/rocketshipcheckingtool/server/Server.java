@@ -13,6 +13,7 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.net.InetSocketAddress;
 import java.nio.charset.StandardCharsets;
+import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.concurrent.Executors;
 
@@ -57,7 +58,8 @@ public class Server {
         try {
             // Authenticate user
             logger.debug("Authenticating user: {}", user);
-            if (!user.equals(UserRole.MANAGER.name().toLowerCase()) && !user.equals(UserRole.TECHNICIAN.name().toLowerCase())) {
+            if (!user.equals(UserRole.MANAGER.name().toLowerCase()) && !user.equals(UserRole.TECHNICIAN.name().toLowerCase())
+                    && !user.equals(UserRole.BOOKING_AGENT.name().toLowerCase())) {
                 logger.warn("Unauthorized access attempt from user: {}", user);
                 sendResponse(exchange, 403, "Unauthorized user");
                 return;
@@ -95,6 +97,46 @@ public class Server {
                                 Map<String, String> parameters, String user) throws IOException {
         logger.debug("Processing {} request for endpoint {} with parameters: {}", requestMethod, path, parameters);
         try {
+            if (path.startsWith("/api") && user.equals(UserRole.BOOKING_AGENT.name().toLowerCase())) {
+                switch (path) {
+                    case "/api/requestShuttles":
+                        if ("GET".equals(requestMethod)) {
+                            ArrayList<Shuttle> shuttles = databaseConnection.getShuttles();
+                            ArrayList<Map<String, Object>> simplifiedShuttles = new ArrayList<>();
+                            for (Shuttle shuttle : shuttles) {
+                                Map<String, Object> shuttleMap = new HashMap<>();
+                                shuttleMap.put("id", shuttle.getId());
+                                shuttleMap.put("shuttleName", shuttle.getShuttleName());
+                                shuttleMap.put("predictedLandingTime", shuttle.getPredictedLandingTime());
+                                SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+                                Calendar releaseTime = databaseConnection.getPredictedReleaseTime(shuttle.getId());
+                                shuttleMap.put("predictedReleaseTime", releaseTime != null ? sdf.format(releaseTime) : "Not available");
+                                simplifiedShuttles.add(shuttleMap);
+                            }
+                            logger.debug("Retrieved {} shuttles with release time", shuttles.size());
+                            sendResponse(exchange, 200, Util.combineJSONString(simplifiedShuttles));
+                        } else {
+                            sendResponse(exchange, 405, "Method not allowed");
+                        }
+                        break;
+                    case "/api/requestShuttle":
+                        if ("GET".equals(requestMethod)) {
+                            int shuttleId = Integer.parseInt(parameters.get("ShuttleID"));
+                            Shuttle shuttle = databaseConnection.getShuttle(shuttleId);
+                            Map<String, Object> shuttleMap = new HashMap<>();
+                            shuttleMap.put("id", shuttle.getId());
+                            shuttleMap.put("shuttleName", shuttle.getShuttleName());
+                            shuttleMap.put("predictedLandingTime", shuttle.getPredictedLandingTime());
+                            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+                            Calendar releaseTime = databaseConnection.getPredictedReleaseTime(shuttle.getId());
+                            shuttleMap.put("predictedReleaseTime", releaseTime != null ? sdf.format(releaseTime) : "Not available");
+                            sendResponse(exchange, 200, new com.google.gson.Gson().toJson(shuttleMap));
+                        } else {
+                            sendResponse(exchange, 405, "Method not allowed");
+                        }
+                        break;
+                }
+            }
             switch (path) {
                 case "/requestShuttles":
                     if ("GET".equals(requestMethod)) {

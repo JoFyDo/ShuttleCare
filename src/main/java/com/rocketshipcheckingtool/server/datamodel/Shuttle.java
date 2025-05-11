@@ -2,6 +2,8 @@ package com.rocketshipcheckingtool.server.datamodel;
 
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
+
+import com.rocketshipcheckingtool.server.Util;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -55,4 +57,10 @@ public class Shuttle {
     public String getMechanic() {
         return mechanic;
     }
+
+    public String getPredictedLandingTime() {
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        return sdf.format(landingTime.getTime());
+    }
+
 }
