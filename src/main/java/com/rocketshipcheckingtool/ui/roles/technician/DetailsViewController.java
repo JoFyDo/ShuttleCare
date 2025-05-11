@@ -300,6 +300,7 @@ public class DetailsViewController extends DetailsViewControllerMaster {
                         TaskUtil.updateAllTasksBelongToShuttle(clientRequests, user, shuttleSelected.getId(), false);
                         GeneralTaskUtil.updateAllGeneralTasksStatusBelongToShuttle(clientRequests, user, shuttleSelected.getId(), false);
                         ShuttleUtil.updatePredictedReleaseTime(clientRequests, user, shuttleSelected.getId(), null);
+                        loadLoadingBar();
                         //loadShuttleContent(shuttleSelected.getShuttleName());
                     } catch (IOException e) {
                         logger.error("Error during shuttle release: {}", e.getMessage(), e);

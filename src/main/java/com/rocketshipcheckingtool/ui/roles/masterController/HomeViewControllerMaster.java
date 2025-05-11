@@ -85,6 +85,14 @@ public abstract class HomeViewControllerMaster {
         try {
             //Shuttle
             ArrayList<Shuttle> shuttles = ShuttleUtil.getShuttles(clientRequests, user);
+            for (Shuttle shuttle : shuttles) {
+                switch (shuttle.getStatus()) {
+                    case "Gelandet" -> shuttle.setStatus("Inspektion 1");
+                    case "Inspektion 1" -> shuttle.setStatus("In Wartung");
+                    case "In Wartung" -> shuttle.setStatus("Reinspektion");
+                    case "Inspektion 2" -> shuttle.setStatus("Erledigt");
+                }
+            }
             shuttleTableView.setItems(FXCollections.observableArrayList(shuttles));
             logger.info("Loaded {} shuttles into overview table", shuttles.size());
 
