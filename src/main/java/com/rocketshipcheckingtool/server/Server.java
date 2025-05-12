@@ -107,10 +107,10 @@ public class Server {
                                 Map<String, Object> shuttleMap = new HashMap<>();
                                 shuttleMap.put("id", shuttle.getId());
                                 shuttleMap.put("shuttleName", shuttle.getShuttleName());
-                                shuttleMap.put("predictedLandingTime", shuttle.getPredictedLandingTime());
                                 SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
                                 Calendar releaseTime = databaseConnection.getPredictedReleaseTime(shuttle.getId());
-                                shuttleMap.put("predictedReleaseTime", releaseTime != null ? sdf.format(releaseTime) : "Not available");
+                                shuttleMap.put("predictedReleaseTime", releaseTime != null ? sdf.format(releaseTime.getTime()) : "Not available");
+                                shuttleMap.put("predictedLandingTime", shuttle.getPredictedLandingTime());
                                 simplifiedShuttles.add(shuttleMap);
                             }
                             logger.debug("Retrieved {} shuttles with release time", shuttles.size());
@@ -126,11 +126,29 @@ public class Server {
                             Map<String, Object> shuttleMap = new HashMap<>();
                             shuttleMap.put("id", shuttle.getId());
                             shuttleMap.put("shuttleName", shuttle.getShuttleName());
-                            shuttleMap.put("predictedLandingTime", shuttle.getPredictedLandingTime());
                             SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
                             Calendar releaseTime = databaseConnection.getPredictedReleaseTime(shuttle.getId());
-                            shuttleMap.put("predictedReleaseTime", releaseTime != null ? sdf.format(releaseTime) : "Not available");
+                            shuttleMap.put("predictedReleaseTime", releaseTime != null ? sdf.format(releaseTime.getTime()) : "Not available");
+                            shuttleMap.put("predictedLandingTime", shuttle.getPredictedLandingTime());
                             sendResponse(exchange, 200, new com.google.gson.Gson().toJson(shuttleMap));
+                        } else {
+                            sendResponse(exchange, 405, "Method not allowed");
+                        }
+                        break;
+                    case "/api/requestReadyShuttles":
+                        if ("GET".equals(requestMethod)) {
+                            ArrayList<Shuttle> shuttles = databaseConnection.getShuttles();
+                            ArrayList<Map<String, Object>> simplifiedShuttles = new ArrayList<>();
+                            for (Shuttle shuttle : shuttles) {
+                                if (shuttle.getStatus().equals("Freigegeben")) {
+                                    Map<String, Object> shuttleMap = new HashMap<>();
+                                    shuttleMap.put("id", shuttle.getId());
+                                    shuttleMap.put("shuttleName", shuttle.getShuttleName());
+                                    simplifiedShuttles.add(shuttleMap);
+                                }
+                            }
+                            logger.debug("Retrieved {} ready shuttles with release time", shuttles.size());
+                            sendResponse(exchange, 200, Util.combineJSONString(simplifiedShuttles));
                         } else {
                             sendResponse(exchange, 405, "Method not allowed");
                         }
