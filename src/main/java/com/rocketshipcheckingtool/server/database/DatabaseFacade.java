@@ -56,6 +56,28 @@ public class DatabaseFacade {
         logger.info("All repositories initialized in DatabaseFacade.");
     }
 
+    public DatabaseFacade(String databasePath) {
+        logger.info("Initializing DatabaseFacade with custom database path...");
+        this.connector = new BaseDatabaseConnection(databasePath);
+        Connection connection = null;
+        try {
+            connection = connector.getConnection();
+        } catch (Exception e) {
+            logger.error("Failed to get database connection", e);
+            throw new RuntimeException("Failed to initialize DatabaseFacade", e);
+        }
+
+        this.shuttleRepository = new ShuttleRepository(connection);
+        this.taskRepository = new TaskRepository(connection);
+        this.generalTaskRepository = new GeneralTaskRepository(connection);
+        this.partRepository = new PartRepository(connection);
+        this.notificationRepository = new NotificationRepository(connection);
+        this.mechanicRepository = new MechanicRepository(connection);
+        this.questionnaireRepository = new QuestionnaireRepository(connection);
+        this.commentRepository = new CommentRepository(connection);
+        logger.info("All repositories initialized in DatabaseFacade.");
+    }
+
     // Shuttle Repository methods
 
     /**

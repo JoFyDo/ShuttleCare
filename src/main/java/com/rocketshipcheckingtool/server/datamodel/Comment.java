@@ -51,37 +51,4 @@ public class Comment {
         return comment;
     }
 
-    /**
-     * Gets the property indicating whether the comment is selected.
-     * Initializes the property if it is not already initialized.
-     *
-     * @return The BooleanProperty representing the selection status.
-     */
-    public BooleanProperty selectedProperty() {
-        if (selected == null) {
-            selected = new SimpleBooleanProperty(false);
-            logger.debug("Initialized selected property for comment id={}", id);
-        }
-        return selected;
-    }
-
-    /**
-     * Gets the ID of the shuttle associated with the comment.
-     *
-     * @return The shuttle ID.
-     */
-    public int getShuttleId() {
-        logger.trace("getShuttleId called: {}", shuttleId);
-        return shuttleId;
-    }
-
-    /**
-     * Sets the selection status of the comment.
-     *
-     * @param selected The new selection status.
-     */
-    public void setSelected(boolean selected) {
-        selectedProperty().set(selected);
-        logger.debug("Set selected={} for comment id={}", selected, id);
-    }
 }

@@ -40,33 +40,5 @@ public class QuestionnaireRating {
         return id;
     }
 
-    /**
-     * Gets the topic of the questionnaire.
-     *
-     * @return The topic of the questionnaire.
-     */
-    public String getTopic() {
-        logger.trace("getTopic called: {}", topic);
-        return topic;
-    }
 
-    /**
-     * Gets the ID of the shuttle associated with the questionnaire rating.
-     *
-     * @return The shuttle ID.
-     */
-    public int getShuttleId() {
-        logger.trace("getShuttleId called: {}", shuttleId);
-        return shuttleId;
-    }
-
-    /**
-     * Gets the rating value given in the questionnaire.
-     *
-     * @return The rating value.
-     */
-    public int getRating() {
-        logger.trace("getRating called: {}", rating);
-        return rating;
-    }
 }

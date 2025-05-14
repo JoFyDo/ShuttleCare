@@ -6,6 +6,7 @@ import org.slf4j.LoggerFactory;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
+import java.sql.Statement;
 
 /**
  * Implementation of the DatabaseConnector interface for managing SQLite database connections.
@@ -13,7 +14,7 @@ import java.sql.SQLException;
  */
 public class BaseDatabaseConnection implements DatabaseConnector {
     private final static Logger logger = LoggerFactory.getLogger(BaseDatabaseConnection.class); // Logger for logging database connection events.
-    private final String database = "jdbc:sqlite:RocketDatabase.db"; // The SQLite database URL.
+    private String database = "jdbc:sqlite:RocketDatabase.db"; // The SQLite database URL.
     private Connection connection; // The active database connection.
 
     /**
@@ -21,6 +22,18 @@ public class BaseDatabaseConnection implements DatabaseConnector {
      * Logs the connection status and throws a RuntimeException if the connection fails.
      */
     public BaseDatabaseConnection() {
+        try {
+            logger.info("Attempting to connect to SQLite database: {}", database);
+            this.connection = connect();
+            logger.info("Database connection established successfully.");
+        } catch (SQLException e) {
+            logger.error("Failed to connect to SQLite database: {}", e.getMessage(), e);
+            throw new RuntimeException("Database connection failed", e);
+        }
+    }
+
+    public BaseDatabaseConnection(String database) {
+        this.database = database;
         try {
             logger.info("Attempting to connect to SQLite database: {}", database);
             this.connection = connect();
@@ -42,6 +55,9 @@ public class BaseDatabaseConnection implements DatabaseConnector {
         try {
             Connection c = DriverManager.getConnection(database);
             logger.info("Connected to SQLite database at '{}'", database);
+            try (Statement s = c.createStatement()) {
+                s.execute("PRAGMA journal_mode=WAL;");
+            }
             return c;
         } catch (SQLException e) {
             logger.error("Error connecting to SQLite database: {}", e.getMessage(), e);

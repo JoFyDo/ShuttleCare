@@ -13,6 +13,7 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.net.InetSocketAddress;
 import java.nio.charset.StandardCharsets;
+import java.sql.SQLException;
 import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.concurrent.Executors;
@@ -36,6 +37,13 @@ public class Server {
         logger.info("Initializing server on {}:{}", HOST, PORT);
         this.server = initServer();
         databaseConnection = new DatabaseFacade();
+    }
+
+    public Server(String databasePath) {
+        logger.info("Initializing server on {}:{}", HOST, PORT);
+        this.server = initServer();
+        databaseConnection = new DatabaseFacade(databasePath);
+
     }
 
     /**
@@ -63,7 +71,7 @@ public class Server {
      * @param exchange The HttpExchange object containing the request and response.
      * @throws IOException If an error occurs while processing the request.
      */
-    private void handle(HttpExchange exchange) throws IOException {
+    public void handle(HttpExchange exchange) throws IOException {
         String requestId = UUID.randomUUID().toString().substring(0, 8);
         MDC.put("requestId", requestId);
         logger.debug("Request with ID {} received", requestId);
@@ -565,9 +573,10 @@ public class Server {
     /**
      * Stops the server.
      */
-    public void stop() {
+    public void stop() throws SQLException {
         logger.info("Stopping server on {}:{}...", HOST, PORT);
         server.stop(0);
+        databaseConnection.disconnect();
         logger.info("Server shut down successfully");
     }
 
