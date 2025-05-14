@@ -5,11 +5,13 @@ import com.rocketshipcheckingtool.ui.datamodel.Task;
 import com.rocketshipcheckingtool.ui.helper.GeneralTaskUtil;
 import com.rocketshipcheckingtool.ui.helper.ShuttleUtil;
 import com.rocketshipcheckingtool.ui.helper.TaskUtil;
+import com.rocketshipcheckingtool.ui.helper.Util;
 import com.rocketshipcheckingtool.ui.roles.masterController.HomeViewControllerMaster;
 import javafx.collections.FXCollections;
 import javafx.fxml.FXML;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
+import javafx.scene.control.Alert;
 import javafx.scene.control.Label;
 import javafx.scene.control.ProgressBar;
 import javafx.scene.control.TableColumn;
@@ -25,24 +27,32 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Map;
 
+/**
+ * Controller class for managing the home view in the technician role.
+ * Extends the HomeViewControllerMaster to provide specific functionality for technicians.
+ */
 public class HomeViewController extends HomeViewControllerMaster {
     @FXML
-    private VBox shuttleProgressContainer;
+    private VBox shuttleProgressContainer; // Container for displaying shuttle progress bars.
     @FXML
-    private Label noTasksLabel;
+    private Label noTasksLabel; // Label displayed when no tasks are available.
     @FXML
-    private TableView<Task> taskTableView;
+    private TableView<Task> taskTableView; // TableView for displaying tasks.
     @FXML
-    private TableColumn<Task, String> taskTaskColumn;
+    private TableColumn<Task, String> taskTaskColumn; // Column for task descriptions.
     @FXML
-    private TableColumn<Task, String> shuttleTaskColumn;
+    private TableColumn<Task, String> shuttleTaskColumn; // Column for shuttle names.
     @FXML
-    private TableColumn<Task, String> mechanicTaskColumn;
+    private TableColumn<Task, String> mechanicTaskColumn; // Column for mechanic names.
     @FXML
-    private TableColumn<Task, String> statusTaskColumn;
+    private TableColumn<Task, String> statusTaskColumn; // Column for task statuses.
 
-    private final static Logger logger = LoggerFactory.getLogger(HomeViewController.class);
+    private final static Logger logger = LoggerFactory.getLogger(HomeViewController.class); // Logger instance for logging activities.
 
+    /**
+     * Initializes the controller and sets up the table columns.
+     * Logs the initialization process.
+     */
     @FXML
     public void initialize() {
         logger.info("Initializing HomeViewController");
@@ -50,6 +60,10 @@ public class HomeViewController extends HomeViewControllerMaster {
         logger.debug("Table columns set up");
     }
 
+    /**
+     * Configures the columns of the task table.
+     * Sets cell value factories and adjusts column properties.
+     */
     public void setupTableColumns() {
         super.setupTableColumns();
 
@@ -64,6 +78,10 @@ public class HomeViewController extends HomeViewControllerMaster {
         logger.debug("Task table columns configured");
     }
 
+    /**
+     * Loads the content of the task table.
+     * Fetches active tasks and populates the table.
+     */
     public void loadTaskTableContent() {
         try {
             logger.info("Loading active tasks for user '{}'", user);
@@ -71,10 +89,15 @@ public class HomeViewController extends HomeViewControllerMaster {
             taskTableView.setItems(FXCollections.observableArrayList(tasks));
             logger.info("Loaded {} active tasks", tasks.size());
         } catch (Exception e) {
-            logger.error("Error loading tasks: ", e);
+            logger.error("Error loading tasks", e);
+            Util.showErrorDialog("Error loading tasks: " + e.getMessage());
         }
     }
 
+    /**
+     * Loads the progress bars for shuttles.
+     * Fetches progress data and updates the UI.
+     */
     public void loadProgressBar() {
         javafx.application.Platform.runLater(() -> {
             try {
@@ -126,14 +149,21 @@ public class HomeViewController extends HomeViewControllerMaster {
                     logger.debug("Progress bar for shuttle '{}' set to {:.2f}%%", shuttleName, progress * 100);
                 }
             } catch (Exception e) {
-                logger.error("Error loading progress bars: ", e);
+                logger.error("Error loading progress bars", e);
                 Label errorLabel = new Label("Error loading progress data: " + e.getMessage());
                 errorLabel.setStyle("-fx-text-fill: red;");
                 shuttleProgressContainer.getChildren().add(errorLabel);
+                Util.showErrorDialog("Error loading progress bars: " + e.getMessage());
             }
         });
     }
 
+    /**
+     * Fetches progress data for all shuttles.
+     *
+     * @return A map of shuttle names to their progress percentages.
+     * @throws IOException If an error occurs while fetching the data.
+     */
     private Map<String, Double> getShuttleProgressData() throws IOException {
         logger.debug("Fetching shuttle progress data");
         ArrayList<Shuttle> shuttles = ShuttleUtil.getShuttles(clientRequests, user);
@@ -167,11 +197,22 @@ public class HomeViewController extends HomeViewControllerMaster {
         return progressMap;
     }
 
+    /**
+     * Handles the event when a shuttle box is clicked.
+     * Navigates to the details view.
+     *
+     * @param mouseEvent The mouse event triggered by the click.
+     * @throws IOException If an error occurs during navigation.
+     */
     public void onBoxClicked(MouseEvent mouseEvent) throws IOException {
         logger.info("Shuttle box clicked, navigating to details view");
         super.viewManagerController.handleDetailButton(null);
     }
 
+    /**
+     * Loads the content of the home view.
+     * Populates the task table and progress bars.
+     */
     public void load() {
         logger.info("Loading HomeViewController content");
         loadTaskTableContent();

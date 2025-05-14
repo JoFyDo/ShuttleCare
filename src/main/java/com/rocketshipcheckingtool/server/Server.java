@@ -17,19 +17,33 @@ import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.concurrent.Executors;
 
+/**
+ * Main server class for handling HTTP requests and managing the application's backend logic.
+ * Initializes the server, processes incoming requests, and interacts with the database.
+ */
 public class Server {
-    private final HttpServer server;
-    private final DatabaseFacade databaseConnection;
-    private final static Logger logger = LoggerFactory.getLogger(Server.class);
-    private final int PORT = 2104;
-    private final String HOST = "localhost";
+    private final HttpServer server; // The HTTP server instance.
+    private final DatabaseFacade databaseConnection; // Database connection for handling data operations.
+    private final static Logger logger = LoggerFactory.getLogger(Server.class); // Logger for logging server events.
+    private final int PORT = 2104; // Port number for the server.
+    private final String HOST = "localhost"; // Host address for the server.
 
+    /**
+     * Constructor for the Server class.
+     * Initializes the server and database connection.
+     */
     public Server() {
         logger.info("Initializing server on {}:{}", HOST, PORT);
         this.server = initServer();
         databaseConnection = new DatabaseFacade();
     }
 
+    /**
+     * Initializes the HTTP server.
+     *
+     * @return The initialized HttpServer instance.
+     * @throws RuntimeException If the server fails to initialize.
+     */
     private HttpServer initServer() {
         try {
             HttpServer server = HttpServer.create(new InetSocketAddress(HOST, PORT), 0);
@@ -43,6 +57,12 @@ public class Server {
         }
     }
 
+    /**
+     * Handles incoming HTTP requests.
+     *
+     * @param exchange The HttpExchange object containing the request and response.
+     * @throws IOException If an error occurs while processing the request.
+     */
     private void handle(HttpExchange exchange) throws IOException {
         String requestId = UUID.randomUUID().toString().substring(0, 8);
         MDC.put("requestId", requestId);
@@ -52,7 +72,7 @@ public class Server {
         String requestMethod = exchange.getRequestMethod();
         String path = exchange.getRequestURI().getPath();
         Map<String, List<String>> headers = exchange.getRequestHeaders();
-        String user = headers.containsKey("User") ? headers.get("User").getFirst() : "";
+        String user = headers.containsKey("User") ? headers.get("User").get(0) : "";
 
         logger.info("Request {} started: {} {} from user {}", requestId, requestMethod, path, user);
         try {
@@ -75,8 +95,8 @@ public class Server {
                     parameters = Util.parseQueryParameters(exchange.getRequestURI().getQuery());
                 }
             } catch (Exception e) {
-                logger.error("Failed to parse parameters: {}", e.getMessage());
-                sendResponse(exchange, 400, "Invalid request parameters: " + e.getMessage());
+                logger.error("Failed to parse parameters", e);
+                sendResponse(exchange, 400, "Invalid request parameters.");
                 return;
             }
             // Process based on path and method
@@ -84,8 +104,8 @@ public class Server {
             processRequest(exchange, path, requestMethod, parameters, user);
 
         } catch (Exception e) {
-            logger.error("Error handling request: {}", e.getMessage(), e);
-            sendResponse(exchange, 500, "Server error: " + e.getMessage());
+            logger.error("Error handling request", e);
+            sendResponse(exchange, 500, "Internal server error.");
         } finally {
             long duration = System.currentTimeMillis() - startTime;
             logger.info("Request {} completed in {}ms", requestId, duration);
@@ -93,6 +113,16 @@ public class Server {
         }
     }
 
+    /**
+     * Processes the request based on the path, method, and parameters.
+     *
+     * @param exchange      The HttpExchange object containing the request and response.
+     * @param path          The request path.
+     * @param requestMethod The HTTP method of the request.
+     * @param parameters    The parsed parameters from the request.
+     * @param user          The authenticated user making the request.
+     * @throws IOException If an error occurs while processing the request.
+     */
     private void processRequest(HttpExchange exchange, String path, String requestMethod,
                                 Map<String, String> parameters, String user) throws IOException {
         logger.debug("Processing {} request for endpoint {} with parameters: {}", requestMethod, path, parameters);
@@ -168,11 +198,19 @@ public class Server {
                     break;
                 case "/requestShuttle":
                     if ("GET".equals(requestMethod)) {
-                        int shuttleId = Integer.parseInt(parameters.get("ShuttleID"));
-                        logger.debug("Retrieving shuttle with ID: {}", shuttleId);
-                        Shuttle shuttle = databaseConnection.getShuttle(shuttleId);
-                        logger.debug("Retrieved shuttle: {}", shuttle.getShuttleName());
-                        sendResponse(exchange, 200, shuttle.toJson());
+                        try {
+                            int shuttleId = Integer.parseInt(parameters.get("ShuttleID"));
+                            logger.debug("Retrieving shuttle with ID: {}", shuttleId);
+                            Shuttle shuttle = databaseConnection.getShuttle(shuttleId);
+                            logger.debug("Retrieved shuttle: {}", shuttle.getShuttleName());
+                            sendResponse(exchange, 200, shuttle.toJson());
+                        } catch (NumberFormatException e) {
+                            logger.warn("Invalid ShuttleID format: {}", parameters.get("ShuttleID"));
+                            sendResponse(exchange, 400, "Invalid ShuttleID format.");
+                        } catch (Exception e) {
+                            logger.error("Failed to retrieve shuttle", e);
+                            sendResponse(exchange, 500, "Failed to retrieve shuttle.");
+                        }
                     } else {
                         sendResponse(exchange, 405, "Method not allowed");
                     }
@@ -200,12 +238,20 @@ public class Server {
                     break;
                 case "/updateTask":
                     if ("POST".equals(requestMethod)) {
-                        int taskId = Integer.parseInt(parameters.get("TaskID"));
-                        String status = parameters.get("Status");
-                        logger.debug("Updating task ID: {} to status: {}", taskId, status);
-                        boolean success = databaseConnection.updateTask(taskId, status);
-                        logger.info("Task {} update {} to status {}", taskId, success ? "successful" : "failed", status);
-                        sendResponse(exchange, 200, String.valueOf(success));
+                        try {
+                            int taskId = Integer.parseInt(parameters.get("TaskID"));
+                            String status = parameters.get("Status");
+                            logger.debug("Updating task ID: {} to status: {}", taskId, status);
+                            boolean success = databaseConnection.updateTask(taskId, status);
+                            logger.info("Task {} update {} to status {}", taskId, success ? "successful" : "failed", status);
+                            sendResponse(exchange, 200, String.valueOf(success));
+                        } catch (NumberFormatException e) {
+                            logger.warn("Invalid TaskID format: {}", parameters.get("TaskID"));
+                            sendResponse(exchange, 400, "Invalid TaskID format.");
+                        } catch (Exception e) {
+                            logger.error("Failed to update task", e);
+                            sendResponse(exchange, 500, "Failed to update task.");
+                        }
                     } else {
                         sendResponse(exchange, 405, "Method not allowed");
                     }
@@ -480,15 +526,20 @@ public class Server {
                     sendResponse(exchange, 404, "Endpoint not found");
                     break;
             }
-        } catch (NumberFormatException e) {
-            logger.error("Invalid number format in parameters: {}", e.getMessage());
-            sendResponse(exchange, 400, "Invalid parameter format: " + e.getMessage());
         } catch (Exception e) {
-            logger.error("Error processing request: {}", e.getMessage(), e);
-            sendResponse(exchange, 500, "Server error: " + e.getMessage());
+            logger.error("Error processing request", e);
+            sendResponse(exchange, 500, "Internal server error.");
         }
     }
 
+    /**
+     * Sends a response to the client.
+     *
+     * @param exchange     The HttpExchange object containing the response.
+     * @param responseCode The HTTP status code of the response.
+     * @param message      The response message.
+     * @throws IOException If an error occurs while sending the response.
+     */
     private void sendResponse(HttpExchange exchange, int responseCode, String message) throws IOException {
         byte[] responseBytes = message.getBytes(StandardCharsets.UTF_8);
 
@@ -499,22 +550,30 @@ public class Server {
         try (OutputStream os = exchange.getResponseBody()) {
             os.write(responseBytes);
             os.flush();
+        } catch (IOException e) {
+            logger.error("Failed to write response to client", e);
+            throw e;
         }
 
-        // Only log responses for errors or if debug is enabled
         if (responseCode >= 400 || logger.isDebugEnabled()) {
             logger.debug("Response sent: {} with status {}",
-                message.length() > 100 ? message.substring(0, 100) + "..." : message,
-                responseCode);
+                    message.length() > 100 ? message.substring(0, 100) + "..." : message,
+                    responseCode);
         }
     }
 
+    /**
+     * Stops the server.
+     */
     public void stop() {
         logger.info("Stopping server on {}:{}...", HOST, PORT);
         server.stop(0);
         logger.info("Server shut down successfully");
     }
 
+    /**
+     * Starts the server.
+     */
     public void start() {
         logger.info("Starting server on {}:{}", HOST, PORT);
         server.start();
@@ -522,8 +581,13 @@ public class Server {
         logger.info("Server ready to accept connections");
     }
 
-    // Helper method to check for missing parameters
-// Helper method to check for missing parameters
+    /**
+     * Validates the presence of a required parameter in the request.
+     *
+     * @param parameters The map of request parameters.
+     * @param paramName  The name of the required parameter.
+     * @throws IOException If the parameter is missing or null.
+     */
     private void validateParameter(Map<String, String> parameters, String paramName) throws IOException {
         logger.debug("Validating parameter: {}", paramName);
         if (!parameters.containsKey(paramName) || parameters.get(paramName) == null) {

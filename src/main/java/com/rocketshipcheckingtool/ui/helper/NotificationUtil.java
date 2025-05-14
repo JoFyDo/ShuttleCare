@@ -13,10 +13,22 @@ import java.net.ConnectException;
 import java.util.ArrayList;
 import java.util.HashMap;
 
+/**
+ * Utility class for handling notification-related operations.
+ * Provides methods to request, update, and create notifications.
+ */
 public class NotificationUtil {
 
-    private final static Logger logger = LoggerFactory.getLogger(NotificationUtil.class);
+    private final static Logger logger = LoggerFactory.getLogger(NotificationUtil.class); // Logger instance for logging activities.
 
+    /**
+     * Requests all notifications for a specific user.
+     *
+     * @param clientRequests The ClientRequests instance for server communication.
+     * @param user The username for whom notifications are requested.
+     * @return A list of Notification objects.
+     * @throws IOException If an error occurs during the request.
+     */
     public static ArrayList<Notification> requestNotifications(ClientRequests clientRequests, String user) throws IOException {
         logger.info("Requesting all notifications for user '{}'", user);
         try {
@@ -32,6 +44,15 @@ public class NotificationUtil {
         }
     }
 
+    /**
+     * Updates the status of a specific notification.
+     *
+     * @param clientRequests The ClientRequests instance for server communication.
+     * @param user The username performing the update.
+     * @param notificationID The ID of the notification to update.
+     * @param status The new status to set for the notification.
+     * @throws IOException If an error occurs during the update.
+     */
     public static void updateNotification(ClientRequests clientRequests, String user, int notificationID, String status) throws IOException {
         logger.info("Updating notification ID {} to status '{}' for user '{}'", notificationID, status, user);
         try {
@@ -46,6 +67,15 @@ public class NotificationUtil {
         }
     }
 
+    /**
+     * Requests notifications for a specific shuttle and user.
+     *
+     * @param clientRequests The ClientRequests instance for server communication.
+     * @param user The username for whom notifications are requested.
+     * @param shuttleID The ID of the shuttle for which notifications are requested.
+     * @return A list of Notification objects.
+     * @throws IOException If an error occurs during the request.
+     */
     public static ArrayList<Notification> requestNotificationsByShuttle(ClientRequests clientRequests, String user, int shuttleID) throws IOException {
         logger.info("Requesting notifications for shuttle ID {} and user '{}'", shuttleID, user);
         try {
@@ -63,6 +93,18 @@ public class NotificationUtil {
         }
     }
 
+    /**
+     * Creates a new notification for a specific shuttle.
+     *
+     * @param clientRequests The ClientRequests instance for server communication.
+     * @param user The username creating the notification.
+     * @param shuttleID The ID of the shuttle for which the notification is created.
+     * @param message The message content of the notification.
+     * @param sender The sender of the notification.
+     * @param comment Additional comments for the notification.
+     * @return True if the notification is created successfully.
+     * @throws IOException If an error occurs during the creation.
+     */
     public static boolean createNotification(ClientRequests clientRequests, String user, int shuttleID, String message, String sender, String comment) throws IOException {
         logger.info("Creating notification for shuttle ID {} by user '{}', sender '{}', message '{}'", shuttleID, user, sender, message);
         try {

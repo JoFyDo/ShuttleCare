@@ -14,10 +14,22 @@ import java.net.ConnectException;
 import java.util.ArrayList;
 import java.util.HashMap;
 
+/**
+ * Utility class for handling task-related operations for shuttles.
+ * Provides methods to retrieve, update, and create tasks.
+ */
 public class TaskUtil {
 
     private final static Logger logger = LoggerFactory.getLogger(TaskUtil.class);
 
+    /**
+     * Retrieves all active tasks for a user.
+     *
+     * @param clientRequests the client requests handler
+     * @param user the user performing the request
+     * @return a list of active tasks
+     * @throws IOException if the request fails
+     */
     public static ArrayList<Task> getActiveTasks(ClientRequests clientRequests, String user) throws IOException {
         logger.info("Requesting all active tasks for user '{}'", user);
         try {
@@ -33,6 +45,15 @@ public class TaskUtil {
         }
     }
 
+    /**
+     * Retrieves all active tasks for a specific shuttle.
+     *
+     * @param clientRequests the client requests handler
+     * @param user the user performing the request
+     * @param shuttleID the ID of the shuttle
+     * @return a list of active tasks for the shuttle
+     * @throws IOException if the request fails
+     */
     public static ArrayList<Task> getActiveTasksByShuttleID(ClientRequests clientRequests, String user, int shuttleID) throws IOException {
         logger.info("Requesting active tasks for shuttle ID {} and user '{}'", shuttleID, user);
         try {
@@ -50,6 +71,15 @@ public class TaskUtil {
         }
     }
 
+    /**
+     * Updates the status of a task.
+     *
+     * @param clientRequests the client requests handler
+     * @param user the user performing the update
+     * @param taskID the ID of the task to update
+     * @param status the new status for the task
+     * @throws IOException if the update fails
+     */
     public static void updateTaskStatus(ClientRequests clientRequests, String user, int taskID, String status) throws IOException {
         logger.info("Updating task ID {} to status '{}' for user '{}'", taskID, status, user);
         try {
@@ -64,6 +94,16 @@ public class TaskUtil {
         }
     }
 
+    /**
+     * Creates a new task for a shuttle.
+     *
+     * @param clientRequests the client requests handler
+     * @param user the user creating the task
+     * @param mechanic the mechanic assigned to the task
+     * @param description the description of the task
+     * @param shuttleID the ID of the shuttle
+     * @throws IOException if the creation fails
+     */
     public static void createTask(ClientRequests clientRequests, String user, Mechanic mechanic, String description, int shuttleID) throws IOException {
         logger.info("Creating task for shuttle ID {} by user '{}', mechanic '{}', description '{}'", shuttleID, user, mechanic, description);
         try {
@@ -79,6 +119,15 @@ public class TaskUtil {
         }
     }
 
+    /**
+     * Updates the status of all tasks belonging to a specific shuttle.
+     *
+     * @param clientRequest the client requests handler
+     * @param user the user performing the update
+     * @param shuttleID the ID of the shuttle
+     * @param status the new status for the tasks
+     * @throws IOException if the update fails
+     */
     public static void updateAllTasksBelongToShuttle(ClientRequests clientRequest, String user, int shuttleID, boolean status) throws IOException {
         logger.info("Updating all tasks for shuttle ID {} to status '{}' for user '{}'", shuttleID, status, user);
         try {

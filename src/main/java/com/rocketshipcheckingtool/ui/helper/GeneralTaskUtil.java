@@ -13,10 +13,23 @@ import java.net.ConnectException;
 import java.util.ArrayList;
 import java.util.HashMap;
 
+/**
+ * Utility class for handling general task-related operations for shuttles.
+ * Provides methods to retrieve, update, and bulk-update general tasks.
+ */
 public class GeneralTaskUtil {
 
     private final static Logger logger = LoggerFactory.getLogger(GeneralTaskUtil.class);
 
+    /**
+     * Retrieves all general tasks for a specific shuttle.
+     *
+     * @param clientRequests the client requests handler
+     * @param user the user performing the request
+     * @param shuttleID the ID of the shuttle
+     * @return a list of general tasks for the shuttle
+     * @throws IOException if the request fails
+     */
     public static ArrayList<Task> getGeneralTasksByShuttleID(ClientRequests clientRequests, String user, int shuttleID) throws IOException {
         logger.info("Requesting general tasks for shuttle ID {} and user '{}'", shuttleID, user);
         try {
@@ -34,6 +47,15 @@ public class GeneralTaskUtil {
         }
     }
 
+    /**
+     * Updates the status of a general task.
+     *
+     * @param clientRequests the client requests handler
+     * @param user the user performing the update
+     * @param taskID the ID of the task to update
+     * @param status the new status for the task
+     * @throws IOException if the update fails
+     */
     public static void updateGeneralTask(ClientRequests clientRequests, String user, int taskID, boolean status) throws IOException {
         logger.info("Updating general task ID {} to status '{}' for user '{}'", taskID, status, user);
         try {
@@ -48,6 +70,15 @@ public class GeneralTaskUtil {
         }
     }
 
+    /**
+     * Updates the status of all general tasks belonging to a specific shuttle.
+     *
+     * @param clientRequests the client requests handler
+     * @param user the user performing the update
+     * @param shuttleID the ID of the shuttle
+     * @param status the new status for the tasks
+     * @throws IOException if the update fails
+     */
     public static void updateAllGeneralTasksStatusBelongToShuttle(ClientRequests clientRequests, String user, int shuttleID, boolean status) throws IOException {
         logger.info("Updating all general tasks for shuttle ID {} to status '{}' for user '{}'", shuttleID, status, user);
         try {

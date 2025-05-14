@@ -13,11 +13,22 @@ import java.lang.reflect.Type;
 import java.net.ConnectException;
 import java.util.ArrayList;
 
+/**
+ * Utility class for handling mechanic-related operations such as retrieving all mechanics
+ * or a specific mechanic by ID.
+ */
 public class MechanicUtil {
 
     private final static Logger logger = LoggerFactory.getLogger(MechanicUtil.class);
 
-
+    /**
+     * Retrieves all mechanics.
+     *
+     * @param clientRequests the client requests handler
+     * @param user the user performing the request
+     * @return a list of all mechanics
+     * @throws IOException if the request fails
+     */
     public static ArrayList<Mechanic> getMechanics(ClientRequests clientRequests, String user) throws IOException {
         logger.info("Requesting all mechanics for user '{}'", user);
         try {
@@ -33,6 +44,15 @@ public class MechanicUtil {
         }
     }
 
+    /**
+     * Retrieves a specific mechanic by ID.
+     *
+     * @param clientRequests the client requests handler
+     * @param user the user performing the request
+     * @param mechanicID the ID of the mechanic to retrieve
+     * @return the Mechanic object, or null if not found
+     * @throws IOException if the request fails
+     */
     public static Mechanic getMechanic(ClientRequests clientRequests, String user, int mechanicID) throws IOException {
         logger.info("Requesting mechanic with ID {} for user '{}'", mechanicID, user);
         try {
@@ -49,4 +69,3 @@ public class MechanicUtil {
     }
 
 }
-

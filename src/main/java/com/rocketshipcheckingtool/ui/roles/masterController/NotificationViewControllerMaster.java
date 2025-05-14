@@ -6,6 +6,7 @@ import com.rocketshipcheckingtool.ui.helper.NotificationUtil;
 import com.rocketshipcheckingtool.ui.helper.ShuttleUtil;
 import com.rocketshipcheckingtool.ui.ViewManagerController;
 import com.rocketshipcheckingtool.ui.auth.UserSession;
+import com.rocketshipcheckingtool.ui.helper.Util;
 import com.rocketshipcheckingtool.ui.roles.technician.ClientRequests;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
@@ -21,33 +22,41 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * Abstract base controller class for managing the notification view.
+ * Provides common functionality for handling notifications and user interactions.
+ */
 public abstract class NotificationViewControllerMaster {
     @FXML
-    protected ComboBox<String> shuttleComboBox;
+    protected ComboBox<String> shuttleComboBox; // ComboBox for selecting a shuttle.
     @FXML
-    protected TableView<Notification> noticationTableView;
+    protected TableView<Notification> noticationTableView; // TableView for displaying notifications.
     @FXML
-    protected TableColumn<Notification, String> notificationColumn;
+    protected TableColumn<Notification, String> notificationColumn; // Column for notification messages.
     @FXML
-    protected TableColumn<Notification, String> commentColumn;
+    protected TableColumn<Notification, String> commentColumn; // Column for notification comments.
     @FXML
-    protected TableColumn<Notification, String> shuttleColumn;
+    protected TableColumn<Notification, String> shuttleColumn; // Column for shuttle names.
     @FXML
-    protected TableColumn<Notification, String> senderColumn;
+    protected TableColumn<Notification, String> senderColumn; // Column for notification senders.
     @FXML
-    protected TableColumn<Notification, Void> deleteColumn;
+    protected TableColumn<Notification, Void> deleteColumn; // Column for delete buttons.
 
-    protected Shuttle shuttleSelected;
+    protected Shuttle shuttleSelected; // The currently selected shuttle.
 
-    protected ClientRequests clientRequests;
-    protected final String user = UserSession.getRole().name().toLowerCase();
+    protected ClientRequests clientRequests; // ClientRequests instance for server communication.
+    protected final String user = UserSession.getRole().name().toLowerCase(); // The current user's role.
 
-    protected List<Shuttle> shuttles;
-    protected final static Logger logger = LoggerFactory.getLogger(NotificationViewControllerMaster.class);
+    protected List<Shuttle> shuttles; // List of all available shuttles.
+    protected final static Logger logger = LoggerFactory.getLogger(NotificationViewControllerMaster.class); // Logger instance for logging activities.
 
-    protected ViewManagerController viewManagerController;
+    protected ViewManagerController viewManagerController; // Reference to the main view manager controller.
 
-    public void initialize(){
+    /**
+     * Initializes the controller and sets up the ComboBox and TableView.
+     * Logs the initialization process and handles shuttle selection changes.
+     */
+    public void initialize() {
         shuttleComboBox.valueProperty().addListener((obs, oldVal, newVal) -> {
             if (newVal != null) {
                 shuttleSelected = shuttles.stream()
@@ -60,12 +69,16 @@ public abstract class NotificationViewControllerMaster {
         });
         shuttleComboBox.getStyleClass().add("comboBox");
 
-        //TableView
+        // TableView
         setupTableColumns();
         logger.debug("NotificationViewControllerMaster initialized and ComboBox listener set");
     }
 
-    public void loadTableContent(){
+    /**
+     * Loads the content of the notification table.
+     * Fetches notifications based on the selected shuttle and populates the table.
+     */
+    public void loadTableContent() {
         try {
             ArrayList<Notification> notifications = null;
             if (shuttleSelected != null) {
@@ -77,23 +90,26 @@ public abstract class NotificationViewControllerMaster {
             }
             noticationTableView.setItems(FXCollections.observableArrayList(notifications));
 
-            //Buttons
+            // Buttons
             setupLoeschenButtonColumn();
             load();
 
         } catch (Exception e) {
             logger.error("Error loading notifications: {}", e.getMessage(), e);
-            Alert alert = new Alert(Alert.AlertType.ERROR);
-            alert.setTitle("Loading Error");
-            alert.setHeaderText(null);
-            alert.setContentText(e.getMessage());
-            alert.showAndWait();
-            System.exit(1);
+            Util.showErrorDialog("Fehler beim Laden der Benachrichtigungen: " + e.getMessage());
         }
     }
 
+    /**
+     * Abstract method to load additional data or content.
+     * Must be implemented by subclasses to provide specific loading logic.
+     */
     protected abstract void load();
 
+    /**
+     * Sets up the columns of the notification table.
+     * Configures cell value factories and adjusts column properties.
+     */
     protected void setupTableColumns() {
         notificationColumn.setCellValueFactory(new PropertyValueFactory<>("message"));
         commentColumn.setCellValueFactory(new PropertyValueFactory<>("comment"));
@@ -114,8 +130,18 @@ public abstract class NotificationViewControllerMaster {
         setupTableErstellenContent();
     }
 
+    /**
+     * Abstract method to set up additional table content.
+     * Must be implemented by subclasses to provide specific logic for populating the table.
+     */
     protected abstract void setupTableErstellenContent();
 
+    /**
+     * Loads an SVG icon from the specified file.
+     *
+     * @param filename The name of the SVG file to load.
+     * @return The loaded SVGPath object.
+     */
     private SVGPath loadSvgIcon(String filename) {
         try {
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/rocketshipcheckingtool/ui/graphics/" + filename));
@@ -127,6 +153,10 @@ public abstract class NotificationViewControllerMaster {
         }
     }
 
+    /**
+     * Sets up the delete button column in the table.
+     * Adds a button to each row for deleting notifications.
+     */
     private void setupLoeschenButtonColumn() {
         deleteColumn.setCellFactory(col -> new TableCell<>() {
             private final Button button = createIconButton("trash.fxml");
@@ -134,9 +164,9 @@ public abstract class NotificationViewControllerMaster {
                 button.setOnAction(event -> {
                     Notification item = getTableView().getItems().get(getIndex());
                     Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
-                    alert.setTitle("Delete notification");
-                    alert.setHeaderText("Do you really want to delete this notification?");
-                    alert.setContentText("This action cannot be undone.");
+                    alert.setTitle("Benachrichtigung löschen");
+                    alert.setHeaderText("Möchten Sie diese Benachrichtigung wirklich löschen?");
+                    alert.setContentText("Diese Aktion kann nicht rückgängig gemacht werden.");
                     alert.showAndWait().ifPresent(response -> {
                         if (response == ButtonType.OK) {
                             try {
@@ -145,11 +175,7 @@ public abstract class NotificationViewControllerMaster {
                                 loadTableContent();
                             } catch (Exception e) {
                                 logger.error("Error deleting notification: {}", e.getMessage(), e);
-                                Alert errorAlert = new Alert(Alert.AlertType.ERROR);
-                                errorAlert.setTitle("Error");
-                                errorAlert.setHeaderText(null);
-                                errorAlert.setContentText(e.getMessage());
-                                errorAlert.showAndWait();
+                                Util.showErrorDialog("Fehler beim Löschen der Benachrichtigung: " + e.getMessage());
                             }
                         } else {
                             logger.debug("Notification deletion cancelled by user");
@@ -166,6 +192,12 @@ public abstract class NotificationViewControllerMaster {
         });
     }
 
+    /**
+     * Creates a button with an SVG icon.
+     *
+     * @param iconFile The name of the SVG file to use as the button icon.
+     * @return The created Button object.
+     */
     protected Button createIconButton(String iconFile) {
         Button button = new Button();
         button.getStyleClass().add("iconButton");
@@ -173,12 +205,15 @@ public abstract class NotificationViewControllerMaster {
         return button;
     }
 
-    // Combobox
+    /**
+     * Loads the content of the shuttle ComboBox.
+     * Fetches the list of shuttles and populates the ComboBox with their names.
+     */
     private void loadShuttleContent() {
         try {
             shuttles = ShuttleUtil.getShuttles(clientRequests, user);
             shuttleComboBox.getItems().clear();
-            shuttleComboBox.getItems().add("All shuttles");
+            shuttleComboBox.getItems().add("Alle Shuttles");
 
             shuttleComboBox.getItems().addAll(shuttles.stream()
                     .map(Shuttle::getShuttleName)
@@ -188,20 +223,26 @@ public abstract class NotificationViewControllerMaster {
 
         } catch (Exception e) {
             logger.error("Error loading shuttles for notifications: {}", e.getMessage(), e);
-            Alert alert = new Alert(Alert.AlertType.ERROR);
-            alert.setTitle("Loading Error");
-            alert.setHeaderText(null);
-            alert.setContentText(e.getMessage());
-            alert.showAndWait();
-            System.exit(1);
+            Util.showErrorDialog("Fehler beim Laden der Shuttles: " + e.getMessage());
         }
     }
 
+    /**
+     * Sets the ViewManagerController instance for managing the view.
+     *
+     * @param viewManagerController The ViewManagerController instance to set.
+     */
     public void setViewManagerController(ViewManagerController viewManagerController) {
         this.viewManagerController = viewManagerController;
         logger.debug("ViewManagerController set in NotificationViewControllerMaster");
     }
 
+    /**
+     * Sets the ClientRequests instance for server communication.
+     * Loads shuttle and notification data and refreshes the view.
+     *
+     * @param clientRequests The ClientRequests instance to set.
+     */
     public void setClientRequests(ClientRequests clientRequests) {
         this.clientRequests = clientRequests;
         loadShuttleContent();

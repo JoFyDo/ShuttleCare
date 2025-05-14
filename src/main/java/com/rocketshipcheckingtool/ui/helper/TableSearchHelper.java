@@ -10,16 +10,29 @@ import java.util.List;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
+/**
+ * A helper class for adding search functionality to a JavaFX TableView.
+ * It provides a search field with suggestions and allows selecting items in the table based on the search input.
+ *
+ * @param <T> The type of items in the TableView.
+ */
 public class TableSearchHelper<T> {
 
-    private static final Logger logger = LoggerFactory.getLogger(TableSearchHelper.class);
+    private static final Logger logger = LoggerFactory.getLogger(TableSearchHelper.class); // Logger instance for logging activities.
 
-    private final TableView<T> tableView;
-    private final TextField searchField;
-    private final Function<T, String> searchableTextProvider;
-    private final ContextMenu suggestionsPopup = new ContextMenu();
-    private List<T> allItems = List.of();
+    private final TableView<T> tableView; // The TableView to which the search functionality is applied.
+    private final TextField searchField; // The TextField used for entering search queries.
+    private final Function<T, String> searchableTextProvider; // A function to extract searchable text from table items.
+    private final ContextMenu suggestionsPopup = new ContextMenu(); // A popup menu for displaying search suggestions.
+    private List<T> allItems = List.of(); // The list of all items in the TableView.
 
+    /**
+     * Constructs a TableSearchHelper instance.
+     *
+     * @param tableView The TableView to which the search functionality is applied.
+     * @param searchField The TextField used for entering search queries.
+     * @param searchableTextProvider A function to extract searchable text from table items.
+     */
     public TableSearchHelper(TableView<T> tableView, TextField searchField, Function<T, String> searchableTextProvider) {
         this.tableView = tableView;
         this.searchField = searchField;
@@ -29,6 +42,9 @@ public class TableSearchHelper<T> {
         logger.debug("TableSearchHelper initialized");
     }
 
+    /**
+     * Initializes the listener for the search field to handle text changes and search actions.
+     */
     private void initializeSearchFieldListener() {
         searchField.textProperty().addListener((obs, oldText, newText) -> {
             logger.debug("Search field changed from '{}' to '{}'", oldText, newText);
@@ -60,6 +76,11 @@ public class TableSearchHelper<T> {
         });
     }
 
+    /**
+     * Displays the suggestions popup with the provided list of suggestions.
+     *
+     * @param suggestions The list of suggestions to display.
+     */
     private void showSuggestions(List<String> suggestions) {
         List<CustomMenuItem> menuItems = suggestions.stream().map(name -> {
             Label entryLabel = new Label(name);
@@ -81,6 +102,11 @@ public class TableSearchHelper<T> {
         }
     }
 
+    /**
+     * Selects an item in the TableView based on the provided search text.
+     *
+     * @param searchText The text to search for in the TableView items.
+     */
     private void selectItem(String searchText) {
         for (int i = 0; i < allItems.size(); i++) {
             String value = searchableTextProvider.apply(allItems.get(i));
@@ -96,6 +122,11 @@ public class TableSearchHelper<T> {
         }
     }
 
+    /**
+     * Sets the list of items in the TableView.
+     *
+     * @param items The list of items to set.
+     */
     public void setItems(List<T> items) {
         this.allItems = items;
         logger.debug("Items set in TableSearchHelper: {} items", items != null ? items.size() : 0);

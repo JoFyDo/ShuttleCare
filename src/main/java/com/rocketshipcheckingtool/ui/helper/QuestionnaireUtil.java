@@ -13,10 +13,23 @@ import java.net.ConnectException;
 import java.util.ArrayList;
 import java.util.HashMap;
 
+/**
+ * Utility class for handling questionnaire-related operations.
+ * Provides methods to retrieve and update questionnaire ratings for shuttles.
+ */
 public class QuestionnaireUtil {
 
-    private final static Logger logger = LoggerFactory.getLogger(QuestionnaireUtil.class);
+    private final static Logger logger = LoggerFactory.getLogger(QuestionnaireUtil.class); // Logger instance for logging activities.
 
+    /**
+     * Retrieves the questionnaire ratings for a specific shuttle.
+     *
+     * @param clientRequests The ClientRequests instance for server communication.
+     * @param user The username for whom the questionnaire is requested.
+     * @param shuttleID The ID of the shuttle for which the questionnaire is requested.
+     * @return A list of QuestionnaireRating objects.
+     * @throws IOException If an error occurs during the request.
+     */
     public static ArrayList<QuestionnaireRating> getQuestionnaireForShuttle(ClientRequests clientRequests, String user, int shuttleID) throws IOException {
         logger.info("Requesting questionnaire for shuttle ID {} and user '{}'", shuttleID, user);
         try {
@@ -34,6 +47,16 @@ public class QuestionnaireUtil {
         }
     }
 
+    /**
+     * Updates the status of a specific questionnaire rating.
+     *
+     * @param clientRequests The ClientRequests instance for server communication.
+     * @param user The username performing the update.
+     * @param questionnaireRatingID The ID of the questionnaire rating to update.
+     * @param status The new status to set for the questionnaire rating.
+     * @return True if the update is successful.
+     * @throws IOException If an error occurs during the update.
+     */
     public static boolean updateQuestionnaireStatus(ClientRequests clientRequests, String user, int questionnaireRatingID, String status) throws IOException {
         logger.info("Updating questionnaire rating ID {} to status '{}' for user '{}'", questionnaireRatingID, status, user);
         try {

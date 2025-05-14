@@ -13,10 +13,23 @@ import java.net.ConnectException;
 import java.util.ArrayList;
 import java.util.HashMap;
 
+/**
+ * Utility class for handling comment-related operations such as retrieving, updating,
+ * and checking the completion status of comments for shuttles.
+ */
 public class CommentUtil {
 
     private final static Logger logger = LoggerFactory.getLogger(CommentUtil.class);
 
+    /**
+     * Retrieves all comments for a specific shuttle.
+     *
+     * @param clientRequests the client requests handler
+     * @param user the user performing the request
+     * @param shuttleID the ID of the shuttle
+     * @return a list of comments for the shuttle
+     * @throws IOException if the request fails
+     */
     public static ArrayList<Comment> getCommentsForShuttle(ClientRequests clientRequests, String user, int shuttleID) throws IOException {
         logger.info("Requesting comments for shuttle ID {} and user '{}'", shuttleID, user);
         try {
@@ -34,6 +47,16 @@ public class CommentUtil {
         }
     }
 
+    /**
+     * Updates the status of a comment.
+     *
+     * @param clientRequests the client requests handler
+     * @param user the user performing the update
+     * @param commentID the ID of the comment to update
+     * @param status the new status for the comment
+     * @return true if the update was successful
+     * @throws IOException if the update fails
+     */
     public static boolean updateComment(ClientRequests clientRequests, String user, int commentID, String status) throws IOException {
         logger.info("Updating comment ID {} to status '{}' for user '{}'", commentID, status, user);
         try {
@@ -49,6 +72,15 @@ public class CommentUtil {
         }
     }
 
+    /**
+     * Checks if all commands for a specific shuttle are done.
+     *
+     * @param clientRequests the client requests handler
+     * @param user the user performing the check
+     * @param shuttleID the ID of the shuttle
+     * @return true if all commands are done, false otherwise
+     * @throws IOException if the check fails
+     */
     public static boolean allCommandsDone(ClientRequests clientRequests, String user, int shuttleID) throws IOException {
         logger.info("Checking if all commands are done for shuttle ID {} and user '{}'", shuttleID, user);
         try {

@@ -13,10 +13,22 @@ import java.net.ConnectException;
 import java.util.ArrayList;
 import java.util.HashMap;
 
+/**
+ * Utility class for handling part-related operations such as retrieving, using,
+ * and ordering parts for shuttles.
+ */
 public class PartUtil {
 
     private final static Logger logger = LoggerFactory.getLogger(PartUtil.class);
 
+    /**
+     * Retrieves all parts for a user.
+     *
+     * @param clientRequests the client requests handler
+     * @param user the user performing the request
+     * @return a list of parts
+     * @throws IOException if the request fails
+     */
     public static ArrayList<Part> getParts(ClientRequests clientRequests, String user) throws IOException {
         logger.info("Requesting parts for user '{}'", user);
         try {
@@ -32,6 +44,15 @@ public class PartUtil {
         }
     }
 
+    /**
+     * Uses a specified quantity of a part.
+     *
+     * @param clientRequests the client requests handler
+     * @param user the user performing the operation
+     * @param partID the ID of the part to use
+     * @param quantity the quantity to use
+     * @throws IOException if the operation fails
+     */
     public static void usePart(ClientRequests clientRequests, String user, int partID, int quantity) throws IOException {
         logger.info("Using part ID {} with quantity {} for user '{}'", partID, quantity, user);
         try {
@@ -46,6 +67,16 @@ public class PartUtil {
         }
     }
 
+    /**
+     * Orders a specified quantity of a part for a shuttle.
+     *
+     * @param clientRequests the client requests handler
+     * @param user the user performing the operation
+     * @param partId the ID of the part to order
+     * @param quantity the quantity to order
+     * @param shuttleId the ID of the shuttle (nullable)
+     * @throws IOException if the operation fails
+     */
     public static void orderPart(ClientRequests clientRequests, String user, int partId, int quantity, Integer shuttleId) throws IOException {
         logger.info("Ordering part ID {} with quantity {} for user '{}', shuttle ID {}", partId, quantity, user, shuttleId);
         try {
