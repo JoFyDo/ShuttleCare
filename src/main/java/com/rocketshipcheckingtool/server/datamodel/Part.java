@@ -1,7 +1,5 @@
 package com.rocketshipcheckingtool.server.datamodel;
 
-import javafx.beans.property.BooleanProperty;
-import javafx.beans.property.SimpleBooleanProperty;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -10,11 +8,10 @@ import org.slf4j.LoggerFactory;
  * Contains details such as the part's ID, name, price, quantity, and selection status.
  */
 public class Part {
-    private int id; // Unique identifier for the part.
-    private String name; // Name of the part.
-    private String price; // Price of the part as a string.
+    private final int id; // Unique identifier for the part.
+    private final String name; // Name of the part.
+    private final String price; // Price of the part as a string.
     private int quantity; // Quantity of the part available.
-    private BooleanProperty selected; // Property indicating whether the part is selected.
     private static final Logger logger = LoggerFactory.getLogger(Part.class); // Logger for logging part-related events.
 
     /**
@@ -66,16 +63,5 @@ public class Part {
      */
     public int getQuantity() {
         return quantity;
-    }
-
-    /**
-     * Checks whether the part is selected.
-     *
-     * @return True if the part is selected, false otherwise.
-     */
-    public boolean isSelected() {
-        boolean sel = selected != null && selected.get();
-        logger.trace("Checked isSelected for part '{}': {}", name, sel);
-        return sel;
     }
 }

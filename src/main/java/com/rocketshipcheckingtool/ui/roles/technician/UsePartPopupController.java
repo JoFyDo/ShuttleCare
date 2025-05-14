@@ -1,7 +1,6 @@
 package com.rocketshipcheckingtool.ui.roles.technician;
 
 import com.rocketshipcheckingtool.ui.helper.Util;
-import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
