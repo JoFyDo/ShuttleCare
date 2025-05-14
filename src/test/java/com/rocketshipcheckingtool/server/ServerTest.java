@@ -15,7 +15,7 @@ import static org.junit.Assert.*;
 
 public class ServerTest {
     private static final Logger logger = LoggerFactory.getLogger(ServerTest.class);
-    private static final String TEST_DB_PATH = "test-server.db";
+    private static final String TEST_DB_PATH = "src/test/resources/testdatabase.db";
     @ClassRule
     public static TestDatabaseSetup dbSetup = new TestDatabaseSetup(TEST_DB_PATH);
     HttpURLConnection con;
