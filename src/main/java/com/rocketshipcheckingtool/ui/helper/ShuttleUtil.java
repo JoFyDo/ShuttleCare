@@ -13,10 +13,22 @@ import java.net.ConnectException;
 import java.util.ArrayList;
 import java.util.HashMap;
 
+/**
+ * Utility class for handling shuttle-related operations.
+ * Provides methods to retrieve, update, and manage shuttles and their statuses.
+ */
 public class ShuttleUtil {
 
     private final static Logger logger = LoggerFactory.getLogger(ShuttleUtil.class);
 
+    /**
+     * Retrieves all shuttles for a user.
+     *
+     * @param clientRequests the client requests handler
+     * @param user the user performing the request
+     * @return a list of shuttles
+     * @throws IOException if the request fails
+     */
     public static ArrayList<Shuttle> getShuttles(ClientRequests clientRequests, String user) throws IOException {
         logger.info("Requesting all shuttles for user '{}'", user);
         try {
@@ -32,6 +44,15 @@ public class ShuttleUtil {
         }
     }
 
+    /**
+     * Retrieves a specific shuttle by ID.
+     *
+     * @param clientRequests the client requests handler
+     * @param user the user performing the request
+     * @param shuttleID the ID of the shuttle to retrieve
+     * @return the Shuttle object, or null if not found
+     * @throws IOException if the request fails
+     */
     public static Shuttle getShuttle(ClientRequests clientRequests, String user, int shuttleID) throws IOException {
         logger.info("Requesting shuttle with ID {} for user '{}'", shuttleID, user);
         try {
@@ -49,6 +70,15 @@ public class ShuttleUtil {
         }
     }
 
+    /**
+     * Updates the status of a shuttle.
+     *
+     * @param clientRequests the client requests handler
+     * @param user the user performing the update
+     * @param shuttleID the ID of the shuttle to update
+     * @param status the new status for the shuttle
+     * @throws IOException if the update fails
+     */
     public static void updateShuttleStatus(ClientRequests clientRequests, String user, int shuttleID, String status) throws IOException {
         logger.info("Updating shuttle ID {} to status '{}' for user '{}'", shuttleID, status, user);
         try {
@@ -63,6 +93,16 @@ public class ShuttleUtil {
         }
     }
 
+    /**
+     * Updates the predicted release time for a shuttle.
+     *
+     * @param clientRequests the client requests handler
+     * @param user the user performing the update
+     * @param shuttleID the ID of the shuttle
+     * @param status the new status or time for the predicted release
+     * @return true if the update was successful
+     * @throws IOException if the update fails
+     */
     public static boolean updatePredictedReleaseTime(ClientRequests clientRequests, String user, int shuttleID, String status) throws IOException {
         logger.info("Updating predicted release time for shuttle ID {} to status '{}' for user '{}'", shuttleID, status, user);
         try {
@@ -78,3 +118,4 @@ public class ShuttleUtil {
         }
     }
 }
+

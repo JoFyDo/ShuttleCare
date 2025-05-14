@@ -8,7 +8,6 @@ import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.image.Image;
 import javafx.scene.layout.StackPane;
-
 import javafx.stage.Stage;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -17,10 +16,21 @@ import javafx.scene.media.Media;
 import javafx.scene.media.MediaPlayer;
 import javafx.scene.media.MediaView;
 
+/**
+ * Main application class for managing the view transitions and startup logic.
+ * Handles the initialization of the application, connection to the server, and navigation between views.
+ */
 public class ViewManager extends Application {
-    private static ClientRequests clientRequests;
-    private final static Logger logger = LoggerFactory.getLogger(ViewManagerController.class);
+    private static ClientRequests clientRequests; // Instance for handling client requests.
+    private final static Logger logger = LoggerFactory.getLogger(ViewManagerController.class); // Logger for logging application events.
 
+    /**
+     * Entry point for the JavaFX application.
+     * Initializes the application and displays the startup screen.
+     *
+     * @param stage The primary stage for the application.
+     * @throws Exception If an error occurs during startup.
+     */
     @Override
     public void start(Stage stage) throws Exception {
         connectToServer();
@@ -32,6 +42,10 @@ public class ViewManager extends Application {
         }
     }
 
+    /**
+     * Establishes a connection to the server by initializing the ClientRequests instance.
+     * Logs any errors that occur during the connection process.
+     */
     private void connectToServer() {
         try {
             clientRequests = new ClientRequests();
@@ -41,6 +55,12 @@ public class ViewManager extends Application {
         }
     }
 
+    /**
+     * Displays the startup screen with a video.
+     * After the video ends, transitions to the login view.
+     *
+     * @param mainStage The primary stage for the application.
+     */
     public static void showStartupScreen(Stage mainStage) {
         try {
             // Create a new stage for the video
@@ -88,6 +108,13 @@ public class ViewManager extends Application {
         }
     }
 
+    /**
+     * Displays the login view.
+     * Configures the stage with the login scene and sets up the application icon.
+     *
+     * @param stage The primary stage for the application.
+     * @throws Exception If an error occurs while loading the login view.
+     */
     public static void showLoginView(Stage stage) throws Exception {
         FXMLLoader loader = new FXMLLoader(ViewManager.class.getResource("/com/rocketshipcheckingtool/ui/LoginView.fxml"));
         Parent root = loader.load();
@@ -106,6 +133,11 @@ public class ViewManager extends Application {
         stage.setOnCloseRequest(e -> System.exit(1));
     }
 
+    /**
+     * Main method for launching the JavaFX application.
+     *
+     * @param args Command-line arguments.
+     */
     public static void main(String[] args) {
         launch(args);
     }

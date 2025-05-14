@@ -5,6 +5,7 @@ import com.rocketshipcheckingtool.ui.datamodel.Shuttle;
 import com.rocketshipcheckingtool.ui.helper.CommentUtil;
 import com.rocketshipcheckingtool.ui.helper.TableSearchHelper;
 import com.rocketshipcheckingtool.ui.auth.UserSession;
+import com.rocketshipcheckingtool.ui.helper.Util;
 import com.rocketshipcheckingtool.ui.roles.technician.ClientRequests;
 import javafx.collections.FXCollections;
 import javafx.event.ActionEvent;
@@ -23,20 +24,29 @@ import org.slf4j.LoggerFactory;
 import java.io.IOException;
 import java.util.ArrayList;
 
+/**
+ * Controller class for managing the comment view in the manager role.
+ * Handles the display, selection, and forwarding of comments related to a specific shuttle.
+ */
 public class CommentViewController {
-    public TextField searchField;
-    public Button forwardButton;
-    public TableView<Comment> commentTableView;
-    public TableColumn<Comment, Boolean> checkBoxColumn;
-    public TableColumn<Comment, String> commentColumn;
+    public TextField searchField; // TextField for searching comments.
+    public Button forwardButton; // Button for forwarding selected comments.
+    public TableView<Comment> commentTableView; // TableView for displaying comments.
+    public TableColumn<Comment, Boolean> checkBoxColumn; // TableColumn for checkboxes to select comments.
+    public TableColumn<Comment, String> commentColumn; // TableColumn for displaying comment text.
 
-    private ClientRequests clientRequests;
-    private Shuttle shuttleSelected;
-    private final String user = UserSession.getRole().name().toLowerCase();
-    private TableSearchHelper<Comment> searchHelper;
+    private ClientRequests clientRequests; // ClientRequests instance for server communication.
+    private Shuttle shuttleSelected; // The currently selected shuttle.
+    private final String user = UserSession.getRole().name().toLowerCase(); // The current user's role.
+    private TableSearchHelper<Comment> searchHelper; // Helper for adding search functionality to the TableView.
 
-    private static final Logger logger = LoggerFactory.getLogger(CommentViewController.class);
+    private static final Logger logger = LoggerFactory.getLogger(CommentViewController.class); // Logger instance.
 
+    /**
+     * Initializes the controller, setting up the table columns and search functionality.
+     *
+     * @throws IOException If an error occurs during initialization.
+     */
     public void initialize() throws IOException {
         setupTableColumns();
         searchHelper = new TableSearchHelper<>(
@@ -47,6 +57,9 @@ public class CommentViewController {
         logger.info("CommentViewController initialized");
     }
 
+    /**
+     * Configures the table columns, including the checkbox and comment columns.
+     */
     private void setupTableColumns() {
         checkBoxColumn.setCellFactory(col -> {
             CheckBoxTableCell<Comment, Boolean> cell =
@@ -77,6 +90,12 @@ public class CommentViewController {
         logger.debug("Table columns set up in KommentarViewController");
     }
 
+    /**
+     * Handles the action of the forward button, forwarding selected comments.
+     *
+     * @param actionEvent The ActionEvent triggered by the button click.
+     * @throws IOException If an error occurs while loading the popup view.
+     */
     public void onWeiterleitenButtonClick(ActionEvent actionEvent) throws IOException {
         logger.info("Forward button clicked in KommentarViewController");
         boolean hasSelectedComment = false;
@@ -121,8 +140,13 @@ public class CommentViewController {
                 alert.setHeaderText(null);
                 alert.setContentText("Kommentare wurden erfolgreich weitergeleitet.");
                 for (Comment comment : selectedComments ) {
-                    CommentUtil.updateComment(clientRequests, user, comment.getId(), "false");
-                    logger.debug("Comment with ID {} marked as processed", comment.getId());
+                    try {
+                        CommentUtil.updateComment(clientRequests, user, comment.getId(), "false");
+                        logger.debug("Comment with ID {} marked as processed", comment.getId());
+                    } catch (Exception e) {
+                        logger.error("Error updating the comment with ID {}: {}", comment.getId(), e.getMessage(), e);
+                        Util.showErrorDialog("Fehler beim Aktualisieren des Kommentars: " + e.getMessage());
+                    }
                 }
                 popupStage.close();
                 alert.showAndWait();
@@ -143,9 +167,11 @@ public class CommentViewController {
             alert.setContentText("Bitte wählen Sie mindestens einen Kommentar aus, um ihn weiterzuleiten.");
             alert.showAndWait();
         }
-
     }
 
+    /**
+     * Loads the comments for the currently selected shuttle into the TableView.
+     */
     public void loadData() {
         if (shuttleSelected == null) {
             logger.warn("No shuttle selected when loading comments");
@@ -159,15 +185,26 @@ public class CommentViewController {
             logger.info("Loaded comments for shuttle '{}'", shuttleSelected.getShuttleName());
         } catch (Exception e) {
             logger.error("Error loading comments: {}", e.getMessage(), e);
+            Util.showErrorDialog("Fehler beim Laden der Kommentare: " + e.getMessage());
         }
     }
 
+    /**
+     * Sets the ClientRequests instance for server communication.
+     *
+     * @param clientRequests The ClientRequests instance to set.
+     */
     public void setClientRequests(ClientRequests clientRequests) {
         this.clientRequests = clientRequests;
         loadData();
         logger.debug("ClientRequests set in KommentarViewController");
     }
 
+    /**
+     * Sets the currently selected shuttle.
+     *
+     * @param shuttleSelected The Shuttle to set as selected.
+     */
     public void setShuttle(Shuttle shuttleSelected) {
         this.shuttleSelected = shuttleSelected;
         logger.debug("Shuttle set in KommentarViewController: '{}'", shuttleSelected != null ? shuttleSelected.getShuttleName() : "null");

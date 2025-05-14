@@ -5,6 +5,7 @@ import com.rocketshipcheckingtool.ui.datamodel.Shuttle;
 import com.rocketshipcheckingtool.ui.helper.PartUtil;
 import com.rocketshipcheckingtool.ui.auth.UserSession;
 import com.rocketshipcheckingtool.ui.helper.TableSearchHelper;
+import com.rocketshipcheckingtool.ui.helper.Util;
 import javafx.collections.FXCollections;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -23,29 +24,40 @@ import org.slf4j.LoggerFactory;
 import java.io.IOException;
 import java.util.List;
 
+/**
+ * Controller class for managing the storage view in the technician role.
+ * Handles the display and interaction with parts in the inventory.
+ */
 public class StorageViewController {
-    public TextField searchField;
-    public Button useButton;
-    public Button orderButton;
+    public TextField searchField; // TextField for searching parts in the inventory.
+    public Button useButton; // Button for using a selected part.
+    public Button orderButton; // Button for ordering more of a selected part.
 
+    public TableColumn<Part, Boolean> checkBoxColumn; // Column for selecting parts using checkboxes.
+    public TableColumn<Part, Boolean> nameColumn; // Column for displaying part names.
+    public TableColumn<Part, Boolean> nrColumn; // Column for displaying part IDs.
+    public TableColumn<Part, Boolean> priceColumn; // Column for displaying part prices.
+    public TableColumn<Part, Boolean> quantityColumn; // Column for displaying part quantities.
+    public TableView<Part> storageTableView; // TableView for displaying parts in the inventory.
 
-    public TableColumn<Part, Boolean> checkBoxColumn;
-    public TableColumn<Part, Boolean> nameColumn;
-    public TableColumn<Part, Boolean> nrColumn;
-    public TableColumn<Part, Boolean> priceColumn;
-    public TableColumn<Part, Boolean> quantityColumn;
-    public TableView<Part> storageTableView;
-    private ClientRequests clientRequests;
-    private final String user = UserSession.getRole().name().toLowerCase();
-    private TableSearchHelper<Part> searchHelper;
-    private static final Logger logger = LoggerFactory.getLogger(StorageViewController.class);
+    private ClientRequests clientRequests; // ClientRequests instance for making HTTP requests.
+    private final String user = UserSession.getRole().name().toLowerCase(); // Current user's role in lowercase.
+    private TableSearchHelper<Part> searchHelper; // Helper for enabling search functionality in the table.
+    private static final Logger logger = LoggerFactory.getLogger(StorageViewController.class); // Logger instance for logging activities.
 
-
+    /**
+     * Sets the ClientRequests instance and loads the table content.
+     *
+     * @param clientRequests The ClientRequests instance to be set.
+     */
     public void setClientRequests(ClientRequests clientRequests) {
         this.clientRequests = clientRequests;
         loadTableContent();
     }
 
+    /**
+     * Initializes the controller and sets up the table columns and search functionality.
+     */
     @FXML
     public void initialize() {
         setupTableColumns();
@@ -56,11 +68,14 @@ public class StorageViewController {
         );
     }
 
+    /**
+     * Configures the columns of the storage table.
+     * Sets up cell factories, value factories, and column properties.
+     */
     private void setupTableColumns() {
-
         checkBoxColumn.setCellFactory(col -> {
             CheckBoxTableCell<Part, Boolean> cell =
-                    new CheckBoxTableCell<Part, Boolean>(index ->
+                    new CheckBoxTableCell<>(index ->
                             storageTableView.getItems().get(index).selectedProperty()
                     );
 
@@ -101,14 +116,15 @@ public class StorageViewController {
             return row;
         });
         storageTableView.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY_ALL_COLUMNS);
-
     }
 
-
+    /**
+     * Loads the content of the storage table.
+     * Fetches parts from the server and populates the table.
+     */
     private void loadTableContent() {
         try {
             logger.debug("Loading parts for user '{}'", user);
-            storageTableView.setItems(FXCollections.observableArrayList(PartUtil.getParts(clientRequests, user)));
             List<Part> parts = PartUtil.getParts(clientRequests, user);
             storageTableView.setItems(FXCollections.observableArrayList(parts));
             if (searchHelper != null) {
@@ -116,20 +132,23 @@ public class StorageViewController {
             }
             logger.info("Loaded {} parts into table", parts.size());
         } catch (Exception e) {
-            logger.error("Failed to load parts: {}", e.getMessage(), e);
-            Alert alert = new Alert(Alert.AlertType.ERROR);
-            alert.setTitle("Ladefehler");
-            alert.setHeaderText(null);
-            alert.setContentText(e.getMessage());
-            alert.showAndWait();
-            System.exit(1);
+            logger.error("Failed to load parts", e);
+            Util.showErrorDialog("Failed to load parts: " + e.getMessage());
+            storageTableView.setDisable(true);
+            useButton.setDisable(true);
+            orderButton.setDisable(true);
         }
     }
 
+    /**
+     * Handles the action when the "Use" button is clicked.
+     * Opens a popup dialog for using a selected part.
+     *
+     * @param actionEvent The action event triggered by the button click.
+     */
     public void onVerwendenButtonClick(ActionEvent actionEvent) {
         try {
             logger.info("Use button clicked in StorageViewController");
-
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/rocketshipcheckingtool/ui/roles/technician/VerwendenPopupView.fxml"));
             Parent popupRoot = loader.load();
             UsePartPopupController usePartPopupController = loader.getController();
@@ -160,18 +179,24 @@ public class StorageViewController {
                     logger.debug("Use dialog closed without confirmation");
                 }
             } catch (NullPointerException e) {
-                logger.error("NullPointerException in use dialog: {}", e.getMessage(), e);
+                logger.error("NullPointerException in use dialog", e);
                 alertDidntSelect();
             }
         } catch (IOException e) {
-            logger.error("IOException in onVerwendenButtonClick: {}", e.getMessage(), e);
+            logger.error("IOException in onVerwendenButtonClick", e);
+            Util.showErrorDialog("Error opening use dialog: " + e.getMessage());
         }
     }
 
+    /**
+     * Handles the action when the "Order" button is clicked.
+     * Opens a popup dialog for ordering more of a selected part.
+     *
+     * @param actionEvent The action event triggered by the button click.
+     */
     public void onBestellenButtonClick(ActionEvent actionEvent) {
         try {
             logger.info("Order button clicked in StorageViewController");
-
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/rocketshipcheckingtool/ui/roles/technician/OrderPopupView.fxml"));
             Parent popupRoot = loader.load();
             OrderPopupController orderPopupController = loader.getController();
@@ -208,14 +233,18 @@ public class StorageViewController {
                     logger.debug("Order dialog closed without confirmation");
                 }
             } catch (NullPointerException e) {
-                logger.error("NullPointerException in order dialog: {}", e.getMessage(), e);
+                logger.error("NullPointerException in order dialog", e);
                 alertDidntSelect();
             }
         } catch (IOException e) {
-            logger.error("IOException in onBestellenButtonClick: {}", e.getMessage(), e);
+            logger.error("IOException in onBestellenButtonClick", e);
+            Util.showErrorDialog("Error opening order dialog: " + e.getMessage());
         }
     }
 
+    /**
+     * Displays an alert when no row is selected in the inventory table.
+     */
     public void alertDidntSelect() {
         logger.info("No row selected in inventory table when attempting action");
         Alert alert = new Alert(Alert.AlertType.INFORMATION);

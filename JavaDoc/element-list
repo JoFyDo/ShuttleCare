@@ -1,0 +1,14 @@
+unnamed package
+com.rocketshipcheckingtool
+com.rocketshipcheckingtool.server
+com.rocketshipcheckingtool.server.database
+com.rocketshipcheckingtool.server.database.repository
+com.rocketshipcheckingtool.server.datamodel
+com.rocketshipcheckingtool.test
+com.rocketshipcheckingtool.ui
+com.rocketshipcheckingtool.ui.auth
+com.rocketshipcheckingtool.ui.datamodel
+com.rocketshipcheckingtool.ui.helper
+com.rocketshipcheckingtool.ui.roles.manager
+com.rocketshipcheckingtool.ui.roles.masterController
+com.rocketshipcheckingtool.ui.roles.technician
