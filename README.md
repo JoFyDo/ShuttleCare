@@ -20,7 +20,6 @@ Weil Raumfahrt keine Fehler verzeiht.
 | 🧑‍🔧 **Wartungsmanagement**       | Nach der Auswertung des Crew-Debriefings werden technisch relevante Anmerkungen von einem Projektmanager **weitergeleitet**, woraufhin der zuständige Techniker daraus eine neue Aufgabe in **ShuttleCare** einpflegen kann. |
 | ✂️ **API-Schnittstelle**           | **ShuttleCare** übermittelt nach jedem Meilenstein im Wartungsprozess den aktuellen Stand an das **Buchungssystem**.                                                                                                         |
 | 🛒 **Bestellung von Ersatzteilen** | Sollte ein benötigtes Teil nicht mehr im Lager verfügbar sein, kann man mit Hilfe von **ShuttleCare** Teile direkt nachbestellen.                                                                                            |
-llen|
 
 
 ## Das sagen ShuttleCare-Benutzer 
